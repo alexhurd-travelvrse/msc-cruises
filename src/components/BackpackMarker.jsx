@@ -66,8 +66,13 @@ const BackpackMarker = ({ pos, size = 0.4, onClick, experienceId, isCollected })
                         <meshBasicMaterial color={color} transparent opacity={1} depthTest={false} />
                     </mesh>
 
-                    {/* Icon - Minimal Emoji Asset */}
-                    <Text position={[0, 0, 0.02]} fontSize={size * 0.45} depthTest={false}>
+                    {/* Icon - Minimal Emoji Asset with dynamic tinting */}
+                    <Text 
+                        position={[0, 0, 0.02]} 
+                        fontSize={size * 0.45} 
+                        depthTest={false}
+                        color={color}
+                    >
                         🎒
                     </Text>
                 </Billboard>

@@ -2,7 +2,6 @@
   "name": "msc-cruises",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "dev:msc": "vite --mode msc --port 5173 --host",

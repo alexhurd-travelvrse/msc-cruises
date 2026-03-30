@@ -612,7 +612,7 @@ const ExperiencePage = () => {
                 positionStyle={{ top: '50%', left: '40px', transform: 'translateY(-50%)' }}
             />
 
-            {/* Vibe Profiler Mini-HUD - MOVED TO BOTTOM RIGHT TO PREVENT OVERLAP */}
+            {/* Vibe Profiler Mini-HUD - LUXURY GLASS VERSION */}
             {isStarted && (
                 <div style={{
                     position: 'fixed',
@@ -622,22 +622,51 @@ const ExperiencePage = () => {
                     textAlign: 'right'
                 }}>
                     <div className="vibe-box glass-panel" style={{ 
-                        padding: '8px 16px', 
+                        padding: '12px 20px', 
                         border: '1px solid rgba(255, 255, 255, 0.1)', 
-                        borderRight: `3px solid ${currentTheme.primary}`,
-                        borderRadius: '8px', 
+                        borderRight: `4px solid ${currentTheme.primary}`,
+                        borderRadius: '12px', 
                         display: 'flex', 
                         flexDirection: 'column', 
                         alignItems: 'flex-end', 
-                        background: 'rgba(5, 5, 20, 0.6)', 
-                        backdropFilter: 'blur(10px)',
-                        minWidth: '120px'
+                        background: 'rgba(5, 5, 20, 0.75)', 
+                        backdropFilter: 'blur(15px)',
+                        minWidth: '140px',
+                        boxShadow: `0 0 20px ${currentTheme.secondary}`
                     }}>
-                        <div style={{ fontSize: '0.5rem', color: currentTheme.primary, fontWeight: '900', letterSpacing: '2px', marginBottom: '2px' }}>
+                        <div style={{ 
+                            fontSize: '0.65rem', 
+                            color: currentTheme.primary, 
+                            fontWeight: '900', 
+                            letterSpacing: '3px', 
+                            marginBottom: '4px',
+                            textShadow: `0 0 5px ${currentTheme.primary}`
+                        }}>
                              VIBE: {currentTheme.label}
                         </div>
-                        <div style={{ fontSize: '1rem', fontWeight: '900', color: 'white', letterSpacing: '1px' }}>
+                        <div style={{ 
+                            fontSize: '1.2rem', 
+                            fontWeight: '900', 
+                            color: 'white', 
+                            letterSpacing: '2px',
+                            animation: 'pulse 2s infinite'
+                        }}>
                             {getTopInterest().toUpperCase()}
+                        </div>
+                        <div style={{ 
+                            height: '4px', 
+                            width: '100%', 
+                            background: 'rgba(255,255,255,0.1)', 
+                            borderRadius: '2px', 
+                            marginTop: '8px',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{ 
+                                height: '100%', 
+                                width: '85%', 
+                                background: currentTheme.primary,
+                                boxShadow: `0 0 8px ${currentTheme.primary}`
+                            }} />
                         </div>
                     </div>
                 </div>
@@ -858,25 +887,41 @@ const ExperiencePage = () => {
                         {(modal.type === 'activity' || modal.type === 'offer' || modal.type === 'golden' || modal.type === 'medal') && (
                             <button onClick={() => {
                                 handleAddToBackpack();
+                                // Completion Logic: Track all viewed items in room
+                                if (modal.id && !itemsViewed.includes(modal.id)) {
+                                    const newViewed = [...itemsViewed, modal.id];
+                                    setItemsViewed(newViewed);
+                                    
+                                    // Get items for current room
+                                    const roomItems = publicConfig?.experiences?.[id]?.items || [];
+                                    if (newViewed.length >= roomItems.length) {
+                                        setIsOrbAllowed(true);
+                                        window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
+                                        window.dispatchEvent(new CustomEvent('msc-items-allowed'));
+                                    }
+                                }
                                 if (modal.type !== 'golden' && modal.type !== 'medal') {
                                     updateChallenge(`exp-${id}`, { objectsFound: 1 });
-                                }
-                                // Production: trigger coin/orb to appear after backpack action if it's an activity
-                                if (modal.type !== 'medal') {
-                                    setIsOrbAllowed(true);
-                                    window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
                                 }
                             }} className="btn-primary">
                                 {modal.type === 'medal' ? 'COLLECT MEDAL' : 'ADD TO BACKPACK'}
                             </button>
                         )}
                         <button onClick={() => {
+                            if (modal.id && !itemsViewed.includes(modal.id)) {
+                                const newViewed = [...itemsViewed, modal.id];
+                                setItemsViewed(newViewed);
+                                
+                                const roomItems = publicConfig?.experiences?.[id]?.items || [];
+                                if (newViewed.length >= roomItems.length) {
+                                    setIsOrbAllowed(true);
+                                    window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
+                                    window.dispatchEvent(new CustomEvent('msc-items-allowed'));
+                                }
+                            }
                             if (modal.type === 'activity' || modal.type === 'offer') {
                                 updateChallenge(`exp-${id}`, { objectsFound: 1 });
                             }
-                            // Production: trigger coin/orb to appear after close action too
-                            setIsOrbAllowed(true);
-                            window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
                             setModal(null);
                         }} className="btn-glass" style={{ width: modal.type === 'menu' ? '100%' : 'auto', marginTop: modal.type === 'menu' ? '10px' : '0' }}>
                             CLOSE

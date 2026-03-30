@@ -977,27 +977,8 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                             }
 
 
-                            if (obj.name === 'YachtClubStar') {
-                                const isStarCollected = backpack.some(item => item.id === 'YachtClubStar');
-                                console.log('[Scene3D] Rendering YachtClubStar', { pos, size: obj.size, isCollected: isStarCollected });
-                                return (
-                                    <group key={index}>
-                                        <TransformWrapper id={id} activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                            <GreenStar
-                                                pos={pos}
-                                                rot={rot}
-                                                size={obj.size || 0.1}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    console.log('[Scene3D] YachtClubStar clicked!');
-                                                    window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'YachtClubStar', experienceId } }));
-                                                }}
-                                                isCollected={isStarCollected}
-                                            />
-                                        </TransformWrapper>
-                                    </group>
-                                );
-                            }
+                            // Extra objects logic continued...
+
 
                             return (
                                 <group key={index}>

@@ -517,6 +517,32 @@ const ConfigDashboard = () => {
             {/* Actions */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginBottom: '4rem' }}>
                 <button
+                    onClick={() => {
+                        const blob = new Blob([JSON.stringify(formData, null, 4)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `config_truth_${activeCompanyId || currentDestination}.json`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        alert("✓ Config Exported! Please send this JSON to Antigravity to lock it into the master project.");
+                    }}
+                    style={{
+                        padding: '1rem 2rem',
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        fontWeight: 'bold',
+                        boxShadow: '0 4px 10px rgba(0, 123, 255, 0.3)'
+                    }}
+                >
+                    💾 DOWNLOAD MASTER TRUTH JSON
+                </button>
+
+                <button
                     onClick={async () => {
                         if (confirm("SHIP TO LIVE? This will commit and push your content to GitHub, triggering a Vercel deploy.")) {
                             try {

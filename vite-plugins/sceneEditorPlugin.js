@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,9 +69,7 @@ export default function sceneEditorPlugin() {
                 });
             });
 
-            // NEW: Git Sync Endpoint
             server.middlewares.use('/api/git-sync', async (req, res) => {
-                const { exec } = await import('child_process');
                 console.log("[Plugin] 🚀 GI-SYNC TRIGGERED. Preparing to ship to production...");
 
                 exec('git add . && git commit -m "Automated Content/Scene Update" && git push', (error, stdout, stderr) => {
