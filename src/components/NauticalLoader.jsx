@@ -61,19 +61,6 @@ const NauticalLoader = ({ progress, isSplatLoaded, isVisible }) => {
                         {/* Central Hub */}
                         <circle cx="50" cy="50" r="6" fill="white" stroke="#3D8A9C" strokeWidth="2" />
                     </svg>
-                    {/* Centered Percentage */}
-                    <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        fontSize: '1.2rem',
-                        fontWeight: 900,
-                        color: '#3D8A9C',
-                        textShadow: '0 0 5px rgba(255,255,255,0.8)'
-                    }}>
-                        {displayProgress.toFixed(0)}%
-                    </div>
                 </div>
 
                 <div style={{ textAlign: 'center' }}>
@@ -97,14 +84,30 @@ const NauticalLoader = ({ progress, isSplatLoaded, isVisible }) => {
                     </div>
                 </div>
 
-                {/* Subtle progress bar at bottom */}
-                <div style={{ width: '100%', height: '4px', background: 'rgba(0,0,0,0.05)', marginTop: '10px', overflow: 'hidden', borderRadius: '4px' }}>
-                    <div style={{ 
-                        width: `${displayProgress}%`, 
-                        height: '100%', 
-                        background: 'linear-gradient(90deg, #5BC0DE, #3D8A9C)', 
-                        transition: 'width 0.4s ease-out' 
-                    }} />
+                {/* INTEGRATED NAVIGATION GUIDE */}
+                <div style={{
+                    marginTop: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    width: '100%'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', alignItems: 'center' }}>
+                        <div>
+                            <div style={{ fontSize: '0.6rem', color: '#5D6D7E', letterSpacing: '2px', fontWeight: 800, marginBottom: '5px' }}>MOVE</div>
+                            <div style={{ fontSize: '0.9rem', color: '#3D8A9C', fontWeight: 900 }}>W A S D</div>
+                        </div>
+                        <div style={{ width: '1px', height: '20px', background: 'rgba(61, 138, 156, 0.2)' }}></div>
+                        <div>
+                            <div style={{ fontSize: '0.6rem', color: '#5D6D7E', letterSpacing: '2px', fontWeight: 800, marginBottom: '5px' }}>ELEVATION</div>
+                            <div style={{ fontSize: '0.9rem', color: '#3D8A9C', fontWeight: 900 }}>Q / E</div>
+                        </div>
+                    </div>
+                    
+                    <div style={{ borderTop: '1px solid rgba(61, 138, 156, 0.1)', paddingTop: '10px' }}>
+                        <div style={{ fontSize: '0.6rem', color: '#5D6D7E', letterSpacing: '2px', fontWeight: 800, marginBottom: '5px' }}>VISUALS</div>
+                        <div style={{ fontSize: '0.8rem', color: '#3D8A9C', fontWeight: 400 }}>CLICK + DRAG TO LOOK</div>
+                    </div>
                 </div>
             </div>
         </div>

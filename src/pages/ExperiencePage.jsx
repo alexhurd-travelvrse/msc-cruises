@@ -586,7 +586,6 @@ const ExperiencePage = () => {
     };
 
     const currentHotspots = sceneConfig[id]?.hotspots || [];
-    return (
     const sceneThemes = {
         '1': { primary: '#d4af37', secondary: 'rgba(212, 175, 55, 0.2)', label: 'YACHT CLUB' },
         '2': { primary: '#00e5ff', secondary: 'rgba(0, 229, 255, 0.2)', label: 'SPA' },
@@ -644,16 +643,11 @@ const ExperiencePage = () => {
                 script={publicConfig?.audio?.[id]} 
             />
 
-            {!isStarted && (
-                <StartOverlay
-                    title={brandingTitle}
-                    subtitle="COLLECT ALL 5 MEDALS TO UNLOCK THE SPEAKEASY"
-                    onStart={() => {
-                        setIsStarted(true);
-                    }}
-                    isVisible={!isStarted}
-                />
-            )}
+            <NauticalLoader
+                isVisible={!isSplatLoaded}
+                progress={nextRoomProgress}
+                isSplatLoaded={isSplatLoaded}
+            />
 
 
             {/* 3D Core Layer */}
