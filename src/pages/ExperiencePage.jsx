@@ -587,6 +587,16 @@ const ExperiencePage = () => {
 
     const currentHotspots = sceneConfig[id]?.hotspots || [];
     return (
+    const sceneThemes = {
+        '1': { primary: '#d4af37', secondary: 'rgba(212, 175, 55, 0.2)', label: 'YACHT CLUB' },
+        '2': { primary: '#00e5ff', secondary: 'rgba(0, 229, 255, 0.2)', label: 'SPA' },
+        '3': { primary: '#ff8c00', secondary: 'rgba(255, 140, 0, 0.2)', label: 'SOCIAL' },
+        '4': { primary: '#ff3d00', secondary: 'rgba(255, 61, 0, 0.2)', label: 'RACING' },
+        '5': { primary: '#ffcc00', secondary: 'rgba(255, 204, 0, 0.2)', label: 'CULTURE' }
+    };
+    const currentTheme = sceneThemes[id] || sceneThemes['1'];
+
+    return (
         <div className="experience-container" style={{ touchAction: 'none' }}>
             <DigitalGuideOverlay 
                 avatarUrl={publicConfig?.home?.influencerPhoto || '/assets/Alexhurd1.jpg'} 
@@ -595,31 +605,31 @@ const ExperiencePage = () => {
                 positionStyle={{ top: '50%', left: '40px', transform: 'translateY(-50%)' }}
             />
 
-            {/* Vibe Profiler Mini-HUD */}
+            {/* Vibe Profiler Mini-HUD - MOVED TO BOTTOM RIGHT TO PREVENT OVERLAP */}
             {isStarted && (
                 <div style={{
                     position: 'fixed',
-                    top: '80px',
+                    bottom: '120px',
                     right: '25px',
                     zIndex: 100,
                     textAlign: 'right'
                 }}>
                     <div className="vibe-box glass-panel" style={{ 
-                        padding: '12px 24px', 
-                        border: '1px solid rgba(0, 229, 255, 0.3)', 
-                        borderRight: '4px solid #00e5ff',
-                        borderRadius: '12px', 
+                        padding: '8px 16px', 
+                        border: '1px solid rgba(255, 255, 255, 0.1)', 
+                        borderRight: `3px solid ${currentTheme.primary}`,
+                        borderRadius: '8px', 
                         display: 'flex', 
                         flexDirection: 'column', 
                         alignItems: 'flex-end', 
-                        background: 'rgba(5, 5, 20, 0.75)', 
-                        boxShadow: '0 8px 40px rgba(0, 229, 255, 0.2)',
-                        minWidth: '160px'
+                        background: 'rgba(5, 5, 20, 0.6)', 
+                        backdropFilter: 'blur(10px)',
+                        minWidth: '120px'
                     }}>
-                        <div style={{ fontSize: '0.6rem', color: '#00e5ff', fontWeight: '900', letterSpacing: '3px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                             <span style={{ fontSize: '1rem' }}>✨</span> TRAVEL VIBE
+                        <div style={{ fontSize: '0.5rem', color: currentTheme.primary, fontWeight: '900', letterSpacing: '2px', marginBottom: '2px' }}>
+                             VIBE: {currentTheme.label}
                         </div>
-                        <div style={{ fontSize: '1.3rem', fontWeight: '950', color: 'white', textShadow: '0 2px 15px rgba(0,229,255,0.4)', letterSpacing: '1px' }}>
+                        <div style={{ fontSize: '1rem', fontWeight: '900', color: 'white', letterSpacing: '1px' }}>
                             {getTopInterest().toUpperCase()}
                         </div>
                     </div>
@@ -673,42 +683,40 @@ const ExperiencePage = () => {
                     </div>
 
 
-                    <div className="hud-stats">
-                        <div className="medal-box glass-panel stat-item" style={{ 
-                            display: 'flex', alignItems: 'center', gap: '12px', color: '#ffd700',
-                            padding: '12px 24px', borderRadius: '50px', border: '1px solid rgba(255, 215, 0, 0.4)',
+                    <div className="hud-stats" style={{ display: 'flex', gap: '8px' }}>
+                        <div className="medal-box glass-panel" style={{ 
+                            display: 'flex', alignItems: 'center', gap: '8px', color: '#ffd700',
+                            padding: '8px 16px', borderRadius: '30px', border: '1px solid rgba(255, 255, 255, 0.1)',
                             borderTop: '2px solid #ffd700',
-                            background: 'rgba(5, 5, 20, 0.75)', boxShadow: '0 8px 40px rgba(255, 215, 0, 0.2)'
+                            background: 'rgba(5, 5, 20, 0.6)', backdropFilter: 'blur(10px)'
                         }}>
-                            <span style={{ fontSize: '1.8rem', filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.8))' }}>🏅</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1.1' }}>
-                                <span style={{ fontSize: '0.6rem', fontWeight: '900', color: '#ffd700', letterSpacing: '2px' }}>MEDALS</span>
-                                <span style={{ fontWeight: '950', fontSize: '1.2rem', color: 'white' }}>{getTotalCoins()} <span style={{ fontSize: '0.9rem', opacity: 0.6 }}>/ 5</span></span>
+                            <span style={{ fontSize: '1.2rem' }}>🏅</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1' }}>
+                                <span style={{ fontSize: '0.5rem', fontWeight: '800', opacity: 0.8, letterSpacing: '1px' }}>MEDALS</span>
+                                <span style={{ fontWeight: '900', fontSize: '0.9rem', color: 'white' }}>{getTotalCoins()} / 5</span>
                             </div>
                         </div>
 
                         <div 
-                            className={`backpack-box glass-panel stat-pill ${backpackUpdated ? 'backpack-glow' : ''}`} 
+                            className={`backpack-box glass-panel ${backpackUpdated ? 'backpack-glow' : ''}`} 
                             onClick={() => setShowFavourites(true)} 
                             style={{ 
                                 cursor: 'pointer', 
-                                background: 'rgba(5, 5, 20, 0.75)',
-                                border: '1px solid rgba(0, 229, 255, 0.4)',
-                                borderTop: '2px solid #00e5ff',
-                                color: 'var(--color-white, #ffffff)',
-                                padding: '12px 24px',
-                                borderRadius: '50px',
+                                background: 'rgba(5, 5, 20, 0.6)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderTop: `2px solid ${currentTheme.primary}`,
+                                padding: '8px 16px',
+                                borderRadius: '30px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '12px',
-                                boxShadow: '0 8px 40px rgba(0, 229, 255, 0.2)',
-                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                                gap: '8px',
+                                backdropFilter: 'blur(10px)'
                             }}
                         >
-                            <span style={{ fontSize: '1.6rem', filter: 'drop-shadow(0 0 10px rgba(0,229,255,0.8))' }}>🎒</span>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1.1' }}>
-                                <span style={{ fontWeight: '900', fontSize: '0.6rem', color: '#00e5ff', letterSpacing: '2px' }}>BACKPACK</span>
-                                <span style={{ fontSize: '1.2rem', fontWeight: '950', color: 'white' }}>{backpack.length} <span style={{ fontSize: '0.9rem', opacity: 0.6 }}>ITEMS</span></span>
+                            <span style={{ fontSize: '1.2rem' }}>🎒</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: '1' }}>
+                                <span style={{ fontWeight: '800', fontSize: '0.5rem', opacity: 0.8, letterSpacing: '1px' }}>BACKPACK</span>
+                                <span style={{ fontSize: '0.9rem', fontWeight: '900', color: 'white' }}>{backpack.length} ITEMS</span>
                             </div>
                         </div>
                     </div>

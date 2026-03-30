@@ -203,7 +203,7 @@ const HomePage = () => {
                     </p>
                 )}
 
-                <div className="benefits-list animate-fade-in animate-delay-2" style={{ marginTop: '0.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', alignItems: 'center' }}>
+                <div className="benefits-list animate-fade-in animate-delay-2" style={{ marginTop: '0.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', alignItems: 'center' }}>
                     <div className="benefit-item" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
                         ✨ Discover your secret travel vibe
                     </div>
@@ -223,6 +223,19 @@ const HomePage = () => {
                         textTransform: 'uppercase'
                     }}>
                         🏷️ Get a personalised onboard offer
+                    </div>
+                    
+                    <div className="benefit-item standout-benefit" style={{ 
+                        background: 'rgba(0, 229, 255, 0.15)', 
+                        border: '1px solid rgba(0, 229, 255, 0.5)', 
+                        borderRadius: '4px', 
+                        padding: '12px 24px',
+                        marginTop: '15px',
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 0 20px rgba(0, 229, 255, 0.3)',
+                        cursor: 'pointer'
+                    }}>
+                        <span className="benefit-text" style={{ color: '#00e5ff', fontWeight: '800', fontSize: '1rem', letterSpacing: '2px', textTransform: 'uppercase', textShadow: '0 0 10px rgba(0, 229, 255, 0.6)' }}>Get on the exclusive speakeasy guestlist</span>
                     </div>
                 </div>
 

@@ -67,8 +67,13 @@ const FavouritesOverlay = ({ onClose }) => {
                         {backpack.length === 0 ? (
                             <p style={{ textAlign: 'center', opacity: 0.5, padding: '2rem' }}>Your backpack is empty. Explore and find activities!</p>
                         ) : (
-                            backpack.map((item, idx) => (
-                                <div key={idx} className="feed-item" style={{ borderLeft: item.type === 'loyalty' ? '4px solid #FFD700' : 'none' }}>
+                            backpack.map((item, idx) => {
+                                const roomId = String(item.id || '1').split('-')[0];
+                                const themes = { '1': '#d4af37', '2': '#00e5ff', '3': '#ff8c00', '4': '#ff3d00', '5': '#ffcc00' };
+                                const itemColor = item.type === 'medal' ? '#FFD700' : (themes[roomId] || '#d4af37');
+
+                                return (
+                                <div key={idx} className="feed-item" style={{ borderLeft: `4px solid ${itemColor}`, background: `rgba(255,255,255,0.02)` }}>
                                     <div className="feed-img">
                                         {item.image ? (
                                             <img
@@ -84,26 +89,27 @@ const FavouritesOverlay = ({ onClose }) => {
                                         <div style={{
                                             width: '100%',
                                             height: '100%',
-                                            background: item.type === 'loyalty' ? 'rgba(255,215,0,0.2)' : 'rgba(112,0,255,0.2)',
+                                            background: `${itemColor}20`,
                                             display: item.image ? 'none' : 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
-                                            fontSize: '2rem'
+                                            fontSize: '1.5rem',
+                                            border: `1px solid ${itemColor}40`
                                         }}>
-                                            {item.type === 'loyalty' ? '💎' : (item.icon || '🎒')}
+                                            {item.type === 'medal' ? '🏅' : (item.icon || '🎒')}
                                         </div>
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <h4 style={{ margin: '0 0 5px 0', color: '#FFD700' }}>{item.title}</h4>
+                                            <h4 style={{ margin: '0 0 5px 0', color: itemColor, fontSize: '0.9rem', fontWeight: '800' }}>{item.title.toUpperCase()}</h4>
                                             {item.collectible && (
                                                 <span style={{ 
-                                                    fontSize: '0.6rem', 
-                                                    background: 'rgba(0, 229, 255, 0.2)', 
-                                                    color: '#00e5ff', 
+                                                    fontSize: '0.5rem', 
+                                                    background: `${itemColor}20`, 
+                                                    color: itemColor, 
                                                     padding: '2px 6px', 
                                                     borderRadius: '4px',
-                                                    border: '1px solid rgba(0, 229, 255, 0.4)',
+                                                    border: `1px solid ${itemColor}40`,
                                                     fontWeight: 'bold',
                                                     letterSpacing: '1px'
                                                 }}>
@@ -111,10 +117,11 @@ const FavouritesOverlay = ({ onClose }) => {
                                                 </span>
                                             )}
                                         </div>
-                                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#aaa' }}>{item.description}</p>
+                                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#999' }}>{item.description}</p>
                                     </div>
                                 </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
 
