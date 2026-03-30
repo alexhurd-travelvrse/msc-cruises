@@ -94,7 +94,14 @@ const HomePage = () => {
                     playsInline 
                     preload="auto"
                     poster="/assets/balcony_preview.jpg"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1, transition: 'opacity 0.5s ease-in' }}
+                    style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover', 
+                        opacity: 1, 
+                        transition: 'opacity 0.5s ease-in',
+                        filter: 'brightness(1.15) saturate(1.1) contrast(1.05)' // Boost brilliance
+                    }}
                 />
                 
                 {/* Visual Overlay for Text Contrast */}
@@ -104,7 +111,7 @@ const HomePage = () => {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: 'radial-gradient(circle at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 100%)', 
+                    background: 'radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)', 
                     zIndex: 1, 
                     pointerEvents: 'none',
                     backdropFilter: 'blur(1px)' // Subtle focus effect

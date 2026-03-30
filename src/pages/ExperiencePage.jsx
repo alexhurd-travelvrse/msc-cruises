@@ -366,6 +366,8 @@ const ExperiencePage = () => {
         const handleSplatLoad = () => {
             console.log('[ExperiencePage] Splat loaded signal received');
             setIsSplatLoaded(true);
+            // Reveal icons ONLY after splat is ready for interaction
+            window.dispatchEvent(new CustomEvent('msc-items-allowed'));
         };
         window.addEventListener('msc-splat-loaded', handleSplatLoad);
         return () => window.removeEventListener('msc-splat-loaded', handleSplatLoad);
@@ -378,8 +380,8 @@ const ExperiencePage = () => {
             }
         };
 
-        // Reveal activity items when the experience starts
-        window.dispatchEvent(new CustomEvent('msc-items-allowed'));
+        // Reveal activity items when the experience starts - MOVED TO SPLAT LOAD
+        // window.dispatchEvent(new CustomEvent('msc-items-allowed'));
 
         const handleObjectClick = (e) => {
             const { name, experienceId } = e.detail;
@@ -464,13 +466,19 @@ const ExperiencePage = () => {
                     // New Interaction Tracker: Add this item to the set of things viewed in this room
                     if (dynamicItem.id) {
                         viewedItems.current.add(dynamicItem.id);
-                        if (id === '5') {
-                            const count = Array.from(viewedItems.current).filter(i => String(i).startsWith('5-')).length;
-                            console.log(`[ExperiencePage] Room 5 Viewed Objects: ${count}/2`);
-                            if (count >= 2) {
-                                window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
-                                console.log('%c[ExperiencePage] Room 5: Both items viewed. Reveal the Coin.', 'color: #FFD700; font-weight: bold;');
-                            }
+                        
+                        // Universal Completion Gate: Count expected items for this room
+                        const expectedCount = (id === '1' || id === '5') ? 2 : 1;
+                        const currentRoomItems = Array.from(viewedItems.current).filter(itemId => 
+                            String(itemId).startsWith(`${id}-`) || 
+                            (id === '1' && (itemId === 'tvcontrol-1' || itemId === 'activity-1'))
+                        );
+
+                        console.log(`[ExperiencePage] Room ${id} Progress: ${currentRoomItems.length}/${expectedCount}`);
+                        
+                        if (currentRoomItems.length >= expectedCount) {
+                            window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
+                            console.log(`%c[ExperiencePage] Room ${id} Completion: Reveal the Coin.`, 'color: #FFD700; font-weight: bold;');
                         }
                     }
 
