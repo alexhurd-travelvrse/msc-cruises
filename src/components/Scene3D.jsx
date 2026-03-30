@@ -56,7 +56,7 @@ const DynamicModel = ({ config, modelScale, onSplatLoad }) => {
     }
 };
 
-const RealisticMSCCoin = ({ pos, size, onClick, coinRef, isCollected }) => {
+const RealisticMSCCoin = React.forwardRef(({ pos, size, onClick, isCollected }, ref) => {
     const groupRef = useRef();
     useFrame((state) => {
         if (groupRef.current) {
@@ -67,7 +67,11 @@ const RealisticMSCCoin = ({ pos, size, onClick, coinRef, isCollected }) => {
     return (
         <group
             position={pos}
-            ref={(el) => { if (coinRef) coinRef.current = el; groupRef.current = el; }}
+            ref={(el) => {
+                groupRef.current = el;
+                if (typeof ref === 'function') ref(el);
+                else if (ref) ref.current = el;
+            }}
             visible={!isCollected}
         >
             <mesh onClick={onClick} onPointerDown={onClick}>
@@ -92,15 +96,15 @@ const RealisticMSCCoin = ({ pos, size, onClick, coinRef, isCollected }) => {
             <pointLight intensity={2} distance={2} color="#FFD700" />
         </group>
     );
-};
+});
 
-const TexturedCoin = ({ pos, size, onClick, coinRef, isCollected }) => {
-    return <RealisticMSCCoin pos={pos} size={size} onClick={onClick} coinRef={coinRef} isCollected={isCollected} />;
-};
+const TexturedCoin = React.forwardRef((props, ref) => {
+    return <RealisticMSCCoin {...props} ref={ref} />;
+});
 
-const RealisticActivity = ({ pos, size, onClick, chestRef, isCollected }) => {
+const RealisticActivity = React.forwardRef(({ pos, size, onClick, isCollected }, ref) => {
     return (
-        <group position={pos} ref={chestRef} visible={!isCollected}>
+        <group position={pos} ref={ref} visible={!isCollected}>
             <mesh onClick={onClick} onPointerDown={onClick}>
                 <sphereGeometry args={[size * 3, 8, 8]} />
                 <meshBasicMaterial transparent opacity={0} depthTest={false} />
@@ -123,11 +127,11 @@ const RealisticActivity = ({ pos, size, onClick, chestRef, isCollected }) => {
             <pointLight intensity={2} color="#00e5ff" distance={3} />
         </group>
     );
-};
+});
 
-const ProceduralRing = ({ pos, size, onClick, chestRef, isCollected }) => {
+const ProceduralRing = React.forwardRef(({ pos, size, onClick, isCollected }, ref) => {
     return (
-        <group position={pos} ref={chestRef} visible={!isCollected}>
+        <group position={pos} ref={ref} visible={!isCollected}>
             <mesh onClick={onClick} onPointerDown={onClick}>
                 <sphereGeometry args={[size * 3, 16, 16]} />
                 <meshBasicMaterial transparent opacity={0} depthTest={false} />
@@ -159,7 +163,7 @@ const ProceduralRing = ({ pos, size, onClick, chestRef, isCollected }) => {
             <pointLight intensity={2} color="#FFD700" distance={2} />
         </group>
     );
-};
+});
 
 const TelephoneBox = ({ pos, size, onClick, chestRef }) => {
     return (
@@ -242,9 +246,9 @@ const RacingCarModel = ({ modelPath }) => {
     return <primitive object={clonedScene} scale={0.5} />;
 };
 
-const RacingCar = ({ pos, size, onClick, chestRef, isCollected, modelPath }) => {
+const RacingCar = React.forwardRef(({ pos, size, onClick, isCollected, modelPath }, ref) => {
     return (
-        <group position={pos} ref={chestRef} visible={!isCollected}>
+        <group position={pos} ref={ref} visible={!isCollected}>
             <mesh onClick={onClick} onPointerDown={onClick}>
                 <sphereGeometry args={[size * 4, 16, 16]} />
                 <meshBasicMaterial transparent opacity={0} depthTest={false} />
@@ -278,7 +282,7 @@ const RacingCar = ({ pos, size, onClick, chestRef, isCollected, modelPath }) => 
             </group>
         </group>
     );
-};
+});
 
 
 
@@ -286,7 +290,7 @@ const ProperAvatar = () => {
     return null; // Logic removed as requested
 };
 
-const RemoteModel = ({ pos, rotation, size = 0.1, onClick, modelPath }) => {
+const RemoteModel = React.forwardRef(({ pos, rotation, size = 0.1, onClick, modelPath }, ref) => {
     const { scene } = useGLTF(modelPath || '/models/remotecontrol.glb');
     const groupRef = useRef();
     const clonedScene = React.useMemo(() => scene.clone(), [scene]);
@@ -299,8 +303,6 @@ const RemoteModel = ({ pos, rotation, size = 0.1, onClick, modelPath }) => {
             // Apply pulse to the base size
             groupRef.current.scale.set(size * scalePulse, size * scalePulse, size * scalePulse);
         }
-        // Note: Remote GLB might not have easy emissive property on top level, 
-        // unlike geometry primitives, so we focus on scale pulse primarily.
     });
 
     const handleClick = (e) => {
@@ -309,7 +311,11 @@ const RemoteModel = ({ pos, rotation, size = 0.1, onClick, modelPath }) => {
     };
 
     return (
-        <group position={pos} rotation={rotation} ref={groupRef}>
+        <group position={pos} rotation={rotation} ref={(el) => {
+            groupRef.current = el;
+            if (typeof ref === 'function') ref(el);
+            else if (ref) ref.current = el;
+        }}>
             <primitive object={clonedScene} onClick={handleClick} />
 
             {/* Flashing Light for effect */}
@@ -322,7 +328,7 @@ const RemoteModel = ({ pos, rotation, size = 0.1, onClick, modelPath }) => {
             </Billboard>
         </group>
     );
-};
+});
 
 
 // Local definitions to match Experience 1 & 4 logic for stability
@@ -385,7 +391,7 @@ const GreenStar = ({ pos, rot, size, onClick, isCollected }) => {
     );
 };
 
-const TowelLocal = ({ pos, size, onClick, chestRef, isCollected }) => {
+const TowelLocal = React.forwardRef(({ pos, size, onClick, isCollected }, ref) => {
     // Generate Realistic Fabric Texture
     const fabricTexture = React.useMemo(() => {
         const canvas = document.createElement('canvas');
@@ -420,7 +426,7 @@ const TowelLocal = ({ pos, size, onClick, chestRef, isCollected }) => {
     }, [fabricTexture]);
 
     return (
-        <group position={pos} ref={chestRef} visible={!isCollected}>
+        <group position={pos} ref={ref} visible={!isCollected}>
             {/* Interaction Sphere - Matches RealisticActivity */}
             <mesh onClick={onClick} onPointerDown={onClick}>
                 <sphereGeometry args={[size * 4, 16, 16]} />
@@ -456,11 +462,11 @@ const TowelLocal = ({ pos, size, onClick, chestRef, isCollected }) => {
             <pointLight position={[0, 0.5, 0.2]} color="#00e5ff" intensity={3} distance={4} />
         </group>
     );
-};
+});
 
-const GymBallLocal = ({ pos, size, onClick, isCollected, ballRef }) => {
+const GymBallLocal = React.forwardRef(({ pos, size, onClick, isCollected }, ref) => {
     return (
-        <group position={pos} ref={ballRef} visible={!isCollected}>
+        <group position={pos} ref={ref} visible={!isCollected}>
             {/* Interaction Sphere */}
             <mesh onClick={onClick} onPointerDown={onClick}>
                 <sphereGeometry args={[size * 3, 16, 16]} />
@@ -482,7 +488,7 @@ const GymBallLocal = ({ pos, size, onClick, isCollected, ballRef }) => {
             <pointLight intensity={1} distance={2} color="#ffffff" position={[0, size, 0]} />
         </group>
     );
-};
+});
 
 const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditorObject, isStarted = false }) => {
     const { publicConfig } = useInfluencer();
@@ -678,6 +684,14 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
         const reportObjects = () => {
             const objs = [];
 
+            // Add starting camera position (standardized for overall room experience)
+            objs.push({
+                id: 'camera',
+                name: 'Initial Camera Position',
+                pos: (localPositions['camera'] || startPos),
+                rot: getDegrees('camera', startRot)
+            });
+
             objs.push({
                 id: 'coin',
                 name: 'MSC Cruises Coin',
@@ -761,15 +775,43 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
             }
         };
 
+        const handleUseCameraPos = (e) => {
+            const { id } = e.detail;
+            if (!id) return;
+
+            // Use the global latestCameraPos updated by usePlayerControls
+            const pos = window.latestCameraPos;
+            const rot = window.latestCameraRot;
+
+            if (!pos) {
+                console.error("[Scene3D] Failed to capture camera position: window.latestCameraPos is undefined");
+                return;
+            }
+
+            console.log(`[Scene3D] Snapping object ${id} to camera view:`, pos);
+            
+            setLocalPositions(prev => ({ ...prev, [id]: [...pos] }));
+            setLocalRotations(prev => ({ ...prev, [id]: [...(rot || [0, 0, 0])] }));
+            
+            // For camera ID, we also need to manually trigger the player controls update so the view stays synced
+            if (id === 'camera') {
+                window.dispatchEvent(new CustomEvent('camera-manual-update', { 
+                    detail: { pos, rot } 
+                }));
+            }
+        };
+
         window.addEventListener('scene-editor-request-sync', handleRequest);
         window.addEventListener('scene-editor-manual-update', handleManualSync);
         window.addEventListener('scene-editor-mode-change', handleModeChange);
+        window.addEventListener('scene-editor-use-camera-pos', handleUseCameraPos);
         reportObjects();
 
         return () => {
             window.removeEventListener('scene-editor-request-sync', handleRequest);
             window.removeEventListener('scene-editor-manual-update', handleManualSync);
             window.removeEventListener('scene-editor-mode-change', handleModeChange);
+            window.removeEventListener('scene-editor-use-camera-pos', handleUseCameraPos);
         };
     }, [localPositions, localRotations, experienceId, coinPos, activityPos, config.avatarPos, config.remotePos, config.extraObjects, config.menuPos, config.winePos, config.rewardPos, config.gaudiPos, showWineGlass, showGelato, currentCoinPos, currentActivityPos, currentRemotePos, activityRot]);
 
@@ -814,16 +856,17 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                         <TransformWrapper id="coin" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
                             {/* Production: coin only appears after icon interaction (msc-orb-allowed event) */}
                             {isOrbAllowed && (
-                                <Suspense fallback={null}>
-                                    <TexturedCoin
-                                        pos={currentCoinPos}
-                                        size={coinSize}
-                                        texturePath={coinRefObj.media || config.coinMedia || '/textures/coin.png'}
-                                        onClick={handleCoinClick}
-                                        coinRef={coinRef}
-                                        isCollected={isCoinCollected}
-                                    />
-                                </Suspense>
+                                <group ref={coinRef}>
+                                    <Suspense fallback={null}>
+                                        <TexturedCoin
+                                            pos={currentCoinPos}
+                                            size={coinSize}
+                                            texturePath={coinRefObj.media || config.coinMedia || '/textures/coin.png'}
+                                            onClick={handleCoinClick}
+                                            isCollected={isCoinCollected}
+                                        />
+                                    </Suspense>
+                                </group>
                             )}
                         </TransformWrapper>
                     </group>
@@ -834,24 +877,28 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                         <group>
                             {/* Icon 1: TV/Wifi replacement */}
                             <TransformWrapper id="remote" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <BackpackMarker
-                                    pos={currentRemotePos}
-                                    experienceId={experienceId}
-                                    size={0.5}
-                                    isCollected={backpack.some(it => it.id === '1-1' || it.id === 'tvcontrol-1')}
-                                    onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'TVControl', experienceId } }))}
-                                />
+                                <group>
+                                    <BackpackMarker
+                                        pos={currentRemotePos}
+                                        experienceId={experienceId}
+                                        size={0.5}
+                                        isCollected={backpack.some(it => it.id === '1-1' || it.id === 'tvcontrol-1')}
+                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'TVControl', experienceId } }))}
+                                    />
+                                </group>
                             </TransformWrapper>
 
                             {/* Icon 2: Luxury Service/Bell replacement */}
                             <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <BackpackMarker
-                                    pos={localPositions['activity'] || config.activityPos}
-                                    experienceId={experienceId}
-                                    size={0.4}
-                                    isCollected={backpack.some(it => it.id === '1-2' || it.id === 'activity-1')}
-                                    onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                />
+                                <group ref={chestRef}>
+                                    <BackpackMarker
+                                        pos={localPositions['activity'] || config.activityPos}
+                                        experienceId={experienceId}
+                                        size={0.4}
+                                        isCollected={backpack.some(it => it.id === '1-2' || it.id === 'activity-1')}
+                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
+                                    />
+                                </group>
                             </TransformWrapper>
                         </group>
                     )}
@@ -860,13 +907,15 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                     {experienceId === '2' && isItemsAllowed && (
                         <group>
                             <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <BackpackMarker
-                                    pos={currentActivityPos}
-                                    experienceId={experienceId}
-                                    size={0.6}
-                                    isCollected={backpack.some(it => it.id === '2-1' || it.id.includes('activity-2'))}
-                                    onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                />
+                                <group ref={chestRef}>
+                                    <BackpackMarker
+                                        pos={currentActivityPos}
+                                        experienceId={experienceId}
+                                        size={0.6}
+                                        isCollected={backpack.some(it => it.id === '2-1' || it.id.includes('activity-2'))}
+                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
+                                    />
+                                </group>
                             </TransformWrapper>
                         </group>
                     )}
@@ -875,13 +924,15 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                     {experienceId === '4' && isItemsAllowed && (
                         <group>
                             <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <BackpackMarker
-                                    pos={currentActivityPos}
-                                    experienceId={experienceId}
-                                    size={0.6}
-                                    isCollected={backpack.some(it => it.id === '4-1' || it.id.includes('activity-4'))}
-                                    onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                />
+                                <group ref={chestRef}>
+                                    <BackpackMarker
+                                        pos={currentActivityPos}
+                                        experienceId={experienceId}
+                                        size={0.6}
+                                        isCollected={backpack.some(it => it.id === '4-1' || it.id.includes('activity-4'))}
+                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
+                                    />
+                                </group>
                             </TransformWrapper>
                         </group>
                     )}
@@ -890,13 +941,15 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                     {experienceId !== '1' && experienceId !== '2' && experienceId !== '4' && isItemsAllowed && (
                         <group>
                             <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <BackpackMarker
-                                    pos={currentActivityPos}
-                                    experienceId={experienceId}
-                                    size={0.6}
-                                    isCollected={backpack.some(it => it.id.includes(`activity-${experienceId}`))}
-                                    onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                />
+                                <group ref={chestRef}>
+                                    <BackpackMarker
+                                        pos={currentActivityPos}
+                                        experienceId={experienceId}
+                                        size={0.6}
+                                        isCollected={backpack.some(it => it.id.includes(`activity-${experienceId}`))}
+                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
+                                    />
+                                </group>
                             </TransformWrapper>
                         </group>
                     )}
@@ -959,17 +1012,18 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                                 return (
                                     <group key={index}>
                                         <TransformWrapper id={id} activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                            <GymBallLocal
-                                                pos={pos}
-                                                size={obj.size || 0.4}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'GymBall', experienceId } }));
-                                                    console.log("GymBall Clicked!");
-                                                }}
-                                                isCollected={isGymBallCollected}
-                                                ballRef={React.createRef()}
-                                            />
+                                            <group>
+                                                <GymBallLocal
+                                                    pos={pos}
+                                                    size={obj.size || 0.4}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'GymBall', experienceId } }));
+                                                        console.log("GymBall Clicked!");
+                                                    }}
+                                                    isCollected={isGymBallCollected}
+                                                />
+                                            </group>
                                             {console.log(`[Scene3D] Rendering GymBallLocal at`, pos)}
                                         </TransformWrapper>
                                     </group>

@@ -58,7 +58,7 @@
                 "items": [
                     {
                         "id": "1-1",
-                        "name": "Luxury Service",
+                        "name": "Wi-fi Packages",
                         "type": "bell",
                         "position": [
                             0.3,
@@ -72,7 +72,13 @@
                         ],
                         "media": "/assets/balcony_preview.jpg",
                         "video": "https://v.ftcdn.net/05/52/63/84/700_F_552638472_vI3K8T5v3Z1r0C7e0R9Jz0QvR9uY6N8t_ST.mp4",
-                        "text": "Experience the finest butler service."
+                        "text": "Need to take some calls or access to streaming. There are different wi-fi packages onboard and reception varies across the ship. Watch the vid for the packages and add the PDF tips from your onboard team to your backpack.",
+                        "collectible": {
+                            "type": "pdf",
+                            "title": "Best Onboard Locations for Wifi",
+                            "description": "Wi-fi guide from concierge team",
+                            "url": "wifipackages.pdf"
+                        }
                     },
                     {
                         "id": "1-2",
@@ -134,23 +140,7 @@
                         "label": "Bedroom Area"
                     }
                 ],
-                "extraObjects": [
-                    {
-                        "name": "YachtClubStar",
-                        "pos": [
-                            1.007492214042346,
-                            1.8942973674012722,
-                            0.9034192611816566
-                        ],
-                        "rot": [
-                            0,
-                            0,
-                            0
-                        ],
-                        "size": 0.08,
-                        "type": "star"
-                    }
-                ],
+                "extraObjects": [],
                 "startPos": [
                     -1.1381087138384196,
                     -1.1787073537869066,

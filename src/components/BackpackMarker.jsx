@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 /**
  * Premium Backpack Marker - Minimal Luxury Version
  */
-const BackpackMarker = ({ pos, size = 0.4, onClick, experienceId, isCollected }) => {
+const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected }, ref) => {
     const groupRef = useRef();
     
     // Luxury Scene-specific color mapping
@@ -34,7 +34,11 @@ const BackpackMarker = ({ pos, size = 0.4, onClick, experienceId, isCollected })
     if (isCollected) return null;
 
     return (
-        <group position={pos} ref={groupRef}>
+        <group position={pos} ref={(el) => {
+            groupRef.current = el;
+            if (typeof ref === 'function') ref(el);
+            else if (ref) ref.current = el;
+        }}>
             <Float
                 speed={2} 
                 rotationIntensity={0.5} 
@@ -82,6 +86,6 @@ const BackpackMarker = ({ pos, size = 0.4, onClick, experienceId, isCollected })
             </Float>
         </group>
     );
-};
+});
 
 export default BackpackMarker;
