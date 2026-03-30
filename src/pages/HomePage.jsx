@@ -92,6 +92,8 @@ const HomePage = () => {
                     muted 
                     loop 
                     playsInline 
+                    preload="auto"
+                    poster="/assets/balcony_preview.jpg"
                     style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1, transition: 'opacity 0.5s ease-in' }}
                 />
                 
@@ -176,12 +178,9 @@ const HomePage = () => {
             `}</style>
 
             <div className="container hero-content" style={{ position: 'relative', zIndex: 10 }}>
-                <div className="curated-badge animate-fade-in animate-delay-1">
-                    <img src={curatorImage} alt={curatorName} className="curator-img" />
-                    <span>CURATED BY {curatorName.toUpperCase()}</span>
-                </div>
 
-                <h1 className="hero-title animate-fade-in animate-delay-1" style={{ color: '#fff', textShadow: '0 4px 15px rgba(0,0,0,0.8)' }}>
+
+                <h1 className="hero-title animate-fade-in animate-delay-1" style={{ color: '#fff', textShadow: '0 4px 15px rgba(0,0,0,0.8)', marginTop: '-80px', marginBottom: '40px' }}>
                     <span>{title}</span>
                 </h1>
 
@@ -204,23 +203,30 @@ const HomePage = () => {
                     </p>
                 )}
 
-                <div className="benefits-list animate-fade-in animate-delay-2" style={{ marginTop: '1rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                    <div className="benefit-item standout-benefit" style={{ 
+                <div className="benefits-list animate-fade-in animate-delay-2" style={{ marginTop: '0.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', alignItems: 'center' }}>
+                    <div className="benefit-item" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                        ✨ Discover your secret travel vibe
+                    </div>
+                    <div className="benefit-item" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                        🎵 Collect exclusive soundtracks and guides
+                    </div>
+                    <div className="benefit-item destaque-benefit" style={{ 
                         background: 'rgba(0, 229, 255, 0.1)', 
-                        border: '1px solid rgba(0, 229, 255, 0.4)', 
+                        border: '1px solid rgba(0, 229, 255, 0.3)', 
                         borderRadius: '4px', 
-                        padding: '12px 18px',
-                        transform: 'scale(1.02)',
-                        boxShadow: '0 0 15px rgba(0, 229, 255, 0.2)'
+                        padding: '8px 16px',
+                        marginTop: '5px',
+                        color: '#00e5ff',
+                        fontWeight: '600',
+                        fontSize: '0.9rem',
+                        letterSpacing: '1px',
+                        textTransform: 'uppercase'
                     }}>
-                        <span className="benefit-text" style={{ color: '#00e5ff', fontWeight: '600', fontSize: '1rem', letterSpacing: '1px', textTransform: 'uppercase', textShadow: '0 0 10px rgba(0, 229, 255, 0.4)' }}>Get on the exclusive speakeasy guestlist</span>
+                        🏷️ Get a personalised onboard offer
                     </div>
                 </div>
 
-                <div className="reward-info animate-fade-in animate-delay-2" style={{ marginBottom: '2.5rem' }}>
-                    <div className="reward-text">🪙 5 MEDALS FOUND</div>
-                    <div className="reward-sub">🔑 2,500 POINTS UNLOCKED</div>
-                </div>
+
 
                 <button
                     onClick={handleStartChallenge}

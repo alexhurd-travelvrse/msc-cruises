@@ -592,7 +592,7 @@ const ExperiencePage = () => {
                 avatarUrl={publicConfig?.home?.influencerPhoto || '/assets/Alexhurd1.jpg'} 
                 name={`${publicInfluencer?.name || 'Alex'} - Guide`}
                 isVisible={isStarted}
-                positionStyle={{ bottom: '40px', right: '40px' }}
+                positionStyle={{ top: '50%', left: '40px', transform: 'translateY(-50%)' }}
             />
 
             {/* Vibe Profiler Mini-HUD */}
@@ -669,13 +669,7 @@ const ExperiencePage = () => {
                         >
                             {brandingTitle}
                         </div>
-                        <div
-                            className="curator-tag"
-                            style={{ cursor: 'pointer' }}
-                            title={`Voice of ${publicInfluencer?.name || 'Alex Hurd'}`}
-                        >
-                            👤 CURATED BY {(publicInfluencer?.name || 'Alex Hurd').toUpperCase()}
-                        </div>
+
                     </div>
 
 

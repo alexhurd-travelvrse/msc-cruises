@@ -7,14 +7,20 @@ import voiceoverPlugin from './vite-plugins/voiceoverPlugin.js'
 export default defineConfig({
   plugins: [react(), sceneEditorPlugin(), voiceoverPlugin()],
   server: {
-    allowedHosts: 'all',
+    allowedHosts: true,
+    hmr: {
+      clientPort: 443
+    },
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp'
     }
   },
   preview: {
-    allowedHosts: 'all',
+    allowedHosts: true,
+    hmr: {
+      clientPort: 443
+    },
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp'
