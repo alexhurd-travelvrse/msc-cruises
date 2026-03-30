@@ -1,26 +1,20 @@
-import React, { useRef, Suspense } from 'react';
+import React, { useRef } from 'react';
 import { Billboard, Text, Float } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
 
 /**
- * Premium Backpack Marker for the 3D Experience
- * Features:
- * - Animated floating effect
- * - Color-coded by scene
- * - Subtle glowing ring
- * - Better typography and layout
+ * Premium Backpack Marker - Minimal Luxury Version
  */
 const BackpackMarker = ({ pos, size = 0.4, onClick, experienceId, isCollected }) => {
     const groupRef = useRef();
     
-    // Scene-specific color mapping (Matches MSC Theme)
+    // Luxury Scene-specific color mapping
     const sceneColors = {
-        '1': '#00e5ff', // Yacht Club - Cyan
-        '2': '#ff2d55', // Spa - Rosy Red
-        '3': '#ff9500', // Dining - Orange
-        '4': '#af52de', // Arcade - Purple
-        '5': '#ffd700'  // Culture - Gold
+        '1': '#d4af37', // Yacht Club - Gold
+        '2': '#00e5ff', // Spa - Teal
+        '3': '#ff8c00', // Dining - Social Orange
+        '4': '#ff3d00', // Arcade - Racing Red
+        '5': '#ffcc00'  // Culture - Culture Yellow
     };
     
     const color = sceneColors[experienceId] || '#ffffff';
@@ -72,29 +66,10 @@ const BackpackMarker = ({ pos, size = 0.4, onClick, experienceId, isCollected })
                         <meshBasicMaterial color={color} transparent opacity={1} depthTest={false} />
                     </mesh>
 
-                    {/* Icon - Premium Emoji Asset */}
+                    {/* Icon - Minimal Emoji Asset */}
                     <Text position={[0, 0, 0.02]} fontSize={size * 0.45} depthTest={false}>
                         🎒
                     </Text>
-
-                    {/* LABEL - Action Call */}
-                    <group position={[0, -size * 0.65, 0]}>
-                         {/* Label Background */}
-                        <mesh position={[0, 0, -0.01]}>
-                            <planeGeometry args={[size * 1.8, size * 0.35]} />
-                            <meshBasicMaterial color="black" transparent opacity={0.5} />
-                        </mesh>
-                        <Text font="/assets/Inter.ttf"
-                            fontSize={size * 0.12}
-                            color="white"
-                            maxWidth={size * 2}
-                            textAlign="center"
-                            fontWeight="bold"
-                            depthTest={false}
-                        >
-                            ADD TO BACKPACK
-                        </Text>
-                    </group>
                 </Billboard>
 
                 {/* Light source for the marker itself */}

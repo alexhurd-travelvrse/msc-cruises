@@ -104,9 +104,10 @@ const HomePage = () => {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.8) 100%)', 
+                    background: 'radial-gradient(circle at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 100%)', 
                     zIndex: 1, 
-                    pointerEvents: 'none' 
+                    pointerEvents: 'none',
+                    backdropFilter: 'blur(1px)' // Subtle focus effect
                 }} />
                 
                 {/* Fallback Background Image if video fails or is static */}
@@ -226,16 +227,29 @@ const HomePage = () => {
                     </div>
                     
                     <div className="benefit-item standout-benefit" style={{ 
-                        background: 'rgba(0, 229, 255, 0.15)', 
-                        border: '1px solid rgba(0, 229, 255, 0.5)', 
-                        borderRadius: '4px', 
-                        padding: '12px 24px',
-                        marginTop: '15px',
-                        transform: 'scale(1.05)',
-                        boxShadow: '0 0 20px rgba(0, 229, 255, 0.3)',
-                        cursor: 'pointer'
+                        background: 'rgba(5, 10, 25, 0.9)', 
+                        border: '2px solid #00e5ff', 
+                        borderRadius: '8px', 
+                        padding: '16px 36px',
+                        marginTop: '20px',
+                        transform: 'scale(1.08)',
+                        boxShadow: '0 0 40px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.2)',
+                        cursor: 'pointer',
+                        backdropFilter: 'blur(20px)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                     }}>
-                        <span className="benefit-text" style={{ color: '#00e5ff', fontWeight: '800', fontSize: '1rem', letterSpacing: '2px', textTransform: 'uppercase', textShadow: '0 0 10px rgba(0, 229, 255, 0.6)' }}>Get on the exclusive speakeasy guestlist</span>
+                        <span className="benefit-text" style={{ 
+                            color: '#00e5ff', 
+                            fontWeight: '900', 
+                            fontSize: '1.1rem', 
+                            letterSpacing: '3px', 
+                            textTransform: 'uppercase', 
+                            textShadow: '0 0 15px rgba(0, 229, 255, 0.8)' 
+                        }}>
+                            Get on the exclusive speakeasy guestlist
+                        </span>
                     </div>
                 </div>
 

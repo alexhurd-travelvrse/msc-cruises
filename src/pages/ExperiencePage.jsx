@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ExperienceCanvas from '../components/ExperienceCanvas';
-import StartOverlay from '../components/StartOverlay';
+import NauticalLoader from '../components/NauticalLoader';
 import FavouritesOverlay from '../components/FavouritesOverlay';
 import DigitalGuideOverlay from '../components/DigitalGuideOverlay';
 import Joystick from '../components/Joystick';
