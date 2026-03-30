@@ -71,7 +71,7 @@
                             0
                         ],
                         "media": "/assets/balcony_preview.jpg",
-                        "video": "https://v.ftcdn.net/05/52/63/84/700_F_552638472_vI3K8T5v3Z1r0C7e0R9Jz0QvR9uY6N8t_ST.mp4",
+                        "video": "https://www.youtube.com/shorts/NdUi4fHQ9e4",
                         "text": "Need to take some calls or access to streaming. There are different wi-fi packages onboard and reception varies across the ship. Watch the vid for the packages and add the PDF tips from your onboard team to your backpack.",
                         "collectible": {
                             "type": "pdf",
@@ -112,7 +112,12 @@
                         1.2,
                         -1.5
                     ],
-                    "media": "/textures/coin.png"
+                    "media": "/textures/coin.png",
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
                 },
                 "hotspots": [
                     {
@@ -140,20 +145,85 @@
                         "label": "Bedroom Area"
                     }
                 ],
-                "extraObjects": [],
+                "extraObjects": [
+                    {
+                        "name": "YachtClubStar",
+                        "pos": [
+                            1.4488632396846572,
+                            0.8438555072925971,
+                            -0.22776468661742744
+                        ],
+                        "rot": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "size": 0.08,
+                        "type": "star"
+                    },
+                    {
+                        "id": "activity",
+                        "pos": [
+                            0.030459035164853595,
+                            0.40353174450243123,
+                            -1.2735285886579364
+                        ],
+                        "rot": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "id": "remote",
+                        "pos": [
+                            0.38,
+                            0.391,
+                            -0.594
+                        ],
+                        "rot": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "id": "extra-0",
+                        "pos": [
+                            1.4488632396846572,
+                            0.8438555072925971,
+                            -0.22776468661742744
+                        ],
+                        "rot": [
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ],
                 "startPos": [
-                    -1.1381087138384196,
-                    -1.1787073537869066,
-                    0.07168182885356848
+                    -0.9017804342209648,
+                    -0.9482630536954695,
+                    0.1813562840408729
                 ],
                 "startRot": [
-                    2.015,
-                    -0.747,
-                    2.182
+                    124.95963456765801,
+                    -32.733090119124356,
+                    142.28177037596103
+                ],
+                "remotePos": [
+                    1.4606797585018485,
+                    1.2329259344170134,
+                    0.9490178468567841
+                ],
+                "remoteRot": [
+                    115.45099571886088,
+                    -42.79994729627249,
+                    125.01939089754562
                 ]
             },
             "2": {
-                "name": "Luxurious MSC Aurea Spa",
+                "name": "Luxurious Indoor Pool Lounge",
                 "items": [
                     {
                         "id": "2-1",
@@ -199,7 +269,12 @@
                         1.2,
                         -1.5
                     ],
-                    "media": "/textures/coin.png"
+                    "media": "/textures/coin.png",
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
                 },
                 "hotspots": [
                     {
@@ -234,13 +309,13 @@
                     -1.2182134709428472
                 ],
                 "startRot": [
-                    0.13945813658850809,
-                    -1.0249071449363734,
-                    0.1195274345377135
+                    7.990362645280478,
+                    -58.72285379765716,
+                    6.848417535037214
                 ]
             },
             "3": {
-                "name": "Hola! Tacos & Cantina",
+                "name": "Vibrant Mexican Restaurant Interior",
                 "items": [
                     {
                         "id": "3-1",
@@ -258,7 +333,12 @@
                             "title": "Signature Drinks Recipe",
                             "url": "/assets/recipe_placeholder.pdf",
                             "description": "Learn how to make our signature cocktails at home."
-                        }
+                        },
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
                     },
                     {
                         "id": "3-2",
@@ -281,7 +361,12 @@
                         1.2,
                         -1.5
                     ],
-                    "media": "/textures/coin.png"
+                    "media": "/textures/coin.png",
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
                 },
                 "hotspots": [
                     {
@@ -309,10 +394,30 @@
                         "label": "Kitchen View"
                     }
                 ],
-                "extraObjects": []
+                "extraObjects": [],
+                "startPos": [
+                    -0.7997430050013715,
+                    -0.08558040670980804,
+                    -1.1172473822951061
+                ],
+                "startRot": [
+                    -13.407212406061264,
+                    -3.7815214478634336,
+                    -0.9167324722093172
+                ],
+                "menuPos": [
+                    -0.134,
+                    0.109,
+                    -1.768
+                ],
+                "menuRot": [
+                    0,
+                    0,
+                    0
+                ]
             },
             "4": {
-                "name": "MSC Formula Racer",
+                "name": "Vibrant Indoor Bumper Car Arena",
                 "items": [
                     {
                         "id": "4-1",
@@ -330,7 +435,12 @@
                             "title": "3D Gamer Badge",
                             "url": "/models/racingcar.glb",
                             "description": "A special 3D trophy for your racing performance."
-                        }
+                        },
+                        "rotation": [
+                            27.61656572530568,
+                            0,
+                            0
+                        ]
                     },
                     {
                         "id": "4-2",
@@ -353,7 +463,12 @@
                         1.2,
                         -1
                     ],
-                    "media": "/textures/coin.png"
+                    "media": "/textures/coin.png",
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
                 },
                 "hotspots": [
                     {
@@ -381,10 +496,20 @@
                         "label": "Viewing Area"
                     }
                 ],
-                "extraObjects": []
+                "extraObjects": [],
+                "startPos": [
+                    0.856,
+                    0.806,
+                    -0.4649122315467182
+                ],
+                "startRot": [
+                    0,
+                    0,
+                    0
+                ]
             },
             "5": {
-                "name": "Excursion Spot",
+                "name": "Park Güell Architectural Details",
                 "items": [
                     {
                         "id": "5-1",
@@ -397,7 +522,12 @@
                         ],
                         "media": "/assets/excursion_filler.jpg",
                         "video": "https://v.ftcdn.net/06/17/84/44/700_F_617844445_h8vX0BvL4v3Y6H8H1Z8B1v8v8v8v8v8v_ST.mp4",
-                        "text": "Discover the architectural genius of Antoni Gaudí."
+                        "text": "Discover the architectural genius of Antoni Gaudí.",
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
                     },
                     {
                         "id": "5-2",
@@ -426,7 +556,12 @@
                         1.2,
                         0.5
                     ],
-                    "media": "/textures/coin.png"
+                    "media": "/textures/coin.png",
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
                 },
                 "hotspots": [
                     {
@@ -454,7 +589,17 @@
                         "label": "Tower View"
                     }
                 ],
-                "extraObjects": []
+                "extraObjects": [],
+                "startPos": [
+                    0.173,
+                    1.06,
+                    1.551
+                ],
+                "startRot": [
+                    -2.4064227395494577,
+                    41.25296124941927,
+                    1.604281826366305
+                ]
             }
         },
         "personas": {

@@ -42,8 +42,8 @@ const mscConfig = {
         ]
     },
     "2": {
-        name: 'Luxurious MSC Aurea Spa',
-        modelPath: '/models/spa.splat',
+        name: 'Luxurious Indoor Pool Lounge',
+        modelPath: '/models/Luxurious Indoor Pool Lounge.spz',
         modelRotation: [0, 0, 0],
         startPos: [-0.937, 0.560, -0.554],
         startRot: [0.114, -0.906, 0.090],
@@ -69,8 +69,8 @@ const mscConfig = {
         ]
     },
     "3": {
-        name: 'Hola! Tacos & Cantina',
-        modelPath: '/models/hola.splat',
+        name: 'Vibrant Mexican Restaurant Interior',
+        modelPath: '/models/Vibrant Mexican Restaurant Interior (3).spz',
         modelRotation: [0, 0, 0],
         startPos: [-0.862, 1.642, -0.201],
         startRot: [-0.234, -0.066, -0.016],
@@ -97,9 +97,9 @@ const mscConfig = {
         ]
     },
     "4": {
-        name: 'MSC Formula Racer',
-        modelPath: '/models/arcade.splat',
-        modelRotation: [Math.PI, 0, 0],
+        name: 'Vibrant Indoor Bumper Car Arena',
+        modelPath: '/models/Vibrant Indoor Bumper Car Arena (2).spz',
+        modelRotation: [0, 0, 0],
         startPos: [0.856, 0.806, 0.022],
         startRot: [0.000, 0.000, 0.000],
         scale: 1.0,
@@ -123,8 +123,8 @@ const mscConfig = {
         ]
     },
     "5": {
-        name: 'Excursion Spot',
-        modelPath: '/models/park.splat',
+        name: 'Park Güell Architectural Details',
+        modelPath: '/models/Park Güell Architectural Details (1).spz',
         modelRotation: [0, 0, 0],
         startPos: [0.173, 1.060, 1.551],
         startRot: [-0.042, 0.720, 0.028],

@@ -20,45 +20,16 @@ const SparkSystem = () => {
     return <sparkRendererCore args={[options]} />;
 };
 
-function Loader() {
-    const { progress } = useProgress();
-    if (progress >= 100) return null;
 
-    return (
-        <Html center style={{ pointerEvents: 'none' }}>
-            <div style={{
-                color: '#FFD700',
-                background: 'rgba(5, 5, 16, 0.9)',
-                padding: '30px 50px',
-                borderRadius: '20px',
-                border: '1px solid rgba(255, 215, 0, 0.3)',
-                textAlign: 'center',
-                minWidth: '280px',
-                fontFamily: 'Inter, sans-serif',
-                backdropFilter: 'blur(20px)',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
-            }}>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '4px', marginBottom: '15px', color: '#888', textTransform: 'uppercase' }}>
-                    Initializing Room
-                </div>
-                <div style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '10px' }}>
-                    {progress.toFixed(0)}%
-                </div>
-                <div style={{ width: '100%', height: '2px', background: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
-                    <div style={{ width: `${progress}%`, height: '100%', background: '#FFD700', transition: 'width 0.4s ease-out' }} />
-                </div>
-            </div>
-        </Html>
-    );
-}
 
 // Preload common interactive textures to prevent suspension
 useTexture.preload('/textures/coin.png');
 useTexture.preload('/textures/activity.png');
 useTexture.preload('/textures/gelato.png');
+useTexture.preload('/textures/msc_sovereign_coin.png');
 
 
-const ExperienceCanvas = React.memo(({ experienceId, isInteractionActive, isEditorMode, activeEditorObject, isStarted = false }) => {
+const ExperienceCanvas = React.memo(({ experienceId, isInteractionActive, isEditorMode, activeEditorObject, isStarted = false, itemsViewed = [] }) => {
     return (
         <Canvas
             id="canvas-container"
@@ -106,7 +77,7 @@ const ExperienceCanvas = React.memo(({ experienceId, isInteractionActive, isEdit
                     <Environment preset="city" />
                 )}
             </Suspense>
-            <Suspense fallback={<Loader />}>
+            <Suspense fallback={null}>
                 <Scene3D
                     key={experienceId}
                     experienceId={experienceId}
@@ -114,6 +85,7 @@ const ExperienceCanvas = React.memo(({ experienceId, isInteractionActive, isEdit
                     isEditorMode={isEditorMode}
                     activeEditorObject={activeEditorObject}
                     isStarted={isStarted}
+                    itemsViewed={itemsViewed}
                 />
             </Suspense>
         </Canvas>

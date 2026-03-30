@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ExperienceCanvas from '../components/ExperienceCanvas';
 import NauticalLoader from '../components/NauticalLoader';
 import FavouritesOverlay from '../components/FavouritesOverlay';
@@ -22,12 +22,16 @@ const ExperiencePage = () => {
     const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "MSC WORLD EUROPA";
     const brandingSubtitle = publicConfig?.home?.subtitle || "Virtual Cruise Experience";
 
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const showEditor = queryParams.get('editor') === 'true';
+
+    const [lastId, setLastId] = useState(id);
     const [modal, setModal] = useState(null);
     const [showFavourites, setShowFavourites] = useState(false);
     const [backpackUpdated, setBackpackUpdated] = useState(false);
     const [itemsViewed, setItemsViewed] = useState([]);
     const [isStarted, setIsStarted] = useState(false);
-    const [isDelayedStarted, setIsDelayedStarted] = useState(false);
     const [isSplatLoaded, setIsSplatLoaded] = useState(false);
     const [isItemsAllowed, setIsItemsAllowed] = useState(false);
     const [isOrbAllowed, setIsOrbAllowed] = useState(false);
@@ -41,10 +45,9 @@ const ExperiencePage = () => {
     const [nextRoomReady, setNextRoomReady] = useState(false);
     const startTimeRef = useRef(Date.now());
 
-    // Reset room state
-    useEffect(() => {
+    // Immediate state reset if room ID changes during render
+    if (id !== lastId) {
         setIsStarted(false);
-        setIsDelayedStarted(false);
         setIsSplatLoaded(false);
         setIsItemsAllowed(false);
         setIsOrbAllowed(false);
@@ -52,7 +55,38 @@ const ExperiencePage = () => {
         setModal(null);
         setNextRoomProgress(0);
         setNextRoomReady(false);
+        setLastId(id);
         startTimeRef.current = Date.now();
+    }
+
+    // Apply editor mode from URL
+    useEffect(() => {
+        if (showEditor) {
+            setIsEditorMode(true);
+        }
+    }, [showEditor]);
+
+    // Handle Editor state sync
+    useEffect(() => {
+        const handleEditorUpdate = (e) => {
+            if (e.detail && e.detail.objects) {
+                setEditorObjects(e.detail.objects);
+            }
+        };
+        window.addEventListener('scene-editor-update', handleEditorUpdate);
+        
+        // Request sync if editor opens
+        if (isEditorMode) {
+            window.dispatchEvent(new CustomEvent('scene-editor-request-sync'));
+        }
+        
+        return () => window.removeEventListener('scene-editor-update', handleEditorUpdate);
+    }, [isEditorMode]);
+
+    // Reset room items when changing experiences
+    useEffect(() => {
+        setItemsViewed([]);
+        setModal(null);
     }, [id]);
 
     useEffect(() => {
@@ -65,11 +99,13 @@ const ExperiencePage = () => {
     }, []);
 
     useEffect(() => {
-        if (isSplatLoaded && isStarted) {
+        if (isSplatLoaded) {
+            console.log('[ExperiencePage] Splat loaded - Auto-starting experience');
+            setIsStarted(true);
             window.dispatchEvent(new CustomEvent('msc-items-allowed'));
             setIsItemsAllowed(true);
         }
-    }, [isSplatLoaded, isStarted]);
+    }, [isSplatLoaded]);
 
     // Handle interactions
     useEffect(() => {
@@ -139,15 +175,24 @@ const ExperiencePage = () => {
             // Mark challenge as complete for this room if a medal is found
             if (modal.type === 'medal') {
                 updateChallenge(`exp-${id}`, { coinFound: true });
+                
+                // USER REQUEST: Auto-transition on coin/medal collection
+                setTimeout(() => {
+                    handleCloseModal();
+                    const nextId = parseInt(id) + 1;
+                    if (nextId <= 5) navigate(`/experience/${nextId}`);
+                    else navigate('/completion');
+                }, 1000); 
+                
+                setActiveLiveOffer({ baseTitle: "Medal Collected!", icon: '🏅', discount: 0 });
             } else {
                 updateChallenge(`exp-${id}`, { objectsFound: 1 });
+                handleCloseModal();
+                setActiveLiveOffer({ baseTitle: modal.title, icon: '🎒', discount: 0 });
             }
 
-            handleCloseModal();
             setBackpackUpdated(true);
             setTimeout(() => setBackpackUpdated(false), 2000);
-            
-            setActiveLiveOffer({ baseTitle: modal.title, icon: '🎒', discount: 0 });
             setTimeout(() => setActiveLiveOffer(null), 3000);
         }
     };
@@ -162,47 +207,56 @@ const ExperiencePage = () => {
 
     return (
         <div className="experience-container" style={{ touchAction: 'none' }}>
-            <StartOverlay 
-                isVisible={!isStarted && isSplatLoaded} 
-                onStart={() => setIsStarted(true)} 
-                title={brandingTitle}
-                subtitle={`${curatorName}'s Elite Pick`}
-            />
+            {/* Loading Spinner - Only shown when splat is still loading */}
+            {!isSplatLoaded && (
+                <NauticalLoader isVisible={true} isSplatLoaded={false} />
+            )}
 
             <DigitalGuideOverlay 
                 avatarUrl={publicConfig?.home?.influencerPhoto || '/assets/Alexhurd1.jpg'} 
                 name={`${publicInfluencer?.name || 'Alex'} - Guide`}
                 isVisible={isStarted}
+                positionStyle={{ left: '20px', top: '50%', transform: 'translateY(-50%)', bottom: 'auto', right: 'auto' }}
             />
 
+
             {isStarted && (
-                <div style={{ position: 'fixed', bottom: '120px', right: '25px', zIndex: 100 }}>
-                    <div className="vibe-box glass-panel" style={{ 
-                        padding: '12px 20px', borderRight: `4px solid ${currentTheme.primary}`,
-                        background: 'rgba(5, 5, 20, 0.75)', backdropFilter: 'blur(15px)'
-                    }}>
-                        <div style={{ fontSize: '0.65rem', color: currentTheme.primary, fontWeight: '900', letterSpacing: '3px' }}>
-                             VIBE: {currentTheme.label}
-                        </div>
-                        <div style={{ fontSize: '1.2rem', fontWeight: '900', color: 'white' }}>
-                            {getTopInterest().toUpperCase()}
-                        </div>
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9005, pointerEvents: 'none' }}>
+                    <div style={{ pointerEvents: 'auto' }}>
+                        <SceneEditor 
+                            experienceId={id} 
+                            activeObject={activeEditorObject} 
+                            setActiveObject={setActiveEditorObject}
+                            objects={editorObjects} 
+                            isEditorMode={isEditorMode}
+                            setIsEditorMode={setIsEditorMode}
+                        />
                     </div>
                 </div>
             )}
 
             <AudioController audioKey={id} active={isStarted} script={publicConfig?.audio?.[id]} />
 
-            <NauticalLoader isVisible={!isSplatLoaded} />
+
 
             <div className="experience-canvas-layer">
-                <ExperienceCanvas experienceId={id} isInteractionActive={showFavourites || !!modal || isEditorMode} isStarted={isStarted} />
+                <ExperienceCanvas experienceId={id} isInteractionActive={showFavourites || !!modal || isEditorMode} isStarted={isStarted} itemsViewed={itemsViewed} />
             </div>
 
             <div className="hud-overlay">
                 <div className="hud-top-bar">
                     <div className="location-badge" onClick={() => navigate('/')}>{brandingTitle}</div>
-                    <div className="hud-stats" style={{ display: 'flex', gap: '8px' }}>
+                    
+                    <div className="hud-center-stats" style={{ display: 'flex', gap: '12px' }}>
+                        {isStarted && (
+                           <div className="vibe-badge-top glass-panel" style={{ borderLeft: `3px solid ${currentTheme.primary}` }}>
+                               <span className="vibe-label" style={{ color: currentTheme.primary }}>VIBE: {currentTheme.label}</span>
+                               <span className="vibe-val">{getTopInterest().toUpperCase()}</span>
+                           </div>
+                        )}
+                    </div>
+
+                    <div className="hud-stats" style={{ display: 'flex', gap: '12px' }}>
                         <div className="medal-box glass-panel" style={{ color: '#ffd700' }}>
                             🏅 {getTotalCoins()} / 5
                         </div>
@@ -215,7 +269,7 @@ const ExperiencePage = () => {
 
             {modal && (
                 <div className="modal-overlay" onClick={handleCloseModal}>
-                    <div className="interaction-modal glass-panel animate-fade-in" onClick={(e) => e.stopPropagation()}>
+                    <div className={`interaction-modal glass-panel animate-fade-in ${modal.type === 'medal' ? 'medal-modal' : ''}`} onClick={(e) => e.stopPropagation()}>
                         {modal.video ? (
                             <div style={{ marginBottom: '15px', borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
                                 <video src={modal.video} autoPlay loop controls style={{ width: '100%', display: 'block' }} />
@@ -246,7 +300,7 @@ const ExperiencePage = () => {
                     const nextId = parseInt(id) + 1;
                     if (nextId <= 5) navigate(`/experience/${nextId}`);
                     else navigate('/completion');
-                }} className="btn-primary">NEXT ROOM &rarr;</button>
+                }} className="btn-primary">NEXT EXPERIENCE &rarr;</button>
             </div>
         </div>
     );

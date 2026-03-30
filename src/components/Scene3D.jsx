@@ -58,6 +58,8 @@ const DynamicModel = ({ config, modelScale, onSplatLoad }) => {
 
 const RealisticMSCCoin = React.forwardRef(({ pos, size, onClick, isCollected }, ref) => {
     const groupRef = useRef();
+    const coinTexture = useTexture('/textures/msc_sovereign_coin.png');
+    
     useFrame((state) => {
         if (groupRef.current) {
             groupRef.current.rotation.y += 0.05;
@@ -74,26 +76,39 @@ const RealisticMSCCoin = React.forwardRef(({ pos, size, onClick, isCollected }, 
             }}
             visible={!isCollected}
         >
+            {/* Click sphere */}
             <mesh onClick={onClick} onPointerDown={onClick}>
-                <sphereGeometry args={[size * 1.5, 6, 6]} />
+                <sphereGeometry args={[size * 2.5, 8, 8]} />
                 <meshBasicMaterial transparent opacity={0} depthTest={false} />
             </mesh>
 
+            {/* 3D LUX COIN */}
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+                <cylinderGeometry args={[size, size, 0.06, 64]} />
+                <meshStandardMaterial 
+                    map={coinTexture} 
+                    metalness={1} 
+                    roughness={0.15} 
+                    emissive="#FFD700"
+                    emissiveIntensity={0.2}
+                />
+            </mesh>
+            
+            {/* Inner Gold Rim */}
+            <mesh rotation={[Math.PI / 2, 0, 0]}>
+                <torusGeometry args={[size, 0.04, 16, 64]} />
+                <meshStandardMaterial color="#FFD700" metalness={1} roughness={0.1} />
+            </mesh>
+
+            {/* Glow Aura */}
             <Billboard>
                 <mesh>
-                    <ringGeometry args={[size * 0.45, size * 0.52, 64]} />
-                    <meshBasicMaterial color="#FFD700" transparent opacity={0.6} depthTest={false} />
+                    <circleGeometry args={[size * 1.5, 64]} />
+                    <meshBasicMaterial color="#FFD700" transparent opacity={0.15} depthTest={false} />
                 </mesh>
-                <mesh position={[0, 0, -0.01]}>
-                    <circleGeometry args={[size * 0.42, 64]} />
-                    <meshBasicMaterial color="#0b1e3b" transparent opacity={0.8} depthTest={false} />
-                </mesh>
-                <Text font="/assets/Inter.ttf" fontSize={size * 0.45} position={[0, 0, 0.01]} depthTest={false}>
-                    🏅
-                </Text>
             </Billboard>
 
-            <pointLight intensity={2} distance={2} color="#FFD700" />
+            <pointLight intensity={3} distance={5} color="#FFD700" />
         </group>
     );
 });
@@ -490,20 +505,45 @@ const GymBallLocal = React.forwardRef(({ pos, size, onClick, isCollected }, ref)
     );
 });
 
-const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditorObject, isStarted = false }) => {
+const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditorObject, isStarted = false, itemsViewed = [] }) => {
     const { publicConfig } = useInfluencer();
     const staticConfig = sceneConfig[experienceId] || sceneConfig['default'];
     // Merge: publicConfig.experiences[experienceId] contains items/coin data from truth
     const roomConfig = publicConfig.experiences?.[experienceId] || {};
-    const config = { ...staticConfig, ...roomConfig };
+
+    // Standardize: Convert degrees from roomConfig (truth) to radians for 3D engine
+    const toRad = (arr) => arr ? arr.map(d => d * (Math.PI / 180)) : arr;
+    
+    // Create a normalized config where all rotations are radians
+    const config = React.useMemo(() => {
+        const merged = { ...staticConfig, ...roomConfig };
+        
+        // If it came from roomConfig (json truth), it's likely degrees
+        if (roomConfig.startRot) merged.startRot = toRad(roomConfig.startRot);
+        if (roomConfig.coin?.rotation) merged.coinRotation = toRad(roomConfig.coin.rotation);
+        if (roomConfig.activityRot) merged.activityRot = toRad(roomConfig.activityRot);
+        if (roomConfig.remoteRot) merged.remoteRot = toRad(roomConfig.remoteRot);
+        if (roomConfig.menuRot) merged.menuRot = toRad(roomConfig.menuRot);
+        if (roomConfig.wineRot) merged.wineRot = toRad(roomConfig.wineRot);
+        if (roomConfig.rewardRot) merged.rewardRot = toRad(roomConfig.rewardRot);
+        if (roomConfig.gaudiRot) merged.gaudiRot = toRad(roomConfig.gaudiRot);
+        
+        if (roomConfig.extraObjects) {
+            merged.extraObjects = roomConfig.extraObjects.map(obj => ({
+                ...obj,
+                rot: toRad(obj.rot)
+            }));
+        }
+        
+        return merged;
+    }, [staticConfig, roomConfig]);
 
     // Debug logging for extra objects to find GymBall leak
     React.useEffect(() => {
         if (config.extraObjects && config.extraObjects.length > 0) {
             console.log(`[Scene3D] Exp ${experienceId} Extra Objects:`, JSON.stringify(config.extraObjects));
         }
-        console.log(`[Scene3D] Exp ${experienceId} Public Config Overrides:`, !!roomConfig);
-    }, [experienceId, config, roomConfig]);
+    }, [experienceId, config]);
     const [showWineGlass, setShowWineGlass] = React.useState(false);
     const [showGelato, setShowGelato] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
@@ -616,6 +656,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
 
     const startPos = React.useMemo(() => config.startPos || [0, 2, 5], [config.startPos]);
     const startRot = React.useMemo(() => config.startRot || [0, 0, 0], [config.startRot]);
+    
     // Standardize positions: use roomConfig's "coin" and "items" if they exist, else static fallbacks
     const coinRefObj = roomConfig.coin || roomConfig.items?.find(item => item.type === 'medal' || item.type === 'coin') || {};
     const coinPos = coinRefObj.position || roomConfig.coin?.position || config.coinPos || [2, 1.5, -2];
@@ -629,7 +670,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
     const coinSize = (config.coinSize || 0.4) * 0.65;
     const activitySize = (config.activitySize || 0.3) * 0.65;
     const modelScale = config.scale || 1;
-    const activityRot = roomConfig.items?.[0]?.rotation || config.activityRot || [0, 0, 0];
+    const activityRot = toRad(roomConfig.items?.[0]?.rotation) || config.activityRot || [0, 0, 0];
     const boundaries = config.boundaries || [];
 
     // Feature: Scene Matching Lighting
@@ -882,7 +923,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                                         pos={currentRemotePos}
                                         experienceId={experienceId}
                                         size={0.5}
-                                        isCollected={backpack.some(it => it.id === '1-1' || it.id === 'tvcontrol-1')}
+                                        isCollected={itemsViewed.includes('1-1')}
                                         onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'TVControl', experienceId } }))}
                                     />
                                 </group>
@@ -895,7 +936,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                                         pos={localPositions['activity'] || config.activityPos}
                                         experienceId={experienceId}
                                         size={0.4}
-                                        isCollected={backpack.some(it => it.id === '1-2' || it.id === 'activity-1')}
+                                        isCollected={itemsViewed.includes('1-2')}
                                         onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
                                     />
                                 </group>
@@ -912,7 +953,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                                         pos={currentActivityPos}
                                         experienceId={experienceId}
                                         size={0.6}
-                                        isCollected={backpack.some(it => it.id === '2-1' || it.id.includes('activity-2'))}
+                                        isCollected={itemsViewed.includes('2-1')}
                                         onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
                                     />
                                 </group>
@@ -929,7 +970,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                                         pos={currentActivityPos}
                                         experienceId={experienceId}
                                         size={0.6}
-                                        isCollected={backpack.some(it => it.id === '4-1' || it.id.includes('activity-4'))}
+                                        isCollected={itemsViewed.includes('4-1')}
                                         onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
                                     />
                                 </group>
@@ -946,7 +987,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                                         pos={currentActivityPos}
                                         experienceId={experienceId}
                                         size={0.6}
-                                        isCollected={backpack.some(it => it.id.includes(`activity-${experienceId}`))}
+                                        isCollected={itemsViewed.includes(`${experienceId}-1`)}
                                         onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
                                     />
                                 </group>

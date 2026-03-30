@@ -81,7 +81,7 @@ function SceneEditor({
     const [saveError, setSaveError] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
     const [transformMode, setTransformMode] = React.useState('translate'); // 'translate' | 'rotate'
-    const [capturedCamera, setCapturedCamera] = React.useState(null);
+
 
     if (!isEditorMode) {
         return (
@@ -151,22 +151,7 @@ function SceneEditor({
 
             if (onSaveToContext) {
                 // Modern React-Context Based Saving
-                const savePayload = [...objects];
-                if (capturedCamera) {
-                    savePayload.push({
-                        id: 'camera',
-                        pos: capturedCamera.pos,
-                        rot: capturedCamera.rot
-                    });
-                } else if (activeObject === 'camera') {
-                    // Save latest even if not "captured" yet
-                    savePayload.push({
-                        id: 'camera',
-                        pos: window.latestCameraPos || [0, 0, 0],
-                        rot: window.latestCameraRot || [0, 0, 0]
-                    });
-                }
-                const result = await onSaveToContext(savePayload);
+                const result = await onSaveToContext(objects);
                 if (result && result.success) {
                     setSaved(true);
                     setTimeout(() => setSaved(false), 3000);
@@ -175,7 +160,7 @@ function SceneEditor({
                 }
             } else {
                 // Fallback to legacy filesystem backend (for defaults)
-                const experienceId = window.location.pathname.split('/').pop();
+                const experienceId = window.location.pathname.split('/').pop() || '1';
                 const response = await fetch('/api/save-config', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -214,8 +199,8 @@ function SceneEditor({
     const selectedObj = isCamera ? {
         id: 'camera',
         name: 'Camera Start Position',
-        pos: (capturedCamera?.pos || window.latestCameraPos || [0, 0, 0]),
-        rot: (capturedCamera?.rot || window.latestCameraRot || [0, 0, 0])
+        pos: (window.latestCameraPos || [0, 0, 0]),
+        rot: (window.latestCameraRot || [0, 0, 0])
     } : selectedItem;
 
     return (
@@ -342,33 +327,15 @@ function SceneEditor({
                         const camPos = window.latestCameraPos;
                         if (!camPos) return;
 
-                        if (activeObject === 'camera') {
-                            setCapturedCamera({
-                                pos: [...camPos],
-                                rot: [...(window.latestCameraRot || [0, 0, 0])]
-                            });
-                            alert("📍 Camera Position Captured! Move around more or click SAVE to finalize.");
-                            return;
-                        }
-
                         if (activeObject) {
-                            // Calculate a point in front of the camera. 
-                            // Camera looks along negative Z in local space, so we offset by roughly 1.5m.
-                            // We also drop it 0.5m so it sits closer to 'floor/table' level rather than eye level.
-                            const targetPos = [
-                                camPos[0],
-                                camPos[1] - 0.5,
-                                camPos[2] - 1.5
-                            ];
-
-                            window.dispatchEvent(new CustomEvent('scene-editor-manual-update', {
-                                detail: { 
-                                    id: activeObject, 
-                                    pos: targetPos,
-                                    rot: [0, 0, 0] // Reset rotation on placement
-                                }
+                            // Use the global event that handles camera forward alignment
+                            // This event gives control to Scene3D which has access to the real Three.js camera
+                            window.dispatchEvent(new CustomEvent('scene-editor-use-camera-pos', {
+                                 detail: { id: activeObject }
                             }));
-                            console.log(`[SceneEditor] Snapped ${activeObject} to view offset:`, targetPos);
+                            
+                            const objName = isCamera ? 'Camera Position' : (objects.find(o => o.id === activeObject)?.name || activeObject);
+                            alert(`📍 Position Captured for ${objName}! Look around to verify or click SAVE TO PRODUCTION to apply permanently.`);
                         }
                     }}
                     disabled={!activeObject}
