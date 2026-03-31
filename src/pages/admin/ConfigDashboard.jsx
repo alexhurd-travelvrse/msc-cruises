@@ -476,15 +476,15 @@ const ConfigDashboard = () => {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
                                 <div>
                                     <label style={{ fontSize: '0.8rem' }}>1st Scene (+pts)</label>
-                                    <input type="number" value={formData.personas.priorityWeights.first} onChange={(e) => handleChange('personas', 'priorityWeights', Number(e.target.value), 'first')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
+                                    <input type="number" value={formData.personas?.priorityWeights?.first || 0} onChange={(e) => handleChange('personas', 'priorityWeights', Number(e.target.value), 'first')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
                                 </div>
                                 <div>
                                     <label style={{ fontSize: '0.8rem' }}>2nd Scene (+pts)</label>
-                                    <input type="number" value={formData.personas.priorityWeights.second} onChange={(e) => handleChange('personas', 'priorityWeights', Number(e.target.value), 'second')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
+                                    <input type="number" value={formData.personas?.priorityWeights?.second || 0} onChange={(e) => handleChange('personas', 'priorityWeights', Number(e.target.value), 'second')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
                                 </div>
                                 <div>
                                     <label style={{ fontSize: '0.8rem' }}>Last Scene (+pts)</label>
-                                    <input type="number" value={formData.personas.priorityWeights.last} onChange={(e) => handleChange('personas', 'priorityWeights', Number(e.target.value), 'last')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
+                                    <input type="number" value={formData.personas?.priorityWeights?.last || 0} onChange={(e) => handleChange('personas', 'priorityWeights', Number(e.target.value), 'last')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
                                 </div>
                             </div>
                         </div>
@@ -494,19 +494,19 @@ const ConfigDashboard = () => {
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
                                 <div>
                                     <label style={{ fontSize: '0.8rem' }}>High Engagement (ms)</label>
-                                    <input type="number" value={formData.personas.dwellWeights.minMs} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'minMs')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
+                                    <input type="number" value={formData.personas?.dwellWeights?.minMs || 0} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'minMs')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
                                 </div>
                                 <div>
                                     <label style={{ fontSize: '0.8rem' }}>High Eng. Points</label>
-                                    <input type="number" value={formData.personas.dwellWeights.highPoints} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'highPoints')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
+                                    <input type="number" value={formData.personas?.dwellWeights?.highPoints || 0} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'highPoints')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
                                 </div>
                                 <div>
                                     <label style={{ fontSize: '0.8rem' }}>Low Engagement (ms)</label>
-                                    <input type="number" value={formData.personas.dwellWeights.maxMs} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'maxMs')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
+                                    <input type="number" value={formData.personas?.dwellWeights?.maxMs || 0} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'maxMs')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
                                 </div>
                                 <div>
                                     <label style={{ fontSize: '0.8rem' }}>Low Eng. Points</label>
-                                    <input type="number" value={formData.personas.dwellWeights.lowPoints} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'lowPoints')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
+                                    <input type="number" value={formData.personas?.dwellWeights?.lowPoints || 0} onChange={(e) => handleChange('personas', 'dwellWeights', Number(e.target.value), 'lowPoints')} disabled={isReadOnly} style={{ width: '100%', padding: '4px' }} />
                                 </div>
                             </div>
                         </div>
