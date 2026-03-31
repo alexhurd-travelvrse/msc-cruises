@@ -16,9 +16,16 @@ import { offerDatabase, calculateLiveOfferDiscount } from '../data/offerDatabase
 const YouTubePlayer = ({ url }) => {
     // Extract video ID from youtube.com/shorts/ID or youtube.com/watch?v=ID or youtu.be/ID
     const getYouTubeId = (url) => {
+        if (!url) return null;
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
         const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+        const videoId = (match && match[2].length === 11) ? match[2] : null;
+        if (!videoId) {
+            // Fallback for simple watch URLs or direct IDs
+            const simplified = url.split('v=')[1]?.split('&')[0] || url.split('shorts/')[1]?.split('?')[0];
+            return (simplified && simplified.length === 11) ? simplified : null;
+        }
+        return videoId;
     };
 
     const videoId = getYouTubeId(url);
@@ -139,16 +146,16 @@ const ExperiencePage = () => {
 
             const roomConfig = publicConfig?.experiences?.[id];
 
-            if (name === 'Coin' || name === 'msc-medal') {
+            if (name === 'Coin' || name === 'msc-medal' || name === 'SovereignCoin') {
                 const dynamicCoin = publicConfig?.coins?.[id];
                 setModal({
-                    title: dynamicCoin?.title || 'Secret Clue Found',
-                    description: dynamicCoin?.text || 'Clue discovered!',
+                    title: dynamicCoin?.title || 'Sovereign Reward',
+                    description: dynamicCoin?.text || 'You found a secret clue!',
                     image: dynamicCoin?.image || '/textures/coin.png',
                     type: 'medal',
                     id: `medal-${id}`
                 });
-            } else if (name === 'TVControl' || name === 'ActivityObject' || name === 'RacingCarSimulator') {
+            } else if (name === 'TVControl' || name === 'ActivityObject' || name === 'RacingCarSimulator' || name === 'YachtClubStar') {
                 const items = roomConfig?.items || [];
                 const itemIndex = (name === 'TVControl') ? 0 : 1;
                 const dynamicItem = items[itemIndex] || items[0];
@@ -302,22 +309,32 @@ const ExperiencePage = () => {
             {modal && (
                 <div className="modal-overlay" onClick={handleCloseModal}>
                     <div className={`interaction-modal glass-panel animate-fade-in ${modal.type === 'medal' ? 'medal-modal' : ''}`} onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header-accent" style={{ background: modal.type === 'medal' ? 'linear-gradient(90deg, transparent, #FFD700, transparent)' : `linear-gradient(90deg, transparent, ${currentTheme.primary}, transparent)` }}></div>
+                        
                         {modal.video ? (
                             <YouTubePlayer url={modal.video} />
                         ) : modal.image && (
-                            <div style={{ marginBottom: '15px' }}>
-                                <img src={modal.image} style={{ width: '100%', borderRadius: '12px' }} alt={modal.title} />
+                            <div className="modal-media-container">
+                                <img src={modal.image} className="modal-img" alt={modal.title} />
                             </div>
                         )}
-                        <h3 className="modal-title">{modal.title}</h3>
-                        <p className="modal-desc">{modal.description}</p>
-                        <div className="modal-actions">
-                            {(modal.type === 'activity' || modal.type === 'medal') && (
-                                <button onClick={handleAddToBackpackClick} className="btn-primary">
-                                    ADD TO BACKPACK
-                                </button>
+                        
+                        <div className="modal-content-details">
+                            <h3 className="modal-title" style={{ color: modal.type === 'medal' ? '#FFD700' : currentTheme.primary }}>{modal.title.toUpperCase()}</h3>
+                            <p className="modal-desc">{modal.description}</p>
+                            
+                            {modal.collectible && (
+                                <div className="collectible-notice">
+                                    <span className="collectible-badge">🎒 COLLECTIBLE ITEM</span>
+                                </div>
                             )}
-                            <button onClick={handleCloseModal} className="btn-glass">CLOSE</button>
+
+                            <div className="modal-actions">
+                                <button onClick={handleAddToBackpackClick} className={modal.type === 'medal' ? 'btn-gold-pulse' : 'btn-primary'}>
+                                    {modal.type === 'medal' ? 'UNLOCK REWARD 🏅' : 'ADD TO BACKPACK'}
+                                </button>
+                                <button onClick={handleCloseModal} className="btn-close-minimal">✕ CLOSE</button>
+                            </div>
                         </div>
                     </div>
                 </div>

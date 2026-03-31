@@ -1,0 +1,523 @@
+﻿{
+    "home": {
+        "title": "MSC World Europa",
+        "subtitle": "",
+        "heroImage": "/models/mscheroimage5.mp4",
+        "influencerPhoto": "",
+        "description": ""
+    },
+    "teleport": {
+        "title": "The Promenade",
+        "subtitle": "Select your next deck",
+        "promoTitle": "Unlock classic membership",
+        "promoSubtitle": "Receive a 5% discount on your voyage.",
+        "backpackTitle": "Fill your backpack for a unique offer",
+        "backpackDesc": "Get an exclusive 10% discount on your voyage if you collect exactly 1 item in every experience."
+    },
+    "audio": {
+        "1": "The Yacht Club suite is pure elite luxury. Take a moment to soak in that balcony viewâ€”it's my favorite spot for a morning espresso. Don't forget to check the view for your first clue!",
+        "2": "The Aurea Spa is a literal sanctuary. The thermal baths here are world-class. Relax, breathe in the salt air, and see if the temperature holds our next secret.",
+        "3": "Welcome to Hola! Tacos & Cantina. The vibe here is electric and the margaritas are legendary. Take a look at the menuâ€”it might have just what we need for the next code.",
+        "4": "This arcade is a high-tech playground. I'm obsessed with the Formula One simulator! It feels so real. Check your speedâ€”it might be the key to our next milestone.",
+        "5": "Our Barcelona excursion is the ultimate culture trip. GaudÃ­'s architecture is like nothing else on earth. Let's find the final piece of the puzzle together in this vibrant city.",
+        "home": "Welcome aboard the stunning MSC World Europa. I'm Alex Hurd, your digital guide. I've curated this exclusive journey to show you the absolute best of our ship. Tap Enter to begin your tropical escape.",
+        "teleport": "The Promenade is where the energy of the ship comes alive. I've highlighted five of my favorite spots below. Where should we head first?",
+        "completion": "You've done it! You've unlocked the exclusive Speakeasy. Your travel DNA and special rewards are waiting in your backpack. Thanks for exploring with me!"
+    },
+    "coins": {
+        "1": {
+            "title": "Suite Clue",
+            "text": "Check the balcony view for your first digit.",
+            "image": "/models/msc_clue1.jpg"
+        },
+        "2": {
+            "title": "Spa Clue",
+            "text": "The temperature of the sauna holds the next digit.",
+            "image": "/models/msc_clue2.jpg"
+        },
+        "3": {
+            "title": "Tacos Clue",
+            "text": "How many types of salsa are on the menu?",
+            "image": "/models/msc_clue3.jpg"
+        },
+        "4": {
+            "title": "Arcade Clue",
+            "text": "The high score on Pac-Man is your final digit.",
+            "image": "/models/msc_clue4.jpg"
+        },
+        "5": {
+            "title": "Excursion Code",
+            "text": "Combine all digits to unlock the vault.",
+            "image": "/models/teleport_qr.png"
+        }
+    },
+    "experiences": {
+        "1": {
+            "name": "Yacht Club Owner's Suite",
+            "items": [
+                {
+                    "id": "1-1",
+                    "name": "Wi-fi Packages",
+                    "type": "bell",
+                    "position": [
+                        0.3,
+                        1.2,
+                        -1
+                    ],
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "media": "/assets/balcony_preview.jpg",
+                    "video": "https://www.youtube.com/shorts/NdUi4fHQ9e4",
+                    "text": "Need to take some calls or access to streaming. There are different wi-fi packages onboard and reception varies across the ship. Watch the vid for the packages and add the PDF tips from your onboard team to your backpack.",
+                    "collectible": {
+                        "type": "pdf",
+                        "title": "Best Onboard Locations for Wifi",
+                        "description": "Wi-fi guide from concierge team",
+                        "url": "wifipackages.pdf"
+                    }
+                },
+                {
+                    "id": "1-2",
+                    "name": "Suite View",
+                    "type": "star",
+                    "position": [
+                        1.129,
+                        1.865,
+                        0.74
+                    ],
+                    "rotation": [
+                        1.815,
+                        -0.445,
+                        2.096
+                    ],
+                    "media": "/assets/balcony_new.png",
+                    "text": "Uninterrupted views of the ocean.",
+                    "collectible": {
+                        "type": "image",
+                        "title": "Sunset Photo Filler",
+                        "url": "/models/MSCWorldEuropaswimmingpool.jpg",
+                        "description": "A beautiful sunset filler for your photos."
+                    }
+                }
+            ],
+            "coin": {
+                "id": "special-1",
+                "name": "Sovereign Coin",
+                "position": [
+                    0,
+                    1.2,
+                    -1.5
+                ],
+                "media": "/textures/coin.png"
+            },
+            "hotspots": [
+                {
+                    "pos": [
+                        -0.881,
+                        -0.928,
+                        0.191
+                    ],
+                    "label": "Suite Entrance"
+                },
+                {
+                    "pos": [
+                        0.5,
+                        -0.8,
+                        1.2
+                    ],
+                    "label": "Balcony View"
+                },
+                {
+                    "pos": [
+                        -0.5,
+                        -0.8,
+                        -1
+                    ],
+                    "label": "Bedroom Area"
+                }
+            ],
+            "extraObjects": [
+                {
+                    "name": "YachtClubStar",
+                    "pos": [
+                        1.4488632396846572,
+                        0.8438555072925971,
+                        -0.22776468661742744
+                    ],
+                    "rot": [
+                        0,
+                        0,
+                        0
+                    ],
+                    "size": 0.08,
+                    "type": "star"
+                }
+            ],
+            "startPos": [
+                -1.1381087138384196,
+                -1.1787073537869066,
+                0.07168182885356848
+            ],
+            "startRot": [
+                2.015,
+                -0.747,
+                2.182
+            ]
+        },
+        "2": {
+            "name": "Luxurious MSC Aurea Spa",
+            "items": [
+                {
+                    "id": "2-1",
+                    "name": "Thermal Bath",
+                    "type": "towel",
+                    "position": [
+                        -2.19837254118898,
+                        0.05427330252502871,
+                        -4.047660271759022
+                    ],
+                    "media": "/assets/spa_grab.png",
+                    "text": "Relax in our celestial thermal waters.",
+                    "collectible": {
+                        "type": "mp3",
+                        "title": "Spa Ambient Mix",
+                        "url": "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
+                        "description": "A 5-minute relaxing soundscape from the Aurea Spa."
+                    },
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "id": "2-2",
+                    "name": "Gym Session",
+                    "type": "gymball",
+                    "position": [
+                        1.5,
+                        1.2,
+                        -2
+                    ],
+                    "media": "/assets/spa_grab.png",
+                    "text": "Energize in our state-of-the-art fitness center."
+                }
+            ],
+            "coin": {
+                "id": "special-2",
+                "name": "Aurea Coin",
+                "position": [
+                    0,
+                    1.2,
+                    -1.5
+                ],
+                "media": "/textures/coin.png"
+            },
+            "hotspots": [
+                {
+                    "pos": [
+                        -0.937,
+                        0.56,
+                        -0.554
+                    ],
+                    "label": "Spa Entrance"
+                },
+                {
+                    "pos": [
+                        1.5,
+                        0.5,
+                        -0.5
+                    ],
+                    "label": "Pool Side"
+                },
+                {
+                    "pos": [
+                        -2,
+                        0.5,
+                        -2.5
+                    ],
+                    "label": "Sauna Area"
+                }
+            ],
+            "extraObjects": [],
+            "startPos": [
+                -2.8362595063651423,
+                0.46523980785066704,
+                -1.2182134709428472
+            ],
+            "startRot": [
+                0.13945813658850809,
+                -1.0249071449363734,
+                0.1195274345377135
+            ]
+        },
+        "3": {
+            "name": "Hola! Tacos & Cantina",
+            "items": [
+                {
+                    "id": "3-1",
+                    "name": "Spicy Taco",
+                    "type": "activity",
+                    "position": [
+                        -0.19,
+                        0.119,
+                        -1.313
+                    ],
+                    "media": "/assets/hola_grab.png",
+                    "text": "Authentic flavors from Mexico.",
+                    "collectible": {
+                        "type": "pdf",
+                        "title": "Signature Drinks Recipe",
+                        "url": "/assets/recipe_placeholder.pdf",
+                        "description": "Learn how to make our signature cocktails at home."
+                    }
+                },
+                {
+                    "id": "3-2",
+                    "name": "Fresh Margarita",
+                    "type": "wineglass",
+                    "position": [
+                        -0.374,
+                        0.363,
+                        -0.841
+                    ],
+                    "media": "/assets/hola_grab.png",
+                    "text": "Hand-crafted at our tequila bar."
+                }
+            ],
+            "coin": {
+                "id": "special-3",
+                "name": "Hola Coin",
+                "position": [
+                    0,
+                    1.2,
+                    -1.5
+                ],
+                "media": "/textures/coin.png"
+            },
+            "hotspots": [
+                {
+                    "pos": [
+                        -0.862,
+                        1.642,
+                        -0.201
+                    ],
+                    "label": "Bar Entrance"
+                },
+                {
+                    "pos": [
+                        0.5,
+                        1.5,
+                        -1
+                    ],
+                    "label": "Table Seating"
+                },
+                {
+                    "pos": [
+                        -1.2,
+                        1.5,
+                        -2.5
+                    ],
+                    "label": "Kitchen View"
+                }
+            ],
+            "extraObjects": []
+        },
+        "4": {
+            "name": "MSC Formula Racer",
+            "items": [
+                {
+                    "id": "4-1",
+                    "name": "Simulator Dash",
+                    "type": "car",
+                    "position": [
+                        0.856,
+                        1.124,
+                        -2.237
+                    ],
+                    "media": "/assets/arcade_grab.png",
+                    "text": "Feel the G-force of a Formula 1 car.",
+                    "collectible": {
+                        "type": "badge",
+                        "title": "3D Gamer Badge",
+                        "url": "/models/racingcar.glb",
+                        "description": "A special 3D trophy for your racing performance."
+                    }
+                },
+                {
+                    "id": "4-2",
+                    "name": "Arcade Pass",
+                    "type": "remote",
+                    "position": [
+                        2.5,
+                        1.2,
+                        -1
+                    ],
+                    "media": "/assets/arcade_grab.png",
+                    "text": "Unlimited access to retro classics."
+                }
+            ],
+            "coin": {
+                "id": "special-4",
+                "name": "Speed Coin",
+                "position": [
+                    2.5,
+                    1.2,
+                    -1
+                ],
+                "media": "/textures/coin.png"
+            },
+            "hotspots": [
+                {
+                    "pos": [
+                        0.856,
+                        0.806,
+                        0.022
+                    ],
+                    "label": "Track Entrance"
+                },
+                {
+                    "pos": [
+                        2,
+                        1,
+                        -1.5
+                    ],
+                    "label": "Simulator Bay"
+                },
+                {
+                    "pos": [
+                        -1,
+                        1,
+                        -2.5
+                    ],
+                    "label": "Viewing Area"
+                }
+            ],
+            "extraObjects": []
+        },
+        "5": {
+            "name": "Excursion Spot",
+            "items": [
+                {
+                    "id": "5-1",
+                    "name": "GaudÃ­ Inspiration",
+                    "type": "ring",
+                    "position": [
+                        0,
+                        1.2,
+                        -2.5
+                    ],
+                    "media": "/assets/excursion_filler.jpg",
+                    "video": "https://v.ftcdn.net/06/17/84/44/700_F_617844445_h8vX0BvL4v3Y6H8H1Z8B1v8v8v8v8v8v_ST.mp4",
+                    "text": "Discover the architectural genius of Antoni GaudÃ­."
+                },
+                {
+                    "id": "5-2",
+                    "name": "Park Panorama",
+                    "type": "star",
+                    "position": [
+                        1.2,
+                        1.2,
+                        -1.5
+                    ],
+                    "media": "/assets/excursion_filler.jpg",
+                    "text": "Breathtaking views of the city from Park GÃ¼ell.",
+                    "collectible": {
+                        "type": "pdf",
+                        "title": "Hidden City Tips",
+                        "url": "/assets/tips_placeholder.pdf",
+                        "description": "Exclusive insider tips for exploring Barcelona like a local."
+                    }
+                }
+            ],
+            "coin": {
+                "id": "special-5",
+                "name": "Elite Coin",
+                "position": [
+                    0.173,
+                    1.2,
+                    0.5
+                ],
+                "media": "/textures/coin.png"
+            },
+            "hotspots": [
+                {
+                    "pos": [
+                        0,
+                        1.052,
+                        1.354
+                    ],
+                    "label": "Square Entrance"
+                },
+                {
+                    "pos": [
+                        1.2,
+                        1.2,
+                        -1.5
+                    ],
+                    "label": "Gaudi Sculpture"
+                },
+                {
+                    "pos": [
+                        -1.5,
+                        1.2,
+                        -3
+                    ],
+                    "label": "Tower View"
+                }
+            ],
+            "extraObjects": []
+        }
+    },
+    "personas": {
+        "influencerWeights": {
+            "Luxury/Travel Blogger": {
+                "The Sovereign": 20,
+                "Wellness Voyager": 10
+            },
+            "Family Vlogger": {
+                "Family Planner": 20
+            },
+            "Foodie Influencer": {
+                "Social Foodie": 20,
+                "The Alchemist": 10
+            },
+            "Digital Nomad": {
+                "Work from Sea": 20,
+                "Social Storyteller": 10
+            }
+        },
+        "priorityWeights": {
+            "first": 25,
+            "second": 20,
+            "last": 10
+        },
+        "dwellWeights": {
+            "minMs": 60000,
+            "highPoints": 20,
+            "maxMs": 15000,
+            "lowPoints": -10
+        },
+        "specialOccasionMultipliers": {
+            "The Sovereign": 1.5,
+            "The Alchemist": 1.3
+        },
+        "firstTimerMultipliers": {
+            "Culture Seeker": 1.4,
+            "Work from Sea": 0.8
+        }
+    },
+    "audioFiles": {
+        "1": "/audio/msc-cruises_1_1774458180158.wav",
+        "2": "/audio/msc-cruises_2_1774458180190.wav",
+        "3": "/audio/msc-cruises_3_1774458180202.wav",
+        "4": "/audio/msc-cruises_4_1774458180213.wav",
+        "5": "/audio/msc-cruises_5_1774458180226.wav",
+        "home": "/audio/msc-cruises_home_1774458180526.wav",
+        "teleport": "/audio/msc-cruises_teleport_1774458180719.wav",
+        "completion": "/audio/msc-cruises_completion_1774458180751.wav"
+    }
+}
