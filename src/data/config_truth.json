@@ -82,7 +82,7 @@
                     },
                     {
                         "id": "1-2",
-                        "name": "Suite View",
+                        "name": "Yacht Club",
                         "type": "star",
                         "position": [
                             1.129,
@@ -95,13 +95,14 @@
                             2.096
                         ],
                         "media": "/assets/balcony_new.png",
-                        "text": "Uninterrupted views of the ocean.",
+                        "text": "Fancy uninterrupted views and premium service - the yacht club comes with private pools and butler service - check put the vid and also add the free relaxing soundtrack as curated by our onboard team",
                         "collectible": {
-                            "type": "image",
-                            "title": "Sunset Photo Filler",
-                            "url": "/models/MSCWorldEuropaswimmingpool.jpg",
+                            "type": "mp3",
+                            "title": "Relaxing Yacht Club Vibe",
+                            "url": "/models/Experience_Resolution.mp3",
                             "description": "A beautiful sunset filler for your photos."
-                        }
+                        },
+                        "video": "https://www.youtube.com/shorts/hveF68HPGBs"
                     }
                 ],
                 "coin": {
@@ -207,9 +208,9 @@
                     0.1813562840408729
                 ],
                 "startRot": [
-                    124.95963456765801,
-                    -32.733090119124356,
-                    142.28177037596103
+                    106.93942873981665,
+                    -25.219323523757502,
+                    125.55806763681437
                 ],
                 "remotePos": [
                     1.4606797585018485,
@@ -239,7 +240,7 @@
                         "collectible": {
                             "type": "mp3",
                             "title": "Spa Ambient Mix",
-                            "url": "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
+                            "url": "experience_revolution.mp3",
                             "description": "A 5-minute relaxing soundscape from the Aurea Spa."
                         },
                         "rotation": [
@@ -304,14 +305,14 @@
                 ],
                 "extraObjects": [],
                 "startPos": [
-                    -2.8362595063651423,
-                    0.46523980785066704,
-                    -1.2182134709428472
+                    0.26490551761514053,
+                    -0.10275953881511343,
+                    -0.3043989859956143
                 ],
                 "startRot": [
-                    7.990362645280478,
-                    -58.72285379765716,
-                    6.848417535037214
+                    -107.2639247018915,
+                    -49.277657443342065,
+                    -112.29647297147022
                 ]
             },
             "3": {
