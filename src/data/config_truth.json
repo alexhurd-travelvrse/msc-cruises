@@ -4,8 +4,8 @@
             "title": "MSC World Europa",
             "subtitle": "",
             "heroImage": "/models/mscheroimage5.mp4",
-            "influencerPhoto": "",
-            "description": ""
+            "influencerPhoto": "/assets/Alexhurd1.jpg",
+            "description": "Virtual Cruise Experience"
         },
         "teleport": {
             "title": "The Promenade",
@@ -61,14 +61,14 @@
                         "name": "Wi-fi Packages",
                         "type": "bell",
                         "position": [
-                            0.3,
-                            1.2,
-                            -1
+                            0.341,
+                            -0.287,
+                            -0.036
                         ],
                         "rotation": [
-                            0,
-                            0,
-                            0
+                            -0.575,
+                            0.582,
+                            0.782
                         ],
                         "media": "/assets/balcony_preview.jpg",
                         "video": "https://www.youtube.com/shorts/NdUi4fHQ9e4",
@@ -82,7 +82,7 @@
                     },
                     {
                         "id": "1-2",
-                        "name": "Yacht Club",
+                        "name": "Suite View",
                         "type": "star",
                         "position": [
                             1.129,
@@ -95,30 +95,24 @@
                             2.096
                         ],
                         "media": "/assets/balcony_new.png",
-                        "text": "Fancy uninterrupted views and premium service - the yacht club comes with private pools and butler service - check put the vid and also add the free relaxing soundtrack as curated by our onboard team",
+                        "text": "Uninterrupted views of the ocean.",
                         "collectible": {
-                            "type": "mp3",
-                            "title": "Relaxing Yacht Club Vibe",
-                            "url": "/models/Experience_Resolution.mp3",
+                            "type": "image",
+                            "title": "Sunset Photo Filler",
+                            "url": "/models/MSCWorldEuropaswimmingpool.jpg",
                             "description": "A beautiful sunset filler for your photos."
-                        },
-                        "video": "https://www.youtube.com/shorts/hveF68HPGBs"
+                        }
                     }
                 ],
                 "coin": {
                     "id": "special-1",
                     "name": "Sovereign Coin",
                     "position": [
-                        0,
-                        1.2,
-                        -1.5
+                        0.760,
+                        0.790,
+                        1.310
                     ],
-                    "media": "/textures/coin.png",
-                    "rotation": [
-                        0,
-                        0,
-                        0
-                    ]
+                    "media": "/textures/msc_sovereign_coin.png"
                 },
                 "hotspots": [
                     {
@@ -146,101 +140,35 @@
                         "label": "Bedroom Area"
                     }
                 ],
-                "extraObjects": [
-                    {
-                        "name": "YachtClubStar",
-                        "pos": [
-                            1.4488632396846572,
-                            0.8438555072925971,
-                            -0.22776468661742744
-                        ],
-                        "rot": [
-                            0,
-                            0,
-                            0
-                        ],
-                        "size": 0.08,
-                        "type": "star"
-                    },
-                    {
-                        "id": "activity",
-                        "pos": [
-                            0.030459035164853595,
-                            0.40353174450243123,
-                            -1.2735285886579364
-                        ],
-                        "rot": [
-                            0,
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "id": "remote",
-                        "pos": [
-                            0.38,
-                            0.391,
-                            -0.594
-                        ],
-                        "rot": [
-                            0,
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "id": "extra-0",
-                        "pos": [
-                            1.4488632396846572,
-                            0.8438555072925971,
-                            -0.22776468661742744
-                        ],
-                        "rot": [
-                            0,
-                            0,
-                            0
-                        ]
-                    }
-                ],
                 "startPos": [
-                    -0.9017804342209648,
-                    -0.9482630536954695,
-                    0.1813562840408729
+                    -0.90178,
+                    -0.94826,
+                    0.18135
                 ],
                 "startRot": [
-                    106.93942873981665,
-                    -25.219323523757502,
-                    125.55806763681437
-                ],
-                "remotePos": [
-                    1.4606797585018485,
-                    1.2329259344170134,
-                    0.9490178468567841
-                ],
-                "remoteRot": [
-                    115.45099571886088,
-                    -42.79994729627249,
-                    125.01939089754562
+                    1.86,
+                    -0.44,
+                    2.19
                 ]
             },
             "2": {
-                "name": "Luxurious Indoor Pool Lounge",
+                "name": "Luxurious MSC Aurea Spa",
                 "items": [
                     {
                         "id": "2-1",
                         "name": "Thermal Bath",
                         "type": "towel",
                         "position": [
-                            -2.19837254118898,
-                            0.05427330252502871,
-                            -4.047660271759022
+                            -2.198,
+                            0.054,
+                            -4.047
                         ],
                         "media": "/assets/spa_grab.png",
                         "text": "Relax in our celestial thermal waters.",
                         "collectible": {
                             "type": "mp3",
                             "title": "Spa Ambient Mix",
-                            "url": "experience_revolution.mp3",
+                            "url": "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
                             "description": "A 5-minute relaxing soundscape from the Aurea Spa."
                         },
                         "rotation": [
@@ -254,9 +182,9 @@
                         "name": "Gym Session",
                         "type": "gymball",
                         "position": [
-                            1.5,
-                            1.2,
-                            -2
+                            2.0,
+                            0.5,
+                            -1.5
                         ],
                         "media": "/assets/spa_grab.png",
                         "text": "Energize in our state-of-the-art fitness center."
@@ -266,16 +194,11 @@
                     "id": "special-2",
                     "name": "Aurea Coin",
                     "position": [
-                        0,
-                        1.2,
-                        -1.5
+                        -3.119,
+                        -0.272,
+                        -1.211
                     ],
-                    "media": "/textures/coin.png",
-                    "rotation": [
-                        0,
-                        0,
-                        0
-                    ]
+                    "media": "/textures/msc_sovereign_coin.png"
                 },
                 "hotspots": [
                     {
@@ -303,20 +226,19 @@
                         "label": "Sauna Area"
                     }
                 ],
-                "extraObjects": [],
                 "startPos": [
-                    0.26490551761514053,
-                    -0.10275953881511343,
-                    -0.3043989859956143
+                    0.2649,
+                    -0.1027,
+                    -0.3043
                 ],
                 "startRot": [
-                    -107.2639247018915,
-                    -49.277657443342065,
-                    -112.29647297147022
+                    -1.87,
+                    -0.86,
+                    -1.96
                 ]
             },
             "3": {
-                "name": "Vibrant Mexican Restaurant Interior",
+                "name": "Hola! Tacos & Cantina",
                 "items": [
                     {
                         "id": "3-1",
@@ -334,12 +256,7 @@
                             "title": "Signature Drinks Recipe",
                             "url": "/assets/recipe_placeholder.pdf",
                             "description": "Learn how to make our signature cocktails at home."
-                        },
-                        "rotation": [
-                            0,
-                            0,
-                            0
-                        ]
+                        }
                     },
                     {
                         "id": "3-2",
@@ -358,16 +275,11 @@
                     "id": "special-3",
                     "name": "Hola Coin",
                     "position": [
-                        0,
-                        1.2,
-                        -1.5
+                        -1.546,
+                        0.131,
+                        -1.010
                     ],
-                    "media": "/textures/coin.png",
-                    "rotation": [
-                        0,
-                        0,
-                        0
-                    ]
+                    "media": "/textures/msc_sovereign_coin.png"
                 },
                 "hotspots": [
                     {
@@ -394,31 +306,10 @@
                         ],
                         "label": "Kitchen View"
                     }
-                ],
-                "extraObjects": [],
-                "startPos": [
-                    -0.7997430050013715,
-                    -0.08558040670980804,
-                    -1.1172473822951061
-                ],
-                "startRot": [
-                    -13.407212406061264,
-                    -3.7815214478634336,
-                    -0.9167324722093172
-                ],
-                "menuPos": [
-                    -0.134,
-                    0.109,
-                    -1.768
-                ],
-                "menuRot": [
-                    0,
-                    0,
-                    0
                 ]
             },
             "4": {
-                "name": "Vibrant Indoor Bumper Car Arena",
+                "name": "MSC Formula Racer",
                 "items": [
                     {
                         "id": "4-1",
@@ -436,12 +327,7 @@
                             "title": "3D Gamer Badge",
                             "url": "/models/racingcar.glb",
                             "description": "A special 3D trophy for your racing performance."
-                        },
-                        "rotation": [
-                            27.61656572530568,
-                            0,
-                            0
-                        ]
+                        }
                     },
                     {
                         "id": "4-2",
@@ -464,12 +350,7 @@
                         1.2,
                         -1
                     ],
-                    "media": "/textures/coin.png",
-                    "rotation": [
-                        0,
-                        0,
-                        0
-                    ]
+                    "media": "/textures/msc_sovereign_coin.png"
                 },
                 "hotspots": [
                     {
@@ -496,21 +377,10 @@
                         ],
                         "label": "Viewing Area"
                     }
-                ],
-                "extraObjects": [],
-                "startPos": [
-                    0.856,
-                    0.806,
-                    -0.4649122315467182
-                ],
-                "startRot": [
-                    0,
-                    0,
-                    0
                 ]
             },
             "5": {
-                "name": "Park Güell Architectural Details",
+                "name": "Excursion Spot",
                 "items": [
                     {
                         "id": "5-1",
@@ -523,12 +393,7 @@
                         ],
                         "media": "/assets/excursion_filler.jpg",
                         "video": "https://v.ftcdn.net/06/17/84/44/700_F_617844445_h8vX0BvL4v3Y6H8H1Z8B1v8v8v8v8v8v_ST.mp4",
-                        "text": "Discover the architectural genius of Antoni Gaudí.",
-                        "rotation": [
-                            0,
-                            0,
-                            0
-                        ]
+                        "text": "Discover the architectural genius of Antoni Gaudí."
                     },
                     {
                         "id": "5-2",
@@ -557,12 +422,7 @@
                         1.2,
                         0.5
                     ],
-                    "media": "/textures/coin.png",
-                    "rotation": [
-                        0,
-                        0,
-                        0
-                    ]
+                    "media": "/textures/msc_sovereign_coin.png"
                 },
                 "hotspots": [
                     {
@@ -589,17 +449,6 @@
                         ],
                         "label": "Tower View"
                     }
-                ],
-                "extraObjects": [],
-                "startPos": [
-                    0.173,
-                    1.06,
-                    1.551
-                ],
-                "startRot": [
-                    -2.4064227395494577,
-                    41.25296124941927,
-                    1.604281826366305
                 ]
             }
         },
@@ -620,25 +469,6 @@
                     "Work from Sea": 20,
                     "Social Storyteller": 10
                 }
-            },
-            "priorityWeights": {
-                "first": 25,
-                "second": 20,
-                "last": 10
-            },
-            "dwellWeights": {
-                "minMs": 60000,
-                "highPoints": 20,
-                "maxMs": 15000,
-                "lowPoints": -10
-            },
-            "specialOccasionMultipliers": {
-                "The Sovereign": 1.5,
-                "The Alchemist": 1.3
-            },
-            "firstTimerMultipliers": {
-                "Culture Seeker": 1.4,
-                "Work from Sea": 0.8
             }
         },
         "audioFiles": {

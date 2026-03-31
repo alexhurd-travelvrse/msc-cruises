@@ -84,20 +84,14 @@ const RealisticMSCCoin = React.forwardRef(({ pos, size, onClick, isCollected }, 
 
             {/* 3D LUX COIN */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-                <cylinderGeometry args={[size, size, 0.06, 64]} />
+                <cylinderGeometry args={[size, size, 0.08, 64]} />
                 <meshStandardMaterial 
                     map={coinTexture} 
                     metalness={1} 
-                    roughness={0.15} 
+                    roughness={0.1} 
                     emissive="#FFD700"
                     emissiveIntensity={0.2}
                 />
-            </mesh>
-            
-            {/* Inner Gold Rim */}
-            <mesh rotation={[Math.PI / 2, 0, 0]}>
-                <torusGeometry args={[size, 0.04, 16, 64]} />
-                <meshStandardMaterial color="#FFD700" metalness={1} roughness={0.1} />
             </mesh>
 
             {/* Glow Aura */}
@@ -913,87 +907,30 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                     </group>
 
 
-                    {/* Experience 1: Standardized Backpack Icons replacing TV/Bell */}
-                    {experienceId === '1' && isItemsAllowed && (
-                        <group>
-                            {/* Icon 1: TV/Wifi replacement */}
-                            <TransformWrapper id="remote" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <group>
-                                    <BackpackMarker
-                                        pos={currentRemotePos}
-                                        experienceId={experienceId}
-                                        size={0.5}
-                                        isCollected={itemsViewed.includes('1-1')}
-                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'TVControl', experienceId } }))}
-                                    />
-                                </group>
-                            </TransformWrapper>
+                    {/* GLOBAL BACKPACK MARKERS: Only show first 2 items from roomConfig */}
+                    {isItemsAllowed && roomConfig.items?.slice(0, 2).map((item, idx) => {
+                        const id = item.id;
+                        const isFirstItem = idx === 0;
+                        const markerId = isFirstItem ? 'remote' : 'activity'; // For editor sync
+                        const pos = localPositions[markerId] || item.position;
+                        const isItemCollected = itemsViewed.includes(id);
 
-                            {/* Icon 2: Luxury Service/Bell replacement */}
-                            <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <group ref={chestRef}>
-                                    <BackpackMarker
-                                        pos={localPositions['activity'] || config.activityPos}
-                                        experienceId={experienceId}
-                                        size={0.4}
-                                        isCollected={itemsViewed.includes('1-2')}
-                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                    />
-                                </group>
-                            </TransformWrapper>
-                        </group>
-                    )}
-
-                    {/* Experience 2: Spa Backpack Icon */}
-                    {experienceId === '2' && isItemsAllowed && (
-                        <group>
-                            <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <group ref={chestRef}>
-                                    <BackpackMarker
-                                        pos={currentActivityPos}
-                                        experienceId={experienceId}
-                                        size={0.6}
-                                        isCollected={itemsViewed.includes('2-1')}
-                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                    />
-                                </group>
-                            </TransformWrapper>
-                        </group>
-                    )}
-
-                    {/* Experience 4: Arcade Backpack Icon */}
-                    {experienceId === '4' && isItemsAllowed && (
-                        <group>
-                            <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <group ref={chestRef}>
-                                    <BackpackMarker
-                                        pos={currentActivityPos}
-                                        experienceId={experienceId}
-                                        size={0.6}
-                                        isCollected={itemsViewed.includes('4-1')}
-                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                    />
-                                </group>
-                            </TransformWrapper>
-                        </group>
-                    )}
-
-                    {/* Other Experiences (3, 5, etc.): Universal Backpack Marker */}
-                    {experienceId !== '1' && experienceId !== '2' && experienceId !== '4' && isItemsAllowed && (
-                        <group>
-                            <TransformWrapper id="activity" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                <group ref={chestRef}>
-                                    <BackpackMarker
-                                        pos={currentActivityPos}
-                                        experienceId={experienceId}
-                                        size={0.6}
-                                        isCollected={itemsViewed.includes(`${experienceId}-1`)}
-                                        onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'ActivityObject', experienceId } }))}
-                                    />
-                                </group>
-                            </TransformWrapper>
-                        </group>
-                    )}
+                        return (
+                            <group key={id}>
+                                <TransformWrapper id={markerId} activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
+                                    <group>
+                                        <BackpackMarker
+                                            pos={pos}
+                                            experienceId={experienceId}
+                                            size={isFirstItem ? 0.5 : 0.4}
+                                            isCollected={isItemCollected}
+                                            onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: isFirstItem ? 'TVControl' : 'ActivityObject', experienceId } }))}
+                                        />
+                                    </group>
+                                </TransformWrapper>
+                            </group>
+                        );
+                    })}
 
                     {/* TelephoneBox removal confirmed by user - we only need the backpack items and final coin in Room 5 now */}
 
@@ -1042,95 +979,9 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
 
                     {/* Gaudi billboard merged into activity object */}
 
-                    {
-                        isItemsAllowed && config.extraObjects?.map((obj, index) => {
-                            const id = `extra-${index}`;
-                            const pos = localPositions[id] || obj.pos;
-                            const rot = localRotations[id] || obj.rot || [0, 0, 0];
+                    {/* TelephoneBox removal confirmed by user - we only need the backpack items and final coin in Room 5 now */}
 
-                            if (obj.name === 'GymBall') {
-                                const isGymBallCollected = backpack.some(item => item.id === 'GymBall');
-                                return (
-                                    <group key={index}>
-                                        <TransformWrapper id={id} activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                            <group>
-                                                <GymBallLocal
-                                                    pos={pos}
-                                                    size={obj.size || 0.4}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'GymBall', experienceId } }));
-                                                        console.log("GymBall Clicked!");
-                                                    }}
-                                                    isCollected={isGymBallCollected}
-                                                />
-                                            </group>
-                                            {console.log(`[Scene3D] Rendering GymBallLocal at`, pos)}
-                                        </TransformWrapper>
-                                    </group>
-                                );
-                            }
-
-
-                            // Extra objects logic continued...
-
-
-                            return (
-                                <group key={index}>
-                                    <TransformWrapper id={id} activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                        <Suspense fallback={null}>
-                                            <RealisticMSCCoin
-                                                pos={pos}
-                                                rotation={rot}
-                                                size={coinSize}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    const event = new CustomEvent('object-clicked', { detail: { name: obj.name, experienceId } });
-                                                    window.dispatchEvent(event);
-                                                    e.eventObject.parent.visible = false;
-                                                }}
-                                            />
-                                        </Suspense>
-                                    </TransformWrapper>
-                                </group>
-                            );
-                        })
-                    }
-                    {/* Fallback to default render if no specific handler */}
-                    {config.extraObjects?.map((obj, i) => {
-                        if (obj.type === 'GaudiTicket' || obj.type === 'RacingCar' || obj.type === 'GelatoReward' || obj.type === 'WineGlassReward' || obj.type === 'Towel' || obj.type === 'InteractiveMenu' || obj.type === 'GymBall' || obj.type === 'star' || obj.type === 'coin' || obj.type === 'gym_ball' || obj.name === 'YachtClubStar' || obj.name === 'GymBall' || obj.name === 'SpeakeasyCoin' || obj.name === 'RestaurantSpeakeasyCoin') return null;
-                        const isActiveObj = activeEditorObject === obj.id;
-                        const getLocalPos = (id, fallback) => localPositions[id] || fallback;
-                        const getLocalRot = (id, fallback) => localRotations[id] || fallback;
-                        const handleTransformChange = (id, e) => {
-                            if (!e.target.object) return;
-                            const obj = e.target.object;
-                            if (editorMode === 'translate') {
-                                const { x, y, z } = obj.position;
-                                setLocalPositions(prev => ({ ...prev, [id]: [x, y, z] }));
-                            } else {
-                                const { x, y, z } = obj.rotation;
-                                setLocalRotations(prev => ({ ...prev, [id]: [x, y, z] }));
-                            }
-                        };
-                        return (
-                            <TransformWrapper
-                                key={`fallback-${experienceId}-${i}`}
-                                id={obj.id}
-                                activeId={activeEditorObject}
-                                isEditorActive={isEditorMode && activeEditorObject === obj.id}
-                                handleTransform={handleTransformChange}
-                            >
-                                <mesh
-                                    position={getLocalPos(obj.id, obj.position)}
-                                    rotation={getLocalRot(obj.id, obj.rotation)}
-                                >
-                                    <boxGeometry args={[0.2, 0.2, 0.2]} />
-                                    <meshBasicMaterial color={isActiveObj ? "lime" : "gray"} wireframe />
-                                </mesh>
-                            </TransformWrapper>
-                        );
-                    })}
+                    {/* Fallback to default render removed to eliminate ghost meshes */}
                 </>
             )}
         </>

@@ -31,15 +31,7 @@ const mscConfig = {
             { pos: [0.5, -0.8, 1.2], label: 'Balcony View' },
             { pos: [-0.5, -0.8, -1.0], label: 'Bedroom Area' }
         ],
-        extraObjects: [
-            {
-                name: 'YachtClubStar',
-                pos: [1.129, 1.865, 0.740],
-                rot: [1.815, -0.445, 2.096],
-                size: 0.08,
-                type: 'star'
-            }
-        ]
+        extraObjects: []
     },
     "2": {
         name: 'Luxurious Indoor Pool Lounge',

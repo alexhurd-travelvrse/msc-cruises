@@ -13,6 +13,30 @@ import StartOverlay from '../components/StartOverlay';
 import AudioController from '../components/AudioController';
 import { offerDatabase, calculateLiveOfferDiscount } from '../data/offerDatabase';
 
+const YouTubePlayer = ({ url }) => {
+    // Extract video ID from youtube.com/shorts/ID or youtube.com/watch?v=ID or youtu.be/ID
+    const getYouTubeId = (url) => {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    };
+
+    const videoId = getYouTubeId(url);
+    if (!videoId) return <video src={url} autoPlay loop controls style={{ width: '100%', display: 'block' }} />;
+
+    return (
+        <div className="video-container">
+            <iframe
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0&modestbranding=1`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+            ></iframe>
+        </div>
+    );
+};
+
 const ExperiencePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -125,7 +149,10 @@ const ExperiencePage = () => {
                     id: `medal-${id}`
                 });
             } else if (name === 'TVControl' || name === 'ActivityObject' || name === 'RacingCarSimulator') {
-                const dynamicItem = roomConfig?.items?.[name === 'TVControl' ? 0 : 1] || roomConfig?.items?.[0];
+                const items = roomConfig?.items || [];
+                const itemIndex = (name === 'TVControl') ? 0 : 1;
+                const dynamicItem = items[itemIndex] || items[0];
+                
                 if (dynamicItem) {
                     setModal({
                         title: dynamicItem.name,
@@ -149,8 +176,8 @@ const ExperiencePage = () => {
             const newViewed = [...new Set([...itemsViewed, modal.id])];
             setItemsViewed(newViewed);
             
-            const roomItemsCount = publicConfig?.experiences?.[id]?.items?.length || 1;
-            if (newViewed.length >= roomItemsCount) {
+            // USER REQUEST: Only show coin after 2 items are viewed
+            if (newViewed.length >= 2) {
                 setIsOrbAllowed(true);
                 window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
             }
@@ -176,15 +203,20 @@ const ExperiencePage = () => {
             if (modal.type === 'medal') {
                 updateChallenge(`exp-${id}`, { coinFound: true });
                 
+                // Trigger Confetti Moment
+                window.dispatchEvent(new CustomEvent('trigger-confetti'));
+                
+                // Close modal immediately so user sees the reward moment in the room
+                setModal(null);
+
                 // USER REQUEST: Auto-transition on coin/medal collection
                 setTimeout(() => {
-                    handleCloseModal();
                     const nextId = parseInt(id) + 1;
                     if (nextId <= 5) navigate(`/experience/${nextId}`);
                     else navigate('/completion');
-                }, 1000); 
+                }, 2000); 
                 
-                setActiveLiveOffer({ baseTitle: "Medal Collected!", icon: '🏅', discount: 0 });
+                setActiveLiveOffer({ baseTitle: "Elite Reward Unlocked!", icon: '🏅', discount: 0 });
             } else {
                 updateChallenge(`exp-${id}`, { objectsFound: 1 });
                 handleCloseModal();
@@ -256,11 +288,11 @@ const ExperiencePage = () => {
                         )}
                     </div>
 
-                    <div className="hud-stats" style={{ display: 'flex', gap: '12px' }}>
-                        <div className="medal-box glass-panel" style={{ color: '#ffd700' }}>
+                    <div className="hud-stats" style={{ display: 'flex', gap: '10px' }}>
+                        <div className="medal-box glass-panel" style={{ color: '#ffd700', padding: '8px 20px', fontSize: '0.85rem' }}>
                             🏅 {getTotalCoins()} / 5
                         </div>
-                        <div className={`backpack-box glass-panel ${backpackUpdated ? 'backpack-glow' : ''}`} onClick={() => setShowFavourites(true)}>
+                        <div className={`backpack-box glass-panel ${backpackUpdated ? 'backpack-glow' : ''}`} style={{ padding: '8px 20px', fontSize: '0.85rem' }} onClick={() => setShowFavourites(true)}>
                             🎒 {backpack.length} ITEMS
                         </div>
                     </div>
@@ -271,9 +303,7 @@ const ExperiencePage = () => {
                 <div className="modal-overlay" onClick={handleCloseModal}>
                     <div className={`interaction-modal glass-panel animate-fade-in ${modal.type === 'medal' ? 'medal-modal' : ''}`} onClick={(e) => e.stopPropagation()}>
                         {modal.video ? (
-                            <div style={{ marginBottom: '15px', borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
-                                <video src={modal.video} autoPlay loop controls style={{ width: '100%', display: 'block' }} />
-                            </div>
+                            <YouTubePlayer url={modal.video} />
                         ) : modal.image && (
                             <div style={{ marginBottom: '15px' }}>
                                 <img src={modal.image} style={{ width: '100%', borderRadius: '12px' }} alt={modal.title} />
