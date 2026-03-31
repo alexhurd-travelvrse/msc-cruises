@@ -876,6 +876,10 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
             <DynamicModel config={config} modelScale={modelScale} onSplatLoad={() => {
                 setIsSplatLoaded(true);
                 window.dispatchEvent(new CustomEvent('msc-splat-loaded'));
+                // Ensure camera snaps to the truth startPos/Rot once splat is ready
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('force-camera-reset'));
+                }, 100); 
             }} />
 
             {/* Loading indicator handled by ExperienceCanvas Suspense fallback */}

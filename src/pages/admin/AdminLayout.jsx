@@ -10,7 +10,7 @@ const AdminLayout = () => {
     // This eliminates the async race condition between login() and navigation
     const currentInfluencer = ctxInfluencer || (() => {
         try {
-            const saved = localStorage.getItem('currentInfluencer_v3');
+            const saved = localStorage.getItem('currentInfluencer_v9');
             return saved ? JSON.parse(saved) : null;
         } catch { return null; }
     })();
