@@ -88,7 +88,7 @@ const ConfigDashboard = () => {
         }
 
         saveConfig(currentInfluencer?.id, companyId, formData);
-        alert("✓ Published! Changes synced to production files.");
+        alert("🚀 READY FOR GITHUB DESKTOP!\nYour configuration has been updated on disk.");
         setIsSaving(false);
     };
 
