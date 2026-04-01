@@ -739,31 +739,6 @@ const Scene3D = ({
                     rot: getDegrees(id, item.rotation || [0, 0, 0])
                 });
             });
-            if ((experienceId === '3' || experienceId === '4') && config.menuPos) objs.push({
-                id: 'menu',
-                name: 'Restaurant Menu',
-                pos: (localPositions['menu'] || config.menuPos),
-                rot: getDegrees('menu', config.menuRot)
-            });
-            if (showWineGlass && config.winePos) objs.push({
-                id: 'wine',
-                name: 'Wine Glass',
-                pos: (localPositions['wine'] || config.winePos),
-                rot: getDegrees('wine', config.wineRot)
-            });
-            if (showGelato && config.rewardPos) objs.push({
-                id: 'reward',
-                name: 'Reward Item',
-                pos: (localPositions['reward'] || config.rewardPos),
-                rot: getDegrees('reward', config.rewardRot)
-            });
-            if (experienceId === '5' && config.gaudiPos) objs.push({
-                id: 'gaudi',
-                name: 'Gaudi Panel',
-                pos: (localPositions['gaudi'] || config.gaudiPos),
-                rot: getDegrees('gaudi', config.gaudiRot)
-            });
-
             config.extraObjects?.forEach((obj, index) => {
                 const id = `extra-${index}`;
                 objs.push({
@@ -905,13 +880,11 @@ const Scene3D = ({
                     </group>
 
 
-                    {/* GLOBAL BACKPACK MARKERS: Render all items from configuration */}
+                    {/* GLOBAL BACKPACK MARKERS: Standardized across all 5 experiences */}
                     {isItemsAllowed && (roomConfig?.items || []).map((item, idx) => {
                         const id = item.id || `item-${experienceId}-${idx}`;
                         const pos = localPositions[id] || item.position || [0, 0, 0];
                         const isItemCollected = itemsViewed.includes(id);
-
-                        console.log(`[Scene3D] Marker Render Check (${id}):`, { pos, isItemCollected, isItemsAllowed });
 
                         return (
                             <group key={`container-${id}`}>
@@ -920,7 +893,7 @@ const Scene3D = ({
                                         <BackpackMarker
                                             pos={pos}
                                             experienceId={experienceId}
-                                            size={idx === 0 ? 0.5 : 0.4}
+                                            size={0.65} // Standardized premium size
                                             isCollected={isItemCollected}
                                             type={item.type}
                                             onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
@@ -937,57 +910,6 @@ const Scene3D = ({
                             </group>
                         );
                     })}
-
-                    {/* TelephoneBox removal confirmed by user - we only need the backpack items and final coin in Room 5 now */}
-
-                    {
-                        (experienceId === '3' || experienceId === '4') && config.menuPos && (
-                            <group>
-                                <TransformWrapper id="menu" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                    <InteractiveMenu
-                                        pos={localPositions['menu'] || config.menuPos}
-                                        rotation={localRotations['menu'] || config.menuRot || [0, 0, 0]}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: 'RestaurantMenu', experienceId } }));
-                                        }}
-                                    />
-                                </TransformWrapper>
-                            </group>
-                        )
-                    }
-
-                    {
-                        showWineGlass && config.winePos && (
-                            <group>
-                                <TransformWrapper id="wine" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                    <ProceduralWineGlass
-                                        pos={localPositions['wine'] || config.winePos}
-                                        rotation={localRotations['wine'] || config.wineRot || [0, 0, 0]}
-                                    />
-                                </TransformWrapper>
-                            </group>
-                        )
-                    }
-
-                    {
-                        showGelato && config.rewardPos && isItemsAllowed && (
-                            <group>
-                                <TransformWrapper id="reward" activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
-                                    <ProceduralGelato
-                                        pos={localPositions['reward'] || config.rewardPos}
-                                        rotation={localRotations['reward'] || config.rewardRot || [0, 0, 0]}
-                                    />
-                                </TransformWrapper>
-                            </group>
-                        )
-                    }
-
-                    {/* Gaudi billboard merged into activity object */}
-
-                    {/* TelephoneBox removal confirmed by user - we only need the backpack items and final coin in Room 5 now */}
-
-                    {/* Fallback to default render removed to eliminate ghost meshes */}
                 </>
             )}
         </>

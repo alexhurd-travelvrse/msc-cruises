@@ -14,27 +14,30 @@ import AudioController from '../components/AudioController';
 import { offerDatabase, calculateLiveOfferDiscount } from '../data/offerDatabase';
 
 const YouTubePlayer = ({ url }) => {
-    // Extract video ID from youtube.com/shorts/ID or youtube.com/watch?v=ID or youtu.be/ID
+    // Robust YouTube ID extraction
     const getYouTubeId = (url) => {
         if (!url) return null;
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|youtube.com\/shorts\/)([^#&?]*).*/;
         const match = url.match(regExp);
-        const videoId = (match && match[2].length === 11) ? match[2] : null;
-        if (!videoId) {
-            // Fallback for simple watch URLs or direct IDs
-            const simplified = url.split('v=')[1]?.split('&')[0] || url.split('shorts/')[1]?.split('?')[0];
-            return (simplified && simplified.length === 11) ? simplified : null;
-        }
-        return videoId;
+        return (match && match[2].length === 11) ? match[2] : null;
     };
 
     const videoId = getYouTubeId(url);
-    if (!videoId) return <video src={url} autoPlay loop controls style={{ width: '100%', display: 'block' }} />;
+    
+    // If it's not a YouTube ID, it might be a direct MP4/video file
+    if (!videoId) {
+        return (
+            <div className="video-container">
+                <video src={url} autoPlay loop muted playsInline style={{ width: '100%', borderRadius: '12px' }} />
+            </div>
+        );
+    }
 
     return (
-        <div className="video-container">
+        <div className="video-container" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px', background: '#000' }}>
             <iframe
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0&modestbranding=1`}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0&modestbranding=1&controls=1`}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
