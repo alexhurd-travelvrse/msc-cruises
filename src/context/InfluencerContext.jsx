@@ -24,21 +24,21 @@ export const InfluencerProvider = ({ children }) => {
 
     const [currentInfluencer, setCurrentInfluencer] = useState(() => {
         try {
-            const saved = localStorage.getItem('currentInfluencer_v16');
+            const saved = localStorage.getItem('currentInfluencer_v17');
             return saved ? JSON.parse(saved) : null;
         } catch (e) { return null; }
     });
     const [currentDestination, setCurrentDestination] = useState(null);
     const [activeCompanyId, setActiveCompanyId] = useState(() => {
         try {
-            const saved = localStorage.getItem('activeCompanyId_v16');
+            const saved = localStorage.getItem('activeCompanyId_v17');
             return saved ? JSON.parse(saved) : 'msc-cruises';
         } catch (e) { return 'msc-cruises'; }
     });
 
     const [configs, setConfigs] = useState(() => {
         try {
-            const saved = localStorage.getItem('influencerConfigs_v16');
+            const saved = localStorage.getItem('influencerConfigs_v17');
             const cached = saved ? JSON.parse(saved) : {};
             console.log("[InfluencerContext] Initializing configs with truth + cache", { cachedKeys: Object.keys(cached) });
             return { ...configTruth, ...cached };
@@ -56,13 +56,13 @@ export const InfluencerProvider = ({ children }) => {
 
     const resetToTruth = () => {
         setConfigs({ ...configTruth });
-        localStorage.setItem('influencerConfigs_v16', JSON.stringify(configTruth));
+        localStorage.setItem('influencerConfigs_v17', JSON.stringify(configTruth));
         console.log("%c[InfluencerContext] REVERTED TO GITHUB TRUTH", "color: #ff9800; font-weight: bold;");
     };
 
     const [earnings, setEarnings] = useState(() => {
         try {
-            const saved = localStorage.getItem('influencerEarnings_v16');
+            const saved = localStorage.getItem('influencerEarnings_v17');
             return saved ? JSON.parse(saved) : {};
         } catch (e) { return {}; }
     });
@@ -70,7 +70,7 @@ export const InfluencerProvider = ({ children }) => {
 
     const [influencers, setInfluencers] = useState(() => {
         try {
-            const saved = localStorage.getItem('influencers_v16');
+            const saved = localStorage.getItem('influencers_v17');
             return saved ? JSON.parse(saved) : initialInfluencers;
         } catch (e) { 
             return initialInfluencers; 
@@ -80,7 +80,7 @@ export const InfluencerProvider = ({ children }) => {
     const updateInfluencer = React.useCallback((id, newData) => {
         setInfluencers(prev => {
             const updated = prev.map(inv => inv.id === id ? { ...inv, ...newData } : inv);
-            localStorage.setItem('influencers_v16', JSON.stringify(updated));
+            localStorage.setItem('influencers_v17', JSON.stringify(updated));
             if (currentInfluencer && currentInfluencer.id === id) {
                 setCurrentInfluencer({ ...currentInfluencer, ...newData });
             }
@@ -92,19 +92,19 @@ export const InfluencerProvider = ({ children }) => {
     useEffect(() => {
         const loadConfigs = () => {
             try {
-                const savedConfigs = localStorage.getItem('influencerConfigs_v16');
+                const savedConfigs = localStorage.getItem('influencerConfigs_v17');
                 if (savedConfigs) {
                     const parsed = JSON.parse(savedConfigs);
                     setConfigs(prev => ({ ...configTruth, ...parsed }));
                 }
-                const savedEarnings = localStorage.getItem('influencerEarnings_v16');
+                const savedEarnings = localStorage.getItem('influencerEarnings_v17');
                 if (savedEarnings) setEarnings(JSON.parse(savedEarnings));
             } catch (e) {
                 console.warn("[InfluencerContext] LocalStorage check failed:", e);
             }
         };
         const handleStorageChange = (e) => {
-            if (e.key === 'influencerConfigs_v16' || e.key === 'influencerEarnings_v16') loadConfigs();
+            if (e.key === 'influencerConfigs_v17' || e.key === 'influencerEarnings_v17') loadConfigs();
         };
         window.addEventListener('storage', handleStorageChange);
         loadConfigs();
@@ -114,19 +114,19 @@ export const InfluencerProvider = ({ children }) => {
     const login = (influencerId) => {
         const influencer = influencers.find(i => i.id === influencerId);
         setCurrentInfluencer(influencer);
-        localStorage.setItem('currentInfluencer_v16', JSON.stringify(influencer));
+        localStorage.setItem('currentInfluencer_v17', JSON.stringify(influencer));
     };
 
     const logout = () => {
         setCurrentInfluencer(null);
         setActiveCompanyId(null);
-        localStorage.removeItem('currentInfluencer_v16');
-        localStorage.removeItem('activeCompanyId_v16');
+        localStorage.removeItem('currentInfluencer_v17');
+        localStorage.removeItem('activeCompanyId_v17');
     };
 
     const selectCompany = (companyId) => {
         setActiveCompanyId(companyId);
-        localStorage.setItem('activeCompanyId_v16', JSON.stringify(companyId));
+        localStorage.setItem('activeCompanyId_v17', JSON.stringify(companyId));
     };
 
     const getConfig = React.useCallback((influencerId, companyId) => {
@@ -180,14 +180,14 @@ export const InfluencerProvider = ({ children }) => {
         const key = `${id}_${companyId}`;
         const updatedConfigs = { ...configs, [key]: newConfig };
         setConfigs(updatedConfigs);
-        localStorage.setItem('influencerConfigs_v16', JSON.stringify(updatedConfigs));
+        localStorage.setItem('influencerConfigs_v17', JSON.stringify(updatedConfigs));
     }, [configs, currentDestination]);
 
     const updateEarnings = React.useCallback((influencerId, amount) => {
         const current = earnings[influencerId] || 0;
         const newEarnings = { ...earnings, [influencerId]: current + amount };
         setEarnings(newEarnings);
-        localStorage.setItem('influencerEarnings_v16', JSON.stringify(newEarnings));
+        localStorage.setItem('influencerEarnings_v17', JSON.stringify(newEarnings));
     }, [earnings]);
 
     const loginAsDestination = (companyId) => setCurrentDestination(companyId);

@@ -10,9 +10,9 @@ export const GameProvider = ({ children }) => {
     const [preferences, setPreferences] = useState({});
 
     // Storage Keys
-    const STORAGE_KEY = 'msc_backpack_v16';
-    const VIEWED_KEY = 'msc_itemsViewed_v16';
-    const CHALLENGE_KEY = 'msc_challenges_v16';
+    const STORAGE_KEY = 'msc_backpack_v17';
+    const VIEWED_KEY = 'msc_itemsViewed_v17';
+    const CHALLENGE_KEY = 'msc_challenges_v17';
 
     // Initialize from localStorage to persist across refreshes
     const [backpack, setBackpack] = useState(() => {
@@ -330,7 +330,7 @@ export const GameProvider = ({ children }) => {
         localStorage.removeItem('gameBackpack'); // Legacy
         
         // Robustness: Clear configuration cache to force revert to config_truth.json
-        localStorage.removeItem('influencerConfigs_v16');
+        localStorage.removeItem('influencerConfigs_v17');
         localStorage.clear(); 
         
         window.dispatchEvent(new CustomEvent('msc-progress-reset'));

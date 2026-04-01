@@ -156,7 +156,7 @@ const HomePage = () => {
                     }}
                     style={{
                         position: 'fixed',
-                        top: 'calc(50% + 140px)',
+                        top: 'calc(50% + 90px)',
                         left: '40px',
                         transform: 'none',
                         background: 'rgba(0, 229, 255, 0.2)',
