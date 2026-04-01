@@ -146,59 +146,55 @@ function SceneEditor({
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const handleSave = async () => {
+    const handleLocalSave = async () => {
         try {
             setSaveError(null);
-
             if (onSaveToContext) {
-                // Modern React-Context Based Saving
                 const result = await onSaveToContext(objects);
                 if (result && result.success) {
-                    setSaved(true);
-                    setTimeout(() => setSaved(false), 3000);
+                    setLocalSaved(true);
+                    setTimeout(() => setLocalSaved(false), 3000);
                 } else {
                     setSaveError('Failed to save to Influencer Context');
                 }
-            } else {
-                // Use the standardized filesystem backend (for GitHub Desktop)
-                const experienceId = window.location.pathname.split('/').pop() || '1';
-                const activeCompanyId = import.meta.env.VITE_ACTIVE_COMPANY || 'msc-cruises';
-                
-                // Get the base config to update
-                const baseConfig = objects.reduce((acc, obj) => {
-                    const id = obj.id;
-                    const finalRot = obj.rot; // Already in degrees from current report logic
-                    
-                    if (id === 'camera' || id === 'coin') {
-                        acc[id] = { pos: obj.pos, rot: finalRot };
-                    }
-                    return acc;
-                }, {});
-
-                const response = await fetch('/api/save-config', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        companyId: activeCompanyId,
-                        experienceId,
-                        objects: objects.map(obj => ({
-                            id: obj.id,
-                            pos: obj.pos,
-                            rot: obj.rot
-                        }))
-                    })
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    setPublishSaved(true);
-                    setTimeout(() => setPublishSaved(false), 3000);
-                    alert("🚀 READY FOR GITHUB DESKTOP!\nYour coordinates have been written to config_truth.json.");
-                } else {
-                    setSaveError(result.error || 'Failed to save');
-                }
             }
         } catch (error) {
-            console.error('Save error:', error);
+            console.error('Local save error:', error);
+            setSaveError(error.message);
+        }
+    };
+
+    const handlePublishToDisk = async () => {
+        try {
+            setSaveError(null);
+            
+            // This specifically hits the Node.js backend to update config_truth.json
+            const experienceId = window.location.pathname.split('/').pop() || '1';
+            const activeCompanyId = import.meta.env.VITE_ACTIVE_COMPANY || 'msc-cruises';
+            
+            const response = await fetch('/api/save-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    companyId: activeCompanyId,
+                    experienceId,
+                    objects: objects.map(obj => ({
+                        id: obj.id,
+                        pos: obj.pos,
+                        rot: obj.rot
+                    }))
+                })
+            });
+            const result = await response.json();
+            if (response.ok) {
+                setPublishSaved(true);
+                setTimeout(() => setPublishSaved(false), 3000);
+                alert("🚀 READY FOR GITHUB DESKTOP!\nYour coordinates have been written to config_truth.json.");
+            } else {
+                setSaveError(result.error || 'Failed to save to project files');
+            }
+        } catch (error) {
+            console.error('Publish error:', error);
             setSaveError(error.message);
         }
     };
@@ -409,15 +405,7 @@ function SceneEditor({
                 </div>
                 
                 <button
-                    onClick={async () => {
-                        try {
-                            if (onSaveToContext) {
-                                await onSaveToContext(objects);
-                                setLocalSaved(true);
-                                setTimeout(() => setLocalSaved(false), 3000);
-                            }
-                        } catch (e) { setSaveError(e.message); }
-                    }}
+                    onClick={handleLocalSave}
                     style={{
                         padding: '16px',
                         background: localSaved ? '#00c853' : 'rgba(255, 215, 0, 0.1)',
@@ -436,7 +424,7 @@ function SceneEditor({
                 </button>
 
                 <button
-                    onClick={handleSave}
+                    onClick={handlePublishToDisk}
                     style={{
                         padding: '16px',
                         background: publishSaved ? '#7000FF' : 'linear-gradient(to right, #7000FF, #00e5ff)',

@@ -180,9 +180,9 @@
                     "name": "Thermal Bath",
                     "type": "towel",
                     "position": [
-                        -2.19837254118898,
-                        0.05427330252502871,
-                        -4.047660271759022
+                        -1.193046714153477,
+                        -0.4419273753519216,
+                        1.023128780046892
                     ],
                     "media": "/assets/spa_grab.png",
                     "text": "Relax in our celestial thermal waters.",
@@ -193,9 +193,9 @@
                         "description": "A 5-minute relaxing soundscape from the Aurea Spa."
                     },
                     "rotation": [
-                        0,
-                        0,
-                        0
+                        -128.4055088449596,
+                        54.11003042182592,
+                        134.37814645361814
                     ]
                 },
                 {
@@ -203,23 +203,33 @@
                     "name": "Gym Session",
                     "type": "gymball",
                     "position": [
-                        1.5,
-                        1.2,
-                        -2
+                        -2.9093257151541803,
+                        -0.3566698781871752,
+                        -0.6354813007036985
                     ],
                     "media": "/assets/spa_grab.png",
-                    "text": "Energize in our state-of-the-art fitness center."
+                    "text": "Energize in our state-of-the-art fitness center.",
+                    "rotation": [
+                        -128.4055088449596,
+                        54.11003042182592,
+                        134.37814645361814
+                    ]
                 }
             ],
             "coin": {
                 "id": "special-2",
                 "name": "Aurea Coin",
                 "position": [
-                    0,
-                    1.2,
-                    -1.5
+                    -1.0726981368192419,
+                    0.3029436132751271,
+                    -1.020097462758667
                 ],
-                "media": "/textures/coin.png"
+                "media": "/textures/coin.png",
+                "rotation": [
+                    -128.4055088449596,
+                    54.11003042182592,
+                    134.37814645361814
+                ]
             },
             "hotspots": [
                 {
@@ -249,14 +259,14 @@
             ],
             "extraObjects": [],
             "startPos": [
-                -2.8362595063651423,
-                0.46523980785066704,
-                -1.2182134709428472
+                0.33565823953314977,
+                0.0538806787580996,
+                -0.4255612610598491
             ],
             "startRot": [
-                0.13945813658850809,
-                -1.0249071449363734,
-                0.1195274345377135
+                -128.4055088449596,
+                54.11003042182592,
+                134.37814645361814
             ]
         },
         "3": {

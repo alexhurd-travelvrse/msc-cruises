@@ -75,7 +75,7 @@ const ExperiencePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { resetProgress, updateChallenge, addToBackpack, getTotalCoins, influencer, backpack, trackTime, getTopInterest, itemsViewed, setItemsViewed } = useGame();
-    const { publicConfig, publicInfluencer, resetToTruth } = useInfluencer();
+    const { publicConfig, publicInfluencer, resetToTruth, saveConfig } = useInfluencer();
     const curatorName = publicInfluencer?.name || 'Alex';
     const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "MSC WORLD EUROPA";
     const brandingSubtitle = publicConfig?.home?.subtitle || "Virtual Cruise Experience";
@@ -351,6 +351,47 @@ const ExperiencePage = () => {
                             objects={editorObjects} 
                             isEditorMode={isEditorMode}
                             setIsEditorMode={setIsEditorMode}
+                            onResetToTruth={resetToTruth}
+                            onDownloadConfig={() => {
+                                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(publicConfig, null, 4));
+                                const downloadAnchorNode = document.createElement('a');
+                                downloadAnchorNode.setAttribute("href", dataStr);
+                                downloadAnchorNode.setAttribute("download", `msc_config_exp_${id}.json`);
+                                document.body.appendChild(downloadAnchorNode);
+                                downloadAnchorNode.click();
+                                downloadAnchorNode.remove();
+                            }}
+                            onSaveToContext={async (objs) => {
+                                // Merge editor objects into the current public config
+                                const newConfig = { ...publicConfig };
+                                if (!newConfig.experiences) newConfig.experiences = {};
+                                if (!newConfig.experiences[id]) newConfig.experiences[id] = { items: [] };
+                                
+                                const exp = newConfig.experiences[id];
+                                objs.forEach(obj => {
+                                    if (obj.id === 'camera') {
+                                        exp.startPos = obj.pos;
+                                        exp.startRot = obj.rot;
+                                    } else if (obj.id === 'coin') {
+                                        if (!exp.coin) exp.coin = {};
+                                        exp.coin.position = obj.pos;
+                                        exp.coin.rotation = obj.rot;
+                                    } else {
+                                        // Standard items
+                                        if (!exp.items) exp.items = [];
+                                        const idx = exp.items.findIndex(i => i.id === obj.id);
+                                        if (idx !== -1) {
+                                            exp.items[idx].position = obj.pos;
+                                            exp.items[idx].rotation = obj.rot;
+                                        }
+                                    }
+                                });
+                                
+                                const companyId = publicConfig?.id || 'msc-cruises';
+                                await saveConfig(null, companyId, newConfig);
+                                console.log("[ExperiencePage] Saved 3D Editor configuration to local Context");
+                                return { success: true };
+                            }}
                         />
                     </div>
                 </div>
