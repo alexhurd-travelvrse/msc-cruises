@@ -181,13 +181,34 @@ const ExperiencePage = () => {
 
             if (name === 'Coin' || name === 'msc-medal' || name === 'SovereignCoin') {
                 const dynamicCoin = publicConfig?.coins?.[id];
-                setModal({
+                
+                // USER REQUEST: Skip modal and collect immediately
+                const itemToAdd = {
+                    id: `medal-${id}`,
                     title: dynamicCoin?.title || 'Sovereign Reward',
-                    description: dynamicCoin?.text || 'You found a secret clue!',
+                    description: dynamicCoin?.text || 'Reward collected',
                     image: dynamicCoin?.image || '/textures/coin.png',
                     type: 'medal',
-                    id: `medal-${id}`
-                });
+                    icon: '🏅',
+                    collectible: true
+                };
+                
+                addToBackpack(itemToAdd);
+                updateChallenge(`exp-${id}`, { coinFound: true });
+                window.dispatchEvent(new CustomEvent('trigger-confetti'));
+                
+                setActiveLiveOffer({ baseTitle: "Elite Reward Unlocked!", icon: '🏅', discount: 0 });
+                setBackpackUpdated(true);
+                setTimeout(() => setBackpackUpdated(false), 2000);
+                setTimeout(() => setActiveLiveOffer(null), 3000);
+
+                // Auto-transition
+                setTimeout(() => {
+                    const nextId = parseInt(id) + 1;
+                    if (nextId <= 5) navigate(`/experience/${nextId}`);
+                    else navigate('/completion');
+                }, 2000);
+
             } else if (name === 'TVControl' || name === 'ActivityObject' || name === 'BackpackItem' || name === 'RacingCarSimulator' || name === 'YachtClubStar') {
                 const items = roomConfig?.items || [];
                 // If BackpackItem provides itemIndex, use it, otherwise fall back to name-based logic

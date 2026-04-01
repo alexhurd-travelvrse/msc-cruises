@@ -216,49 +216,6 @@ const ConfigDashboard = () => {
                 ))}
             </div>
 
-            {/* Coin Clues Configuration */}
-            <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', marginBottom: '2rem' }}>
-                <h3 style={{ marginTop: 0, marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '0.5rem' }}>Speakeasy Coin Clues</h3>
-
-                {formData.coins && Object.keys(formData.coins).map((key) => (
-                    <div key={key} style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #eee', borderRadius: '4px' }}>
-                        <h4 style={{ marginTop: 0 }}>{key === '5' ? 'Final Puzzle (Exp 5)' : `Experience ${key} Coin`}</h4>
-
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Title</label>
-                            <input
-                                type="text"
-                                value={formData.coins[key].title}
-                                onChange={(e) => handleChange('coins', key, e.target.value, 'title')}
-                                disabled={isReadOnly}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Clue Text / Description</label>
-                            <textarea
-                                value={formData.coins[key].text}
-                                onChange={(e) => handleChange('coins', key, e.target.value, 'text')}
-                                disabled={isReadOnly}
-                                rows={2}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Image URL</label>
-                            <input
-                                type="text"
-                                value={formData.coins[key].image}
-                                onChange={(e) => handleChange('coins', key, e.target.value, 'image')}
-                                disabled={isReadOnly}
-                                style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-                            />
-                        </div>
-                    </div>
-                ))}
-            </div>
 
             {/* Experience Items Configuration */}
             <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', marginBottom: '2rem' }}>
