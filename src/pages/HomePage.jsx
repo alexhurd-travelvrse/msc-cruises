@@ -274,7 +274,19 @@ const HomePage = () => {
                 </button>
             </div>
 
-            <div style={{ position: 'fixed', bottom: '1rem', right: '1rem', opacity: 0.7, display: 'flex', gap: '1rem', flexWrap: 'wrap', zIndex: 50 }}>
+            <div style={{ position: 'fixed', bottom: '1rem', right: '1rem', opacity: 0.7, display: 'flex', gap: '1rem', flexWrap: 'wrap', zIndex: 100 }}>
+                <span 
+                    onClick={() => {
+                        if (window.confirm("ARE YOU SURE? THIS WILL CLEAR ALL PROGRESS AND CACHED CONFIGURATIONS.")) {
+                            localStorage.clear();
+                            window.location.reload();
+                        }
+                    }} 
+                    style={{ color: '#ff4444', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                >
+                    Reset Session
+                </span>
+                <span style={{ color: 'white' }}>|</span>
                 <Link to="/admin/login" style={{ color: 'white', textDecoration: 'none', fontSize: '0.8rem' }}>Influencer Sign-in</Link>
                 <span style={{ color: 'white' }}>|</span>
                 <Link to="/admin/destination-login" style={{ color: 'white', textDecoration: 'none', fontSize: '0.8rem' }}>Destination Sign-in</Link>
