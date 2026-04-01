@@ -13,8 +13,7 @@ import StartOverlay from '../components/StartOverlay';
 import AudioController from '../components/AudioController';
 import { offerDatabase, calculateLiveOfferDiscount } from '../data/offerDatabase';
 
-const YouTubePlayer = ({ url }) => {
-    // Robust YouTube ID extraction
+const YouTubePlayer = ({ url, previewImage }) => {
     const getYouTubeId = (url) => {
         if (!url) return null;
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|youtube.com\/shorts\/)([^#&?]*).*/;
@@ -23,26 +22,51 @@ const YouTubePlayer = ({ url }) => {
     };
 
     const videoId = getYouTubeId(url);
-    
-    // If it's not a YouTube ID, it might be a direct MP4/video file
-    if (!videoId) {
-        return (
-            <div className="video-container">
-                <video src={url} autoPlay loop muted playsInline style={{ width: '100%', borderRadius: '12px' }} />
-            </div>
-        );
-    }
 
     return (
-        <div className="video-container" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '12px', background: '#000' }}>
-            <iframe
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0&modestbranding=1&controls=1&origin=${window.location.origin}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-            ></iframe>
+        <div 
+            onClick={() => window.open(url, '_blank')}
+            className="video-click-to-play"
+            style={{ 
+                width: '100%', 
+                height: '200px', 
+                borderRadius: '12px', 
+                background: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${previewImage || '/assets/balcony_grab.png'})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+                border: '1px solid rgba(255,215,0,0.3)'
+            }}
+        >
+            <div style={{ 
+                width: '60px', 
+                height: '60px', 
+                background: '#FFD700', 
+                borderRadius: '50%', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                boxShadow: '0 0 20px rgba(255,215,0,0.5)',
+                fontSize: '1.5rem'
+            }}>
+                ▶
+            </div>
+            <div style={{
+                position: 'absolute',
+                bottom: '10px',
+                right: '10px',
+                fontSize: '0.7rem',
+                color: '#fff',
+                background: 'rgba(0,0,0,0.6)',
+                padding: '4px 8px',
+                borderRadius: '4px'
+            }}>
+                OPEN ON YOUTUBE ↗
+            </div>
         </div>
     );
 };
@@ -377,7 +401,7 @@ const ExperiencePage = () => {
                         <div className="modal-header-accent" style={{ background: modal.type === 'medal' ? 'linear-gradient(90deg, transparent, #FFD700, transparent)' : `linear-gradient(90deg, transparent, ${currentTheme.primary}, transparent)` }}></div>
                         
                         {modal.video ? (
-                            <YouTubePlayer url={modal.video} />
+                            <YouTubePlayer url={modal.video} previewImage={modal.image} />
                         ) : modal.image && (
                             <div className="modal-media-container">
                                 <img src={modal.image} className="modal-img" alt={modal.title} />
