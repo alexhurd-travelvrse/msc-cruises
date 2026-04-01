@@ -288,30 +288,45 @@
                         "title": "Signature Drinks Recipe",
                         "url": "/assets/recipe_placeholder.pdf",
                         "description": "Learn how to make our signature cocktails at home."
-                    }
+                    },
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
                 },
                 {
                     "id": "3-2",
                     "name": "Fresh Margarita",
                     "type": "wineglass",
                     "position": [
-                        -0.374,
-                        0.363,
-                        -0.841
+                        -1.6811511276260984,
+                        -0.32622993282366425,
+                        -2.3920515721114604
                     ],
                     "media": "/assets/hola_grab.png",
-                    "text": "Hand-crafted at our tequila bar."
+                    "text": "Hand-crafted at our tequila bar.",
+                    "rotation": [
+                        -13.407212406061264,
+                        -3.7815214478634336,
+                        -0.9167324722093172
+                    ]
                 }
             ],
             "coin": {
                 "id": "special-3",
                 "name": "Hola Coin",
                 "position": [
-                    0,
-                    1.2,
-                    -1.5
+                    -0.4308480702997347,
+                    -0.24340415961599923,
+                    -1.9564680054711399
                 ],
-                "media": "/textures/coin.png"
+                "media": "/textures/coin.png",
+                "rotation": [
+                    -13.407212406061264,
+                    -3.7815214478634336,
+                    -0.9167324722093172
+                ]
             },
             "hotspots": [
                 {
@@ -339,7 +354,17 @@
                     "label": "Kitchen View"
                 }
             ],
-            "extraObjects": []
+            "extraObjects": [],
+            "startPos": [
+                -0.7659823124413823,
+                -0.15667959868961603,
+                -1.6141095611272451
+            ],
+            "startRot": [
+                -13.407212406061264,
+                -3.7815214478634336,
+                -0.9167324722093172
+            ]
         },
         "4": {
             "name": "MSC Formula Racer",
