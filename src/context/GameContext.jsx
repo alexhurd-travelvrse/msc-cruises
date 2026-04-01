@@ -9,15 +9,51 @@ export const GameProvider = ({ children }) => {
     // User Preferences from Teleport Page
     const [preferences, setPreferences] = useState({});
 
-    // Backpack: Array of activity objects { id, title, type, description, image }
+    // Storage Keys
+    const STORAGE_KEY = 'msc_backpack_v16';
+    const VIEWED_KEY = 'msc_itemsViewed_v16';
+    const CHALLENGE_KEY = 'msc_challenges_v16';
+
     // Initialize from localStorage to persist across refreshes
     const [backpack, setBackpack] = useState(() => {
         try {
-            const saved = localStorage.getItem('gameBackpack');
+            const saved = localStorage.getItem(STORAGE_KEY);
             return saved ? JSON.parse(saved) : [];
         } catch (e) {
-            console.error('[GameContext] Failed to load backpack from localStorage:', e);
+            console.error('[GameContext] Failed to load backpack:', e);
             return [];
+        }
+    });
+
+    const [itemsViewed, setItemsViewed] = useState(() => {
+        try {
+            const saved = localStorage.getItem(VIEWED_KEY);
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            return [];
+        }
+    });
+
+    const [challenges, setChallenges] = useState(() => {
+        try {
+            const saved = localStorage.getItem(CHALLENGE_KEY);
+            return saved ? JSON.parse(saved) : {
+                'exp-1': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-2': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-3': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-4': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-5': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-6': { completed: false },
+            };
+        } catch (e) {
+            return {
+                'exp-1': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-2': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-3': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-4': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-5': { coinFound: false, objectsFound: 0, completed: false },
+                'exp-6': { completed: false },
+            };
         }
     });
 
@@ -34,14 +70,9 @@ export const GameProvider = ({ children }) => {
 
     // Interest Insights: Qualitative weightings based on behavior
     const [basePersonaScores, setBasePersonaScores] = useState({
-        'Wellness Voyager': 0,
-        'Culture Seeker': 0,
-        'Family Planner': 0,
-        'Work from Sea': 0,
-        'Social Foodie': 0,
-        'The Alchemist': 0,
-        'Social Storyteller': 0,
-        'The Sovereign': 0
+        'Wellness Voyager': 0, 'Culture Seeker': 0, 'Family Planner': 0,
+        'Work from Sea': 0, 'Social Foodie': 0, 'The Alchemist': 0,
+        'Social Storyteller': 0, 'The Sovereign': 0
     });
 
     const [visitedScenes, setVisitedScenes] = useState([]);
@@ -77,22 +108,23 @@ export const GameProvider = ({ children }) => {
         }
 
         console.log('[GameContext] Recalculated interestInsights:', scores);
-
         return scores;
     }, [basePersonaScores, publicConfig, publicInfluencer, travelStatus]);
 
     const [timeSpentSeconds, setTimeSpentSeconds] = useState({});
 
-    // Challenges: Track progress in each experience
-    // Structure: { 'experienceId': { coinFound: false, objectsFound: 0, completed: false } }
-    const [challenges, setChallenges] = useState({
-        'exp-1': { coinFound: false, objectsFound: 0, completed: false },
-        'exp-2': { coinFound: false, objectsFound: 0, completed: false },
-        'exp-3': { coinFound: false, objectsFound: 0, completed: false },
-        'exp-4': { coinFound: false, objectsFound: 0, completed: false },
-        'exp-5': { coinFound: false, objectsFound: 0, completed: false },
-        'exp-6': { completed: false }, // Loyalty challenge
-    });
+    // Persist states to localStorage
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(backpack));
+    }, [backpack]);
+
+    useEffect(() => {
+        localStorage.setItem(VIEWED_KEY, JSON.stringify(itemsViewed));
+    }, [itemsViewed]);
+
+    useEffect(() => {
+        localStorage.setItem(CHALLENGE_KEY, JSON.stringify(challenges));
+    }, [challenges]);
 
     // Current active experience for the 3D view
     const [currentExperience, setCurrentExperience] = useState(null);
@@ -122,7 +154,6 @@ export const GameProvider = ({ children }) => {
                 else weight = pWeights.last || 5;
 
                 if (weight > 0) {
-                    // Have to use setBasePersonaScores directly here to avoid dependency loop with updateInterest
                     setBasePersonaScores(scores => ({
                         ...scores,
                         [personaLayer]: (scores[personaLayer] || 0) + weight
@@ -138,7 +169,7 @@ export const GameProvider = ({ children }) => {
         id: '1',
         name: 'Alex Hurd',
         handle: '@alexhurd',
-        image: '/assets/Alexhurd1.jpg', // Alex Hurd photo
+        image: '/assets/Alexhurd1.jpg', 
         bio: 'Travel enthusiast and content creator showcasing the best of the world.',
         themeColor: '#0070f3'
     });
@@ -161,16 +192,6 @@ export const GameProvider = ({ children }) => {
         audio.play().catch(e => console.log("Audio play blocked by browser policy"));
     }, []);
 
-    // Persist backpack to localStorage whenever it changes
-    React.useEffect(() => {
-        try {
-            localStorage.setItem('gameBackpack', JSON.stringify(backpack));
-            console.log('%c[GameContext] Saved backpack to localStorage:', 'color: #00e5ff;', backpack.length, 'items');
-        } catch (e) {
-            console.error('[GameContext] Failed to save backpack to localStorage:', e);
-        }
-    }, [backpack]);
-
     const updateInterest = React.useCallback((category, weight) => {
         if (!category) return;
         setBasePersonaScores(prev => ({
@@ -181,15 +202,12 @@ export const GameProvider = ({ children }) => {
 
     const trackTime = React.useCallback((category, seconds) => {
         if (!category) return;
-        setTimeSpentSeconds(prev => ({
-            ...prev,
-            [category]: (prev[category] || 0) + seconds
-        }));
+        setTimeSpentSeconds(prev => ({ ...prev, [category]: (prev[category] || 0) + seconds }));
 
         let weight = 0;
-        if (seconds > 60) weight = 20; // High Engagement
-        else if (seconds < 15) weight = -10; // Low Engagement
-        else weight = Math.floor(seconds / 10); // Normal fallback
+        if (seconds > 60) weight = 20;
+        else if (seconds < 15) weight = -10;
+        else weight = Math.floor(seconds / 10);
 
         updateInterest(category, weight);
     }, [updateInterest]);
@@ -197,36 +215,25 @@ export const GameProvider = ({ children }) => {
     const addToBackpack = React.useCallback((item) => {
         console.log('%c[GameContext] Adding to backpack:', 'color: #00ff00; font-weight: bold;', item);
         setBackpack(prev => {
-            if (prev.find(i => i.id === item.id)) {
-                console.log('%c[GameContext] Item already in backpack, skipping:', 'color: #ff9800;', item.id);
-                return prev;
-            }
+            if (prev.find(i => i.id === item.id)) return prev;
             triggerSound('backpack');
 
             const mapping = {
                 'Spa Pass': { persona: 'Wellness Voyager', weight: 40 },
                 'Wi-Fi Package': { persona: 'Work from Sea', weight: 40 },
                 'Excursion Guide': { persona: 'Culture Seeker', weight: 40 },
-                'Thermal Spa Haven': { persona: 'Wellness Voyager', weight: 10 },
-                'Luxury': { persona: 'The Sovereign', weight: 10 },
                 'Yacht Club Access': { persona: 'The Sovereign', weight: 20 },
                 'Hola Dining Spot': { persona: 'Social Foodie', weight: 10 },
-                'Kids Activities': { persona: 'Family Planner', weight: 10 },
-                'Kids Arcade Zone': { persona: 'Family Planner', weight: 20 },
-                'Culture Challenge Spot': { persona: 'Culture Seeker', weight: 10 },
-                'Fine Wine': { persona: 'The Alchemist', weight: 10 },
-                'Speakeasy Coin': { persona: 'Social Storyteller', weight: 15 }
+                'Kids Arcade Zone': { persona: 'Family Planner', weight: 20 }
             };
 
             const match = mapping[item.name] || mapping[item.title];
             let category = match ? match.persona : 'Culture Seeker';
             let weight = match ? match.weight : 5;
 
-            // Handle Collectible specific weighting and sound
             if (item.collectible) {
-                weight += 50; // Significant bonus for collectibles
+                weight += 50;
                 if (item.collectible.type === 'mp3' && item.collectible.url) {
-                    // Play the collectible sound if it's an MP3
                     const audio = new Audio(item.collectible.url);
                     audio.volume = 0.5;
                     audio.play().catch(e => console.log("Audio play blocked"));
@@ -234,10 +241,7 @@ export const GameProvider = ({ children }) => {
             }
 
             updateInterest(category, weight);
-
-            const newBackpack = [...prev, item];
-            console.log('%c[GameContext] New backpack state:', 'color: #00e5ff;', newBackpack);
-            return newBackpack;
+            return [...prev, item];
         });
         setFavourites(prev => prev.includes(item.id) ? prev : [...prev, item.id]);
     }, [triggerSound, updateInterest]);
@@ -252,12 +256,8 @@ export const GameProvider = ({ children }) => {
     }, []);
 
     const updateLoyaltyPrograms = React.useCallback((program, value) => {
-        setLoyaltyPrograms(prev => ({
-            ...prev,
-            [program]: value
-        }));
+        setLoyaltyPrograms(prev => ({ ...prev, [program]: value }));
     }, []);
-
 
     const toggleFavourite = React.useCallback((id) => {
         setFavourites(prev => {
@@ -274,14 +274,11 @@ export const GameProvider = ({ children }) => {
         setChallenges(prev => {
             const newState = { ...prev };
             const current = newState[expId] || { coinFound: false, objectsFound: 0, completed: false };
-
-            // Check if coin was just found
             if (update.coinFound && !current.coinFound) {
                 triggerSound('coin');
                 updateInterest('The Sovereign', 10);
                 return { ...newState, [expId]: { ...current, ...update, completed: true } };
             }
-
             return { ...newState, [expId]: { ...current, ...update } };
         });
     }, [triggerSound, updateInterest]);
@@ -291,7 +288,8 @@ export const GameProvider = ({ children }) => {
     }, [challenges]);
 
     const getTopInterest = React.useCallback(() => {
-        return Object.entries(interestInsights).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+        const scores = interestInsights;
+        return Object.entries(scores).reduce((a, b) => a[1] > b[1] ? a : b)[0];
     }, [interestInsights]);
 
     const isAllComplete = React.useCallback(() => {
@@ -299,6 +297,8 @@ export const GameProvider = ({ children }) => {
     }, [getTotalCoins]);
 
     const resetProgress = React.useCallback(() => {
+        console.log("%c[GameContext] PERFORMING ROBUST PROGRESS RESET", "color: #ff0000; font-weight: bold;");
+        
         setBackpack([]);
         setFavourites([]);
         setVisitedScenes([]);
@@ -306,6 +306,10 @@ export const GameProvider = ({ children }) => {
             'Wellness Voyager': 0, 'Culture Seeker': 0, 'Family Planner': 0,
             'Work from Sea': 0, 'Social Foodie': 0, 'The Alchemist': 0,
             'Social Storyteller': 0, 'The Sovereign': 0
+        });
+        setTravelStatus({
+            bookingDates: null, isBooked: false, partySize: 1,
+            hasFirstTimeBadge: false, hasSpecialOccasionBadge: false
         });
         setTimeSpentSeconds({});
         setChallenges({
@@ -318,11 +322,23 @@ export const GameProvider = ({ children }) => {
         });
         setLoyaltyPrograms({ msc: false, accor: false, marriott: false, virgin: false });
         setDismissedItems([]);
-        localStorage.removeItem('gameBackpack');
-        console.log("%c[GameContext] PROGRESS RESET", "color: #ff0000; font-weight: bold;");
+        setItemsViewed([]);
+        
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(VIEWED_KEY);
+        localStorage.removeItem(CHALLENGE_KEY);
+        localStorage.removeItem('gameBackpack'); // Legacy
+        
+        // Robustness: Clear configuration cache to force revert to config_truth.json
+        localStorage.removeItem('influencerConfigs_v16');
+        localStorage.clear(); 
+        
+        window.dispatchEvent(new CustomEvent('msc-progress-reset'));
+        
+        // Return to start
+        window.location.href = '/experience/1?reset=true';
     }, []);
 
-    // Global start state to ensure overlay only shows once
     const [hasStarted, setHasStarted] = useState(false);
 
     return (
@@ -342,6 +358,7 @@ export const GameProvider = ({ children }) => {
             dismissedItems, dismissItem,
             influencer, setInfluencer,
             loyaltyPrograms, updateLoyaltyPrograms,
+            itemsViewed, setItemsViewed,
             resetProgress
         }}>
             {children}

@@ -5,6 +5,7 @@ import { useInfluencer } from '../context/InfluencerContext';
 const FavouritesOverlay = ({ onClose }) => {
     const { interestInsights, influencer, backpack, favourites, toggleFavourite, travelStatus, resetProgress } = useGame();
     const { publicConfig, publicInfluencer } = useInfluencer();
+    const [showConfirmReset, setShowConfirmReset] = React.useState(false);
     const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "VIRTUAL EXPERIENCE";
 
     React.useEffect(() => {
@@ -183,23 +184,50 @@ const FavouritesOverlay = ({ onClose }) => {
 
                     {/* Reset Progress Button */}
                     <div style={{ marginTop: '3rem', padding: '1rem', textAlign: 'center' }}>
-                        <button 
-                            onClick={() => {
-                                if (window.confirm("Are you sure you want to restart your voyage? This will clear your backpack and profile.")) {
-                                    resetProgress();
-                                    onClose();
-                                }
-                            }}
-                            className="btn-glass"
-                            style={{ 
-                                color: '#ff4444', 
-                                borderColor: 'rgba(255, 68, 68, 0.3)',
-                                fontSize: '0.8rem',
-                                padding: '10px 20px'
-                            }}
-                        >
-                            RESTART VOYAGE (CLEAR PROGRESS)
-                        </button>
+                        {!showConfirmReset ? (
+                            <button 
+                                onClick={() => setShowConfirmReset(true)}
+                                className="btn-glass"
+                                style={{ 
+                                    color: '#ff4444', 
+                                    borderColor: 'rgba(255, 68, 68, 0.3)',
+                                    fontSize: '0.8rem',
+                                    padding: '10px 20px'
+                                }}
+                            >
+                                RESTART VOYAGE (CLEAR PROGRESS)
+                            </button>
+                        ) : (
+                            <div className="animate-fade-in" style={{ 
+                                background: 'rgba(255, 68, 68, 0.1)', 
+                                padding: '15px', 
+                                borderRadius: '8px',
+                                border: '1px solid rgba(255, 68, 68, 0.3)'
+                            }}>
+                                <p style={{ margin: '0 0 10px 0', fontSize: '0.8rem', color: '#ff4444', fontWeight: 'bold' }}>
+                                    CONFIRM RESTART? ALL PROGRESS WILL BE LOST.
+                                </p>
+                                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                                    <button 
+                                        onClick={() => {
+                                            resetProgress();
+                                            onClose();
+                                        }}
+                                        className="btn-glass"
+                                        style={{ color: '#ff4444', borderColor: '#ff4444', padding: '5px 15px' }}
+                                    >
+                                        YES, RESET
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowConfirmReset(false)}
+                                        className="btn-glass"
+                                        style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.3)', padding: '5px 15px' }}
+                                    >
+                                        CANCEL
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

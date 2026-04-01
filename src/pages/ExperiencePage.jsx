@@ -47,7 +47,7 @@ const YouTubePlayer = ({ url }) => {
 const ExperiencePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { updateChallenge, addToBackpack, getTotalCoins, influencer, backpack, trackTime, getTopInterest } = useGame();
+    const { resetProgress, updateChallenge, addToBackpack, getTotalCoins, influencer, backpack, trackTime, getTopInterest, itemsViewed, setItemsViewed } = useGame();
     const { publicConfig, publicInfluencer, resetToTruth } = useInfluencer();
     const curatorName = publicInfluencer?.name || 'Alex';
     const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "MSC WORLD EUROPA";
@@ -61,7 +61,6 @@ const ExperiencePage = () => {
     const [modal, setModal] = useState(null);
     const [showFavourites, setShowFavourites] = useState(false);
     const [backpackUpdated, setBackpackUpdated] = useState(false);
-    const [itemsViewed, setItemsViewed] = useState([]);
     const [isStarted, setIsStarted] = useState(false);
     const [isSplatLoaded, setIsSplatLoaded] = useState(false);
     const [isItemsAllowed, setIsItemsAllowed] = useState(false);
@@ -76,13 +75,23 @@ const ExperiencePage = () => {
     const [nextRoomReady, setNextRoomReady] = useState(false);
     const startTimeRef = useRef(Date.now());
 
+    // URL-driven state reset for robustness
+    useEffect(() => {
+        if (queryParams.get('reset') === 'true') {
+            console.log('%c[ExperiencePage] Reset cleanup from URL parameter', 'color: #ff0000; font-weight: bold;');
+            // Progress was already cleared by the function that redirected here
+            
+            // Clean URL after reset to prevent loop
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location.search, navigate]);
+
     // Immediate state reset if room ID changes during render
     if (id !== lastId) {
         setIsStarted(false);
         setIsSplatLoaded(false);
         setIsItemsAllowed(false);
         setIsOrbAllowed(false);
-        setItemsViewed([]);
         setModal(null);
         setNextRoomProgress(0);
         setNextRoomReady(false);
@@ -116,9 +125,18 @@ const ExperiencePage = () => {
 
     // Reset room items when changing experiences
     useEffect(() => {
-        setItemsViewed([]);
         setModal(null);
     }, [id]);
+
+    useEffect(() => {
+        const handleProgressReset = () => {
+            console.log('[ExperiencePage] Global progress reset received - clearing itemsViewed');
+            setItemsViewed([]);
+            setIsOrbAllowed(false);
+        };
+        window.addEventListener('msc-progress-reset', handleProgressReset);
+        return () => window.removeEventListener('msc-progress-reset', handleProgressReset);
+    }, []);
 
     useEffect(() => {
         const handleSplatLoaded = () => {
@@ -138,6 +156,21 @@ const ExperiencePage = () => {
         }
     }, [isSplatLoaded]);
 
+    // Standardized check for coin reveal
+    useEffect(() => {
+        const roomItems = publicConfig?.experiences?.[id]?.items || [];
+        const viewedInThisRoom = roomItems.filter(item => itemsViewed.includes(item.id)).length;
+        
+        console.log(`[ExperiencePage] Room ${id} Progress: ${viewedInThisRoom}/${roomItems.length}`, { itemsViewed });
+        
+        if (roomItems.length > 0 && viewedInThisRoom >= roomItems.length) {
+            console.log("[ExperiencePage] Room complete - revealing coin/medal");
+            setIsOrbAllowed(true);
+        } else {
+            setIsOrbAllowed(false);
+        }
+    }, [id, itemsViewed, publicConfig]);
+
     // Handle interactions
     useEffect(() => {
         const handleObjectClick = (e) => {
@@ -155,10 +188,11 @@ const ExperiencePage = () => {
                     type: 'medal',
                     id: `medal-${id}`
                 });
-            } else if (name === 'TVControl' || name === 'ActivityObject' || name === 'RacingCarSimulator' || name === 'YachtClubStar') {
+            } else if (name === 'TVControl' || name === 'ActivityObject' || name === 'BackpackItem' || name === 'RacingCarSimulator' || name === 'YachtClubStar') {
                 const items = roomConfig?.items || [];
-                const itemIndex = (name === 'TVControl') ? 0 : 1;
-                const dynamicItem = items[itemIndex] || items[0];
+                // If BackpackItem provides itemIndex, use it, otherwise fall back to name-based logic
+                const idx = (e.detail.itemIndex !== undefined) ? e.detail.itemIndex : ((name === 'TVControl') ? 0 : 1);
+                const dynamicItem = items[idx] || items[0];
                 
                 if (dynamicItem) {
                     setModal({
@@ -279,7 +313,14 @@ const ExperiencePage = () => {
 
 
             <div className="experience-canvas-layer">
-                <ExperienceCanvas experienceId={id} isInteractionActive={showFavourites || !!modal || isEditorMode} isStarted={isStarted} itemsViewed={itemsViewed} />
+                <ExperienceCanvas 
+                    experienceId={id} 
+                    isInteractionActive={showFavourites || !!modal || isEditorMode} 
+                    isStarted={isStarted} 
+                    isItemsAllowed={isItemsAllowed}
+                    isOrbAllowed={isOrbAllowed}
+                    itemsViewed={itemsViewed} 
+                />
             </div>
 
             <div className="hud-overlay">

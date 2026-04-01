@@ -29,68 +29,57 @@ const sceneEditorPlugin = () => ({
       req.on('end', () => {
         try {
           const parsed = JSON.parse(body);
-          let { companyId, config } = parsed;
+          const truthPath = path.resolve(__dirname, './src/data/config_truth.json');
+          let masterTruth = {};
+          if (fs.existsSync(truthPath)) masterTruth = JSON.parse(fs.readFileSync(truthPath, 'utf-8'));
 
-          // Legacy support for direct scene editor saves
-          if (!companyId && parsed.experienceId && parsed.objects) {
-             const truthPath = path.resolve(__dirname, './src/data/config_truth.json');
-             let masterTruth = {};
-             if (fs.existsSync(truthPath)) masterTruth = JSON.parse(fs.readFileSync(truthPath, 'utf-8'));
-             
-             companyId = masterTruth['msc-cruises'] ? 'msc-cruises' : (Object.keys(masterTruth)[0] || 'msc-cruises');
-             if (masterTruth[companyId] && masterTruth[companyId].experiences && masterTruth[companyId].experiences[parsed.experienceId]) {
-                 const exp = masterTruth[companyId].experiences[parsed.experienceId];
+          // Support for direct scene editor saves (no nesting)
+          if (parsed.experienceId && parsed.objects) {
+             const expId = parsed.experienceId;
+             if (masterTruth.experiences && masterTruth.experiences[expId]) {
+                 const exp = masterTruth.experiences[expId];
                  parsed.objects.forEach(obj => {
-                     if (obj.id === 'camera') {
+                     if (obj.id === 'camera' || obj.name === 'Initial Camera Position') {
                          exp.startPos = obj.pos;
                          exp.startRot = obj.rot;
-                     } else if (obj.id === 'coin' || obj.id === (exp.coin && exp.coin.id)) {
+                     } else if (obj.id === 'coin' || (exp.coin && obj.id === exp.coin.id) || obj.id.startsWith('special-')) {
                          if (!exp.coin) exp.coin = {};
                          exp.coin.position = obj.pos;
                          exp.coin.rotation = obj.rot;
-                     } else if (obj.id === 'activity') {
-                         const idx = exp.items ? exp.items.findIndex(item => item.type === 'bell' || item.type === 'activity' || item.id === '1-1' || item.id === `${parsed.experienceId}-1`) : -1;
-                         if (idx !== -1) {
-                             exp.items[idx].position = obj.pos;
-                             exp.items[idx].rotation = obj.rot;
-                         } else if (exp.items && exp.items.length > 0) {
-                             exp.items[0].position = obj.pos;
-                             exp.items[0].rotation = obj.rot;
+                     } else if (obj.id === 'activity' || obj.id === 'remote' || obj.id.match(/^\d+-\d+$/)) {
+                         // Find item in items array by id or default index
+                         const itemIdx = exp.items ? exp.items.findIndex(i => i.id === obj.id) : -1;
+                         if (itemIdx !== -1) {
+                             exp.items[itemIdx].position = obj.pos;
+                             exp.items[itemIdx].rotation = obj.rot;
+                         } else {
+                             // Fallback for named IDs like 'activity' or 'remote' to indices 0 and 1
+                             const fallbackIdx = (obj.id === 'remote') ? 0 : (obj.id === 'activity' ? 1 : -1);
+                             if (fallbackIdx !== -1 && exp.items && exp.items[fallbackIdx]) {
+                                 exp.items[fallbackIdx].position = obj.pos;
+                                 exp.items[fallbackIdx].rotation = obj.rot;
+                             }
                          }
-                     } else if (['remote', 'menu', 'wine', 'reward', 'gaudi'].includes(obj.id)) {
-                         exp[`${obj.id}Pos`] = obj.pos;
-                         exp[`${obj.id}Rot`] = obj.rot;
-                     } else if (obj.id && obj.id.startsWith('extra-')) {
+                     } else if (obj.id.startsWith('extra-')) {
                          const idx = parseInt(obj.id.split('-')[1]);
                          if (exp.extraObjects && exp.extraObjects[idx]) {
                              exp.extraObjects[idx].pos = obj.pos;
                              exp.extraObjects[idx].rot = obj.rot;
                          }
-                     } else {
-                         // Generic fallback for any other named objects directly into extraObjects
-                         if (!exp.extraObjects) exp.extraObjects = [];
-                         const extraIndex = exp.extraObjects.findIndex(eo => eo.id === obj.id || eo.name === obj.id);
-                         if (extraIndex !== -1) {
-                             exp.extraObjects[extraIndex].pos = obj.pos;
-                             exp.extraObjects[extraIndex].rot = obj.rot;
-                         } else {
-                             exp.extraObjects.push({ id: obj.id, pos: obj.pos, rot: obj.rot });
-                         }
                      }
                  });
-                 config = masterTruth[companyId];
              }
           }
 
-          if (!companyId || !config) { res.statusCode = 400; res.end(JSON.stringify({ error: 'Missing data' })); return; }
-          const truthPath = path.resolve(__dirname, './src/data/config_truth.json');
-          let masterTruth = {};
-          if (fs.existsSync(truthPath)) masterTruth = JSON.parse(fs.readFileSync(truthPath, 'utf-8'));
-          masterTruth[companyId] = config;
           fs.writeFileSync(truthPath, JSON.stringify(masterTruth, null, 4), 'utf-8');
           res.statusCode = 200; res.setHeader('Content-Type', 'application/json');
           res.end(JSON.stringify({ success: true }));
-        } catch (e) { res.statusCode = 500; res.end(JSON.stringify({ error: e.message })); }
+        } catch (e) { 
+          console.error("Save error:", e);
+          res.statusCode = 500; 
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: e.message })); 
+        }
       });
     });
     server.middlewares.use('/api/git-sync', async (req, res) => {

@@ -166,11 +166,18 @@ function SceneEditor({
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         experienceId,
-                        objects: objects.map(obj => ({
-                            id: obj.id,
-                            pos: obj.pos,
-                            rot: obj.rot
-                        }))
+                        objects: objects.map(obj => {
+                            let finalRot = obj.rot;
+                            // If this is the camera and we are using the live window property (radians), convert to degrees
+                            if (obj.id === 'camera' && window.latestCameraRot) {
+                                finalRot = window.latestCameraRot.map(r => r * (180 / Math.PI));
+                            }
+                            return {
+                                id: obj.id,
+                                pos: obj.pos,
+                                rot: finalRot
+                            };
+                        })
                     })
                 });
                 const result = await response.json();

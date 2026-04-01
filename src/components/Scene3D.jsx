@@ -499,11 +499,20 @@ const GymBallLocal = React.forwardRef(({ pos, size, onClick, isCollected }, ref)
     );
 });
 
-const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditorObject, isStarted = false, itemsViewed = [] }) => {
+const Scene3D = ({ 
+    experienceId, 
+    isInteractionActive, 
+    isEditorMode, 
+    activeEditorObject, 
+    isStarted = false, 
+    isItemsAllowed: isItemsAllowedProp = false,
+    isOrbAllowed: isOrbAllowedProp = false,
+    itemsViewed = [] 
+}) => {
     const { publicConfig } = useInfluencer();
     const staticConfig = sceneConfig[experienceId] || sceneConfig['default'];
     // Merge: publicConfig.experiences[experienceId] contains items/coin data from truth
-    const roomConfig = publicConfig.experiences?.[experienceId] || {};
+    const roomConfig = publicConfig?.experiences?.[experienceId] || configTruth?.experiences?.[experienceId] || {};
 
     // Standardize: Convert degrees from roomConfig (truth) to radians for 3D engine
     const toRad = (arr) => arr ? arr.map(d => d * (Math.PI / 180)) : arr;
@@ -542,32 +551,26 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
     const [showGelato, setShowGelato] = React.useState(false);
     const [showConfetti, setShowConfetti] = React.useState(false);
     const [isSplatLoaded, setIsSplatLoaded] = React.useState(false);
-    // Production: icons show after splat loads + user starts; coin shows after icon interaction
-    const [isItemsAllowed, setIsItemsAllowed] = React.useState(false);
-    const [isOrbAllowed, setIsOrbAllowed] = React.useState(false);
+    
+    // Prop-driven visibility for production stability
+    const isItemsAllowed = isItemsAllowedProp;
+    const isOrbAllowed = isOrbAllowedProp;
 
     // Reset load state when changing rooms
     React.useEffect(() => {
         setIsSplatLoaded(false);
-        setIsItemsAllowed(false);
-        setIsOrbAllowed(false);
     }, [experienceId]);
 
-    // Listen for production events from ExperiencePage
+    // Listen for coordinate-specific reset only (logic visibility now prop-driven)
     React.useEffect(() => {
-        const handleItemsAllowed = () => {
-            console.log('[Scene3D] msc-items-allowed received - showing icons');
-            setIsItemsAllowed(true);
+        const handleProgressReset = () => {
+            console.log('[Scene3D] Global progress reset received - clearing local overrides');
+            setLocalPositions({});
+            setLocalRotations({});
         };
-        const handleOrbAllowed = () => {
-            console.log('[Scene3D] msc-orb-allowed received - showing coin');
-            setIsOrbAllowed(true);
-        };
-        window.addEventListener('msc-items-allowed', handleItemsAllowed);
-        window.addEventListener('msc-orb-allowed', handleOrbAllowed);
+        window.addEventListener('msc-progress-reset', handleProgressReset);
         return () => {
-            window.removeEventListener('msc-items-allowed', handleItemsAllowed);
-            window.removeEventListener('msc-orb-allowed', handleOrbAllowed);
+            window.removeEventListener('msc-progress-reset', handleProgressReset);
         };
     }, [experienceId]);
 
@@ -627,19 +630,7 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
     }, []);
 
     const { backpack, challenges, getTotalCoins } = useGame();
-    const isBellCollected = backpack.some(item => item.id === `activity-${experienceId}`) || challenges[`exp-${experienceId}`]?.objectsFound > 0;
     const isCoinCollected = challenges[`exp-${experienceId}`]?.coinFound;
-
-    // Debug: Trace why objects disappear
-    React.useEffect(() => {
-        const inBackpack = backpack.some(item => item.id === `activity-${experienceId}`);
-        const challengeFound = challenges[`exp-${experienceId}`]?.objectsFound > 0;
-        console.log(`%c[Exp ${experienceId} Debug]`, 'color: orange; font-weight: bold;');
-        console.log(`  isBellCollected: ${isBellCollected}`);
-        console.log(`  -> inBackpack: ${inBackpack}`);
-        console.log(`  -> challengeFound: ${challengeFound}`);
-        console.log(`  GymBall collected: ${backpack.some(item => item.id === 'GymBall')}`);
-    }, [backpack, challenges, experienceId, isBellCollected]);
 
     // Clear local dirty state when room changes to avoid cross-room state leaks
     React.useEffect(() => {
@@ -711,8 +702,8 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
 
     // Debug logging for collected state
     React.useEffect(() => {
-        console.log(`[Scene3D] Exp ${experienceId} State:`, { isCoinCollected, isBellCollected, backpackIds: backpack.map(i => i.id) });
-    }, [experienceId, isCoinCollected, isBellCollected, backpack]);
+        console.log(`[Scene3D] Exp ${experienceId} State:`, { isCoinCollected, backpackIds: backpack.map(i => i.id), itemsViewed });
+    }, [experienceId, isCoinCollected, backpack, itemsViewed]);
 
     // Notify parent about current objects and their positions
     React.useEffect(() => {
@@ -727,23 +718,26 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                 rot: getDegrees('camera', startRot)
             });
 
+            // Add the coin/medal
             objs.push({
                 id: 'coin',
                 name: 'MSC Cruises Coin',
                 pos: [currentCoinPos[0], currentCoinPos[1], currentCoinPos[2]],
                 rot: getDegrees('coin', config.coinRot)
             });
-            objs.push({
-                id: 'activity',
-                name: 'Main Activity',
-                pos: [currentActivityPos[0], currentActivityPos[1], currentActivityPos[2]],
-                rot: getDegrees('activity', activityRot)
-            });
-            if (experienceId === '1' && config.remotePos) objs.push({
-                id: 'remote',
-                name: 'TV Remote',
-                pos: [currentRemotePos[0], currentRemotePos[1], currentRemotePos[2]],
-                rot: getDegrees('remote', config.remoteRot)
+
+            // Add ALL standardized items from the configuration loop
+            const items = roomConfig?.items || [];
+            items.forEach((item, idx) => {
+                const id = item.id || `item-${experienceId}-${idx}`;
+                const pos = localPositions[id] || item.position || [0, 0, 0];
+                
+                objs.push({
+                    id: id,
+                    name: item.name || `Item ${idx + 1}`,
+                    pos: [pos[0], pos[1], pos[2]],
+                    rot: getDegrees(id, item.rotation || [0, 0, 0])
+                });
             });
             if ((experienceId === '3' || experienceId === '4') && config.menuPos) objs.push({
                 id: 'menu',
@@ -911,24 +905,32 @@ const Scene3D = ({ experienceId, isInteractionActive, isEditorMode, activeEditor
                     </group>
 
 
-                    {/* GLOBAL BACKPACK MARKERS: Only show first 2 items from roomConfig */}
-                    {isItemsAllowed && roomConfig.items?.slice(0, 2).map((item, idx) => {
-                        const id = item.id;
-                        const isFirstItem = idx === 0;
-                        const markerId = isFirstItem ? 'remote' : 'activity'; // For editor sync
-                        const pos = localPositions[markerId] || item.position;
+                    {/* GLOBAL BACKPACK MARKERS: Render all items from configuration */}
+                    {isItemsAllowed && (roomConfig?.items || []).map((item, idx) => {
+                        const id = item.id || `item-${experienceId}-${idx}`;
+                        const pos = localPositions[id] || item.position || [0, 0, 0];
                         const isItemCollected = itemsViewed.includes(id);
 
+                        console.log(`[Scene3D] Marker Render Check (${id}):`, { pos, isItemCollected, isItemsAllowed });
+
                         return (
-                            <group key={id}>
-                                <TransformWrapper id={markerId} activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
+                            <group key={`container-${id}`}>
+                                <TransformWrapper id={id} activeId={activeEditorObject} isEditorActive={isEditorActive} handleTransform={handleTransform} mode={editorMode}>
                                     <group>
                                         <BackpackMarker
                                             pos={pos}
                                             experienceId={experienceId}
-                                            size={isFirstItem ? 0.5 : 0.4}
+                                            size={idx === 0 ? 0.5 : 0.4}
                                             isCollected={isItemCollected}
-                                            onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { detail: { name: isFirstItem ? 'TVControl' : 'ActivityObject', experienceId } }))}
+                                            type={item.type}
+                                            onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
+                                                detail: { 
+                                                    name: 'BackpackItem', 
+                                                    itemId: id,
+                                                    itemIndex: idx,
+                                                    experienceId 
+                                                } 
+                                            }))}
                                         />
                                     </group>
                                 </TransformWrapper>

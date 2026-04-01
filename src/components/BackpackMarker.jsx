@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 /**
  * Premium Backpack Marker - Minimal Luxury Version
  */
-const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected }, ref) => {
+const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type }, ref) => {
     const groupRef = useRef();
     
     // Luxury Scene-specific color mapping
@@ -30,6 +30,21 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
             }
         }
     });
+
+    // Icon mapping based on item type
+    const typeIcons = {
+        'bell': '🔔',
+        'star': '✨',
+        'activity': '🎒',
+        'car': '🏎️',
+        'wineglass': '🍷',
+        'towel': '🧘',
+        'gymball': '⚽',
+        'remote': '🎮',
+        'ring': '💍'
+    };
+    
+    const icon = typeIcons[type] || '🎒';
 
     if (isCollected) return null;
 
@@ -77,7 +92,7 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                         depthTest={false}
                         color={color}
                     >
-                        🎒
+                        {icon}
                     </Text>
                 </Billboard>
 

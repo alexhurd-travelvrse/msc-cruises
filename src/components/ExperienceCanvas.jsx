@@ -29,7 +29,16 @@ useTexture.preload('/textures/gelato.png');
 useTexture.preload('/textures/msc_sovereign_coin.png');
 
 
-const ExperienceCanvas = React.memo(({ experienceId, isInteractionActive, isEditorMode, activeEditorObject, isStarted = false, itemsViewed = [] }) => {
+const ExperienceCanvas = React.memo(({ 
+    experienceId, 
+    isInteractionActive, 
+    isEditorMode, 
+    activeEditorObject, 
+    isStarted = false, 
+    isItemsAllowed = false, 
+    isOrbAllowed = false, 
+    itemsViewed = [] 
+}) => {
     return (
         <Canvas
             id="canvas-container"
@@ -85,6 +94,8 @@ const ExperienceCanvas = React.memo(({ experienceId, isInteractionActive, isEdit
                     isEditorMode={isEditorMode}
                     activeEditorObject={activeEditorObject}
                     isStarted={isStarted}
+                    isItemsAllowed={isItemsAllowed}
+                    isOrbAllowed={isOrbAllowed}
                     itemsViewed={itemsViewed}
                 />
             </Suspense>
