@@ -1,4 +1,4 @@
-{
+﻿{
     "home": {
         "title": "MSC World Europa",
         "subtitle": "",
@@ -15,11 +15,11 @@
         "backpackDesc": "Get an exclusive 10% discount on your voyage if you collect exactly 1 item in every experience."
     },
     "audio": {
-        "1": "The Yacht Club suite is pure elite luxury. Take a moment to soak in that balcony view—it's my favorite spot for a morning espresso. Don't forget to check the view for your first clue!",
+        "1": "The Yacht Club suite is pure elite luxury. Take a moment to soak in that balcony viewâ€”it's my favorite spot for a morning espresso. Don't forget to check the view for your first clue!",
         "2": "The Aurea Spa is a literal sanctuary. The thermal baths here are world-class. Relax, breathe in the salt air, and see if the temperature holds our next secret.",
-        "3": "Welcome to Hola! Tacos & Cantina. The vibe here is electric and the margaritas are legendary. Take a look at the menu—it might have just what we need for the next code.",
-        "4": "This arcade is a high-tech playground. I'm obsessed with the Formula One simulator! It feels so real. Check your speed—it might be the key to our next milestone.",
-        "5": "Our Barcelona excursion is the ultimate culture trip. Gaudí's architecture is like nothing else on earth. Let's find the final piece of the puzzle together in this vibrant city.",
+        "3": "Welcome to Hola! Tacos & Cantina. The vibe here is electric and the margaritas are legendary. Take a look at the menuâ€”it might have just what we need for the next code.",
+        "4": "This arcade is a high-tech playground. I'm obsessed with the Formula One simulator! It feels so real. Check your speedâ€”it might be the key to our next milestone.",
+        "5": "Our Barcelona excursion is the ultimate culture trip. GaudÃ­'s architecture is like nothing else on earth. Let's find the final piece of the puzzle together in this vibrant city.",
         "home": "Welcome aboard the stunning MSC World Europa. I'm Alex Hurd, your digital guide. I've curated this exclusive journey to show you the absolute best of our ship. Tap Enter to begin your tropical escape.",
         "teleport": "The Promenade is where the energy of the ship comes alive. I've highlighted five of my favorite spots below. Where should we head first?",
         "completion": "You've done it! You've unlocked the exclusive Speakeasy. Your travel DNA and special rewards are waiting in your backpack. Thanks for exploring with me!"
@@ -54,21 +54,20 @@
     "experiences": {
         "1": {
             "name": "Yacht Club Owner's Suite",
-            "modelPath": "/models/1.splat",
             "items": [
                 {
                     "id": "1-1",
                     "name": "Wi-fi Packages",
                     "type": "bell",
                     "position": [
-                        0.06491190164531827,
-                        0.12574748989260623,
-                        -0.34597662732112167
+                        0.3,
+                        1.2,
+                        -1
                     ],
                     "rotation": [
-                        5620.14044097337,
-                        -2559.2703437276314,
-                        5811.55893841085
+                        0,
+                        0,
+                        0
                     ],
                     "media": "/assets/balcony_preview.jpg",
                     "video": "https://www.youtube.com/shorts/NdUi4fHQ9e4",
@@ -85,14 +84,14 @@
                     "name": "Suite View",
                     "type": "star",
                     "position": [
-                        1.3435797026481822,
-                        1.6063989803477867,
-                        1.2666036942970111
+                        1.129,
+                        1.865,
+                        0.74
                     ],
                     "rotation": [
-                        5620.14044097337,
-                        -2559.2703437276314,
-                        5811.55893841085
+                        1.815,
+                        -0.445,
+                        2.096
                     ],
                     "media": "/assets/balcony_new.png",
                     "text": "Uninterrupted views of the ocean.",
@@ -108,16 +107,11 @@
                 "id": "special-1",
                 "name": "Sovereign Coin",
                 "position": [
-                    0.6003679895350663,
-                    0.9374989834740285,
-                    1.700992084908088
+                    0,
+                    1.2,
+                    -1.5
                 ],
-                "media": "/textures/coin.png",
-                "rotation": [
-                    98.08995511947133,
-                    -44.66769394669417,
-                    101.43083814897568
-                ]
+                "media": "/textures/coin.png"
             },
             "hotspots": [
                 {
@@ -163,28 +157,27 @@
                 }
             ],
             "startPos": [
-                -0.8345798021767952,
-                -0.69406235521241,
-                0.10637378743602538
+                -1.1381087138384196,
+                -1.1787073537869066,
+                0.07168182885356848
             ],
             "startRot": [
-                98.08995511947133,
-                -44.66769394669417,
-                101.43083814897568
+                2.015,
+                -0.747,
+                2.182
             ]
         },
         "2": {
             "name": "Luxurious MSC Aurea Spa",
-            "modelPath": "/models/Luxurious Indoor Pool Lounge.spz",
             "items": [
                 {
                     "id": "2-1",
                     "name": "Thermal Bath",
                     "type": "towel",
                     "position": [
-                        -0.6763899474535122,
-                        -0.3079661740639216,
-                        0.013510070589181022
+                        -2.19837254118898,
+                        0.05427330252502871,
+                        -4.047660271759022
                     ],
                     "media": "/assets/spa_grab.png",
                     "text": "Relax in our celestial thermal waters.",
@@ -195,9 +188,9 @@
                         "description": "A 5-minute relaxing soundscape from the Aurea Spa."
                     },
                     "rotation": [
-                        -169.3580296391141,
-                        2.444841326585943,
-                        179.5407557380402
+                        0,
+                        0,
+                        0
                     ]
                 },
                 {
@@ -205,33 +198,23 @@
                     "name": "Gym Session",
                     "type": "gymball",
                     "position": [
-                        -1.9399525821420391,
-                        -0.010804164674576797,
-                        -1.6258318235819216
+                        1.5,
+                        1.2,
+                        -2
                     ],
                     "media": "/assets/spa_grab.png",
-                    "text": "Energize in our state-of-the-art fitness center.",
-                    "rotation": [
-                        -169.3580296391141,
-                        2.444841326585943,
-                        179.5407557380402
-                    ]
+                    "text": "Energize in our state-of-the-art fitness center."
                 }
             ],
             "coin": {
                 "id": "special-2",
                 "name": "Aurea Coin",
                 "position": [
-                    -1.5095164760661008,
-                    0.542538155907502,
-                    -0.493925177245237
+                    0,
+                    1.2,
+                    -1.5
                 ],
-                "media": "/textures/coin.png",
-                "rotation": [
-                    -169.3580296391141,
-                    2.444841326585943,
-                    179.5407557380402
-                ]
+                "media": "/textures/coin.png"
             },
             "hotspots": [
                 {
@@ -261,28 +244,27 @@
             ],
             "extraObjects": [],
             "startPos": [
-                -0.5591871231779814,
-                0.1989612580160515,
-                -2.6843016193400446
+                -2.8362595063651423,
+                0.46523980785066704,
+                -1.2182134709428472
             ],
             "startRot": [
-                -169.3580296391141,
-                2.444841326585943,
-                179.5407557380402
+                0.13945813658850809,
+                -1.0249071449363734,
+                0.1195274345377135
             ]
         },
         "3": {
             "name": "Hola! Tacos & Cantina",
-            "modelPath": "/models/Vibrant Mexican Restaurant Interior (3).spz",
             "items": [
                 {
                     "id": "3-1",
                     "name": "Spicy Taco",
                     "type": "activity",
                     "position": [
-                        -0.717495646109543,
-                        0.3753204887941014,
-                        -2.3276965420559335
+                        -0.19,
+                        0.119,
+                        -1.313
                     ],
                     "media": "/assets/hola_grab.png",
                     "text": "Authentic flavors from Mexico.",
@@ -291,45 +273,30 @@
                         "title": "Signature Drinks Recipe",
                         "url": "/assets/recipe_placeholder.pdf",
                         "description": "Learn how to make our signature cocktails at home."
-                    },
-                    "rotation": [
-                        -13.407212406061264,
-                        -3.7815214478634336,
-                        -0.9167324722093172
-                    ]
+                    }
                 },
                 {
                     "id": "3-2",
                     "name": "Fresh Margarita",
                     "type": "wineglass",
                     "position": [
-                        1.2733221697987596,
-                        0.14582968985222672,
-                        -1.6594931632645247
+                        -0.374,
+                        0.363,
+                        -0.841
                     ],
                     "media": "/assets/hola_grab.png",
-                    "text": "Hand-crafted at our tequila bar.",
-                    "rotation": [
-                        -13.407212406061264,
-                        -3.7815214478634336,
-                        -0.9167324722093172
-                    ]
+                    "text": "Hand-crafted at our tequila bar."
                 }
             ],
             "coin": {
                 "id": "special-3",
                 "name": "Hola Coin",
                 "position": [
-                    -0.15959216788313543,
-                    0.1094871109972518,
-                    -1.911783604403236
+                    0,
+                    1.2,
+                    -1.5
                 ],
-                "media": "/textures/coin.png",
-                "rotation": [
-                    -13.407212406061264,
-                    -3.7815214478634336,
-                    -0.9167324722093172
-                ]
+                "media": "/textures/coin.png"
             },
             "hotspots": [
                 {
@@ -357,21 +324,10 @@
                     "label": "Kitchen View"
                 }
             ],
-            "extraObjects": [],
-            "startPos": [
-                -0.862,
-                1.642,
-                -0.201
-            ],
-            "startRot": [
-                -13.407212406061264,
-                -3.7815214478634336,
-                -0.9167324722093172
-            ]
+            "extraObjects": []
         },
         "4": {
             "name": "MSC Formula Racer",
-            "modelPath": "/models/Vibrant Indoor Bumper Car Arena (2).spz",
             "items": [
                 {
                     "id": "4-1",
@@ -444,11 +400,10 @@
         },
         "5": {
             "name": "Excursion Spot",
-            "modelPath": "/models/Park Güell Architectural Details (1).spz",
             "items": [
                 {
                     "id": "5-1",
-                    "name": "Gaudí Inspiration",
+                    "name": "GaudÃ­ Inspiration",
                     "type": "ring",
                     "position": [
                         0,
@@ -457,7 +412,7 @@
                     ],
                     "media": "/assets/excursion_filler.jpg",
                     "video": "https://v.ftcdn.net/06/17/84/44/700_F_617844445_h8vX0BvL4v3Y6H8H1Z8B1v8v8v8v8v8v_ST.mp4",
-                    "text": "Discover the architectural genius of Antoni Gaudí."
+                    "text": "Discover the architectural genius of Antoni GaudÃ­."
                 },
                 {
                     "id": "5-2",
@@ -469,7 +424,7 @@
                         -1.5
                     ],
                     "media": "/assets/excursion_filler.jpg",
-                    "text": "Breathtaking views of the city from Park Güell.",
+                    "text": "Breathtaking views of the city from Park GÃ¼ell.",
                     "collectible": {
                         "type": "pdf",
                         "title": "Hidden City Tips",

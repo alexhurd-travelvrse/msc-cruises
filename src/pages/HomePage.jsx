@@ -156,9 +156,9 @@ const HomePage = () => {
                     }}
                     style={{
                         position: 'fixed',
-                        bottom: '40px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
+                        top: 'calc(50% + 140px)',
+                        left: '40px',
+                        transform: 'none',
                         background: 'rgba(0, 229, 255, 0.2)',
                         border: '1px solid rgba(0, 229, 255, 0.5)',
                         padding: '10px 20px',
@@ -170,7 +170,8 @@ const HomePage = () => {
                         cursor: 'pointer',
                         zIndex: 100,
                         backdropFilter: 'blur(5px)',
-                        animation: 'pulse-slow 2s infinite'
+                        animation: 'pulse-slow 2s infinite',
+                        textAlign: 'center'
                     }}
                 >
                     🔊 CLICK FOR ALEX'S WELCOME
@@ -179,16 +180,16 @@ const HomePage = () => {
 
             <style>{`
                 @keyframes pulse-slow {
-                    0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-                    50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
-                    100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+                    0% { opacity: 0.6; transform: translate(0, 0) scale(1); }
+                    50% { opacity: 1; transform: translate(0, 0) scale(1.05); }
+                    100% { opacity: 0.6; transform: translate(0, 0) scale(1); }
                 }
             `}</style>
 
             <div className="container hero-content" style={{ position: 'relative', zIndex: 10 }}>
 
 
-                <h1 className="hero-title animate-fade-in animate-delay-1" style={{ color: '#fff', textShadow: '0 4px 15px rgba(0,0,0,0.8)', marginTop: '-80px', marginBottom: '40px' }}>
+                <h1 className="hero-title animate-fade-in animate-delay-1" style={{ color: '#fff', textShadow: '0 4px 15px rgba(0,0,0,0.8)', marginTop: '40px', marginBottom: '40px' }}>
                     <span>{title}</span>
                 </h1>
 
@@ -239,6 +240,7 @@ const HomePage = () => {
                         borderRadius: '8px', 
                         padding: '16px 36px',
                         marginTop: '20px',
+                        marginBottom: '40px',
                         transform: 'scale(1.08)',
                         boxShadow: '0 0 40px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.2)',
                         cursor: 'pointer',
