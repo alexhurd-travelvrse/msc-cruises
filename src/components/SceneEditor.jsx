@@ -77,7 +77,8 @@ function SceneEditor({
     onResetToTruth
 }) {
     const [copied, setCopied] = React.useState(false);
-    const [saved, setSaved] = React.useState(false);
+    const [localSaved, setLocalSaved] = React.useState(false);
+    const [publishSaved, setPublishSaved] = React.useState(false);
     const [saveError, setSaveError] = React.useState(null);
     const [isOpen, setIsOpen] = React.useState(false);
     const [transformMode, setTransformMode] = React.useState('translate'); // 'translate' | 'rotate'
@@ -159,31 +160,39 @@ function SceneEditor({
                     setSaveError('Failed to save to Influencer Context');
                 }
             } else {
-                // Fallback to legacy filesystem backend (for defaults)
+                // Use the standardized filesystem backend (for GitHub Desktop)
                 const experienceId = window.location.pathname.split('/').pop() || '1';
+                const activeCompanyId = import.meta.env.VITE_ACTIVE_COMPANY || 'msc-cruises';
+                
+                // Get the base config to update
+                const baseConfig = objects.reduce((acc, obj) => {
+                    const id = obj.id;
+                    const finalRot = obj.rot; // Already in degrees from current report logic
+                    
+                    if (id === 'camera' || id === 'coin') {
+                        acc[id] = { pos: obj.pos, rot: finalRot };
+                    }
+                    return acc;
+                }, {});
+
                 const response = await fetch('/api/save-config', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        companyId: activeCompanyId,
                         experienceId,
-                        objects: objects.map(obj => {
-                            let finalRot = obj.rot;
-                            // If this is the camera and we are using the live window property (radians), convert to degrees
-                            if (obj.id === 'camera' && window.latestCameraRot) {
-                                finalRot = window.latestCameraRot.map(r => r * (180 / Math.PI));
-                            }
-                            return {
-                                id: obj.id,
-                                pos: obj.pos,
-                                rot: finalRot
-                            };
-                        })
+                        objects: objects.map(obj => ({
+                            id: obj.id,
+                            pos: obj.pos,
+                            rot: obj.rot
+                        }))
                     })
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    setSaved(true);
-                    setTimeout(() => setSaved(false), 3000);
+                    setPublishSaved(true);
+                    setTimeout(() => setPublishSaved(false), 3000);
+                    alert("🚀 READY FOR GITHUB DESKTOP!\nYour coordinates have been written to config_truth.json.");
                 } else {
                     setSaveError(result.error || 'Failed to save');
                 }
@@ -398,109 +407,53 @@ function SceneEditor({
                 <div style={{ padding: '10px', background: 'rgba(0, 229, 255, 0.1)', border: '1px solid rgba(0, 229, 255, 0.3)', borderRadius: '8px', fontSize: '0.75rem', textAlign: 'center', marginBottom: '5px' }}>
                     🎥 <b>CURRENT CAMERA VIEW</b> WILL BE SAVED
                 </div>
-                <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
-                    <button
-                        onClick={handleSave}
-                        style={{
-                            flex: 1.5,
-                            padding: '16px',
-                            background: saved ? '#00e5ff' : 'linear-gradient(to right, #7000FF, #00e5ff)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontWeight: '900',
-                            cursor: 'pointer',
-                            textTransform: 'uppercase',
-                            letterSpacing: '2px',
-                            boxShadow: '0 8px 25px rgba(0, 229, 255, 0.4)',
-                            transition: 'all 0.3s',
-                            fontSize: '0.85rem'
-                        }}
-                    >
-                        {saved ? '✓ APPLIED TO HUD' : '🚀 SAVE TO PRODUCTION'}
-                    </button>
-
-                    <button
-                        onClick={async () => {
-                            if (confirm("SHIP TO LIVE? This will commit and push to GitHub, triggering a Vercel deploy.")) {
-                                const res = await fetch('/api/git-sync');
-                                const data = await res.json();
-                                if (data.success) alert("🚀 LIVE SHIP SUCCESSFUL! Vercel is building...");
-                                else alert("❌ Ship failed: " + data.error);
+                
+                <button
+                    onClick={async () => {
+                        try {
+                            if (onSaveToContext) {
+                                await onSaveToContext(objects);
+                                setLocalSaved(true);
+                                setTimeout(() => setLocalSaved(false), 3000);
                             }
-                        }}
-                        style={{
-                            flex: 1,
-                            padding: '16px',
-                            background: 'linear-gradient(to right, #FF1744, #D50000)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '12px',
-                            fontWeight: '900',
-                            cursor: 'pointer',
-                            textTransform: 'uppercase',
-                            letterSpacing: '2px',
-                            boxShadow: '0 8px 25px rgba(255, 23, 68, 0.4)',
-                            transition: 'all 0.3s',
-                            fontSize: '0.85rem'
-                        }}
-                    >
-                        🚢 SHIP TO LIVE
-                    </button>
-                </div>
+                        } catch (e) { setSaveError(e.message); }
+                    }}
+                    style={{
+                        padding: '16px',
+                        background: localSaved ? '#00c853' : 'rgba(255, 215, 0, 0.1)',
+                        color: localSaved ? 'white' : '#FFD700',
+                        border: '1px solid #FFD700',
+                        borderRadius: '12px',
+                        fontWeight: '900',
+                        cursor: 'pointer',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        fontSize: '0.85rem',
+                        transition: '0.3s'
+                    }}
+                >
+                    {localSaved ? '✓ LOCAL CONFIG SAVED' : '💾 SAVE CONFIGURATION (LOCAL)'}
+                </button>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                        onClick={onResetToTruth}
-                        style={{
-                            flex: 1,
-                            padding: '12px',
-                            background: 'rgba(255, 68, 68, 0.15)',
-                            color: '#ff4444',
-                            border: '1px solid #ff4444',
-                            borderRadius: '8px',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            fontSize: '0.7rem'
-                        }}
-                    >
-                        🔄 REVERT TO GITHUB
-                    </button>
-
-                    <button
-                        onClick={handleCopy}
-                        style={{
-                            flex: 1,
-                            padding: '12px',
-                            background: 'rgba(255, 215, 0, 0.1)',
-                            color: '#FFD700',
-                            border: '1px solid #FFD700',
-                            borderRadius: '8px',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            fontSize: '0.7rem'
-                        }}
-                    >
-                        {copied ? '✓ COPIED' : '📋 COPY JSON'}
-                    </button>
-
-                    <button
-                        onClick={onDownloadConfig}
-                        style={{
-                            flex: 1,
-                            padding: '12px',
-                            background: 'rgba(156, 39, 176, 0.15)',
-                            color: '#E91E63',
-                            border: '1px solid #E91E63',
-                            borderRadius: '8px',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            fontSize: '0.7rem'
-                        }}
-                    >
-                        📥 EXPORT
-                    </button>
-                </div>
+                <button
+                    onClick={handleSave}
+                    style={{
+                        padding: '16px',
+                        background: publishSaved ? '#7000FF' : 'linear-gradient(to right, #7000FF, #00e5ff)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontWeight: '900',
+                        cursor: 'pointer',
+                        textTransform: 'uppercase',
+                        letterSpacing: '1px',
+                        boxShadow: '0 8px 25px rgba(0, 229, 255, 0.4)',
+                        transition: 'all 0.3s',
+                        fontSize: '0.85rem'
+                    }}
+                >
+                    {publishSaved ? '✓ READY FOR GITHUB' : '🚀 PUBLISH CHANGES (FOR GITHUB DESKTOP)'}
+                </button>
 
                 {saveError && (
                     <div style={{
@@ -518,7 +471,7 @@ function SceneEditor({
             </div>
 
             <p style={{ fontSize: '0.7rem', marginTop: '20px', color: '#666', textAlign: 'center', lineHeight: '1.4' }}>
-                Toggle <b>MOVE</b> mode to drag objects. Your current camera angle and object positions are saved into your live context immediately upon saving!
+                Use <b>Save Configuration</b> to preview locally. Use <b>Publish Changes</b> to update the source code for your next GitHub Push.
             </p>
         </div>
     );
