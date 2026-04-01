@@ -1,4 +1,4 @@
-﻿{
+{
     "home": {
         "title": "MSC World Europa",
         "subtitle": "",
@@ -15,11 +15,11 @@
         "backpackDesc": "Get an exclusive 10% discount on your voyage if you collect exactly 1 item in every experience."
     },
     "audio": {
-        "1": "The Yacht Club suite is pure elite luxury. Take a moment to soak in that balcony viewâ€”it's my favorite spot for a morning espresso. Don't forget to check the view for your first clue!",
+        "1": "The Yacht Club suite is pure elite luxury. Take a moment to soak in that balcony view—it's my favorite spot for a morning espresso. Don't forget to check the view for your first clue!",
         "2": "The Aurea Spa is a literal sanctuary. The thermal baths here are world-class. Relax, breathe in the salt air, and see if the temperature holds our next secret.",
-        "3": "Welcome to Hola! Tacos & Cantina. The vibe here is electric and the margaritas are legendary. Take a look at the menuâ€”it might have just what we need for the next code.",
-        "4": "This arcade is a high-tech playground. I'm obsessed with the Formula One simulator! It feels so real. Check your speedâ€”it might be the key to our next milestone.",
-        "5": "Our Barcelona excursion is the ultimate culture trip. GaudÃ­'s architecture is like nothing else on earth. Let's find the final piece of the puzzle together in this vibrant city.",
+        "3": "Welcome to Hola! Tacos & Cantina. The vibe here is electric and the margaritas are legendary. Take a look at the menu—it might have just what we need for the next code.",
+        "4": "This arcade is a high-tech playground. I'm obsessed with the Formula One simulator! It feels so real. Check your speed—it might be the key to our next milestone.",
+        "5": "Our Barcelona excursion is the ultimate culture trip. Gaudí's architecture is like nothing else on earth. Let's find the final piece of the puzzle together in this vibrant city.",
         "home": "Welcome aboard the stunning MSC World Europa. I'm Alex Hurd, your digital guide. I've curated this exclusive journey to show you the absolute best of our ship. Tap Enter to begin your tropical escape.",
         "teleport": "The Promenade is where the energy of the ship comes alive. I've highlighted five of my favorite spots below. Where should we head first?",
         "completion": "You've done it! You've unlocked the exclusive Speakeasy. Your travel DNA and special rewards are waiting in your backpack. Thanks for exploring with me!"
@@ -403,7 +403,7 @@
             "items": [
                 {
                     "id": "5-1",
-                    "name": "GaudÃ­ Inspiration",
+                    "name": "Gaudí Inspiration",
                     "type": "ring",
                     "position": [
                         0,
@@ -412,7 +412,7 @@
                     ],
                     "media": "/assets/excursion_filler.jpg",
                     "video": "https://v.ftcdn.net/06/17/84/44/700_F_617844445_h8vX0BvL4v3Y6H8H1Z8B1v8v8v8v8v8v_ST.mp4",
-                    "text": "Discover the architectural genius of Antoni GaudÃ­."
+                    "text": "Discover the architectural genius of Antoni Gaudí."
                 },
                 {
                     "id": "5-2",
@@ -424,7 +424,7 @@
                         -1.5
                     ],
                     "media": "/assets/excursion_filler.jpg",
-                    "text": "Breathtaking views of the city from Park GÃ¼ell.",
+                    "text": "Breathtaking views of the city from Park Güell.",
                     "collectible": {
                         "type": "pdf",
                         "title": "Hidden City Tips",
