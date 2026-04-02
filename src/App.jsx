@@ -10,6 +10,7 @@ import ExperiencePage from './pages/ExperiencePage';
 import CompletionPage from './pages/CompletionPage';
 import ProfilePage from './pages/ProfilePage';
 import Layout from './components/Layout';
+import PasswordGate from './components/PasswordGate';
 import AdminLayout from './pages/admin/AdminLayout';
 import LoginPage from './pages/admin/LoginPage';
 import CompanySelectionPage from './pages/admin/CompanySelectionPage';
@@ -38,16 +39,18 @@ function App() {
 
               {/* Public Routes */}
               <Route path="*" element={
-                <Layout>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/teleport" element={<TeleportPage />} />
-                    <Route path="/ranking" element={<RankingPage />} />
-                    <Route path="/experience/:id" element={<ExperiencePage />} />
-                    <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/completion" element={<CompletionPage />} />
-                  </Routes>
-                </Layout>
+                <PasswordGate>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/teleport" element={<TeleportPage />} />
+                      <Route path="/ranking" element={<RankingPage />} />
+                      <Route path="/experience/:id" element={<ExperiencePage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/completion" element={<CompletionPage />} />
+                    </Routes>
+                  </Layout>
+                </PasswordGate>
               } />
             </Routes>
           </Router>
