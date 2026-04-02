@@ -15,7 +15,8 @@ const PasswordGate = ({ children }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (password.toLowerCase() === 'travelvrse') {
+        // Allow Travelvrse, travelvrse, TRAVELVRSE
+        if (password.trim().toLowerCase() === 'travelvrse') {
             sessionStorage.setItem('travelvrse_authorized', 'true');
             setIsAuthorized(true);
             setError('');
@@ -32,7 +33,7 @@ const PasswordGate = ({ children }) => {
         <div className="password-gate">
             <div className="password-container">
                 <div className="logo-container">
-                    <img src="/assets/vite.svg" alt="Travelvrse" className="gate-logo" />
+                    <img src="/models/travelvrse logo.png" alt="Travelvrse" className="gate-logo" />
                 </div>
                 <h2>Exclusive Access</h2>
                 <p>Please enter the password to view the Barcelona experience.</p>
