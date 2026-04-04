@@ -17,96 +17,121 @@ const NauticalLoader = ({ progress, isSplatLoaded, isVisible }) => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'radial-gradient(circle, #FDF5E6 0%, #EBF5FB 100%)',
+            background: '#050510',
             zIndex: 99999,
             fontFamily: 'Outfit, sans-serif',
             pointerEvents: 'all'
         }}>
+            {/* Background Glows */}
+            <div style={{
+                position: 'absolute',
+                width: '600px',
+                height: '600px',
+                background: 'radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, transparent 70%)',
+                zIndex: -1
+            }} />
+
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '20px',
-                padding: '40px',
-                borderRadius: '30px',
-                boxShadow: '0 20px 50px rgba(91, 192, 222, 0.2)',
-                border: '2px solid rgba(91, 192, 222, 0.3)',
-                background: 'rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(10px)',
-                width: '320px',
-                textAlign: 'center'
+                gap: '30px',
+                padding: '60px',
+                borderRadius: '2px', // Leica Hard Edge
+                border: '0.5px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.02)',
+                backdropFilter: 'blur(40px)',
+                width: '400px',
+                textAlign: 'center',
+                boxShadow: '0 40px 100px rgba(0,0,0,0.8)'
             }}>
-                {/* Nautical Helm Spinner */}
-                <div style={{ position: 'relative', width: '120px', height: '120px' }}>
+                {/* Nautical Helm Spinner - Modernized */}
+                <div style={{ position: 'relative', width: '140px', height: '140px' }}>
                     <svg viewBox="0 0 100 100" style={{
                         width: '100%',
                         height: '100%',
-                        animation: 'nautical-spin 6s linear infinite',
-                        filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))'
+                        animation: 'nautical-spin 8s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                        filter: 'drop-shadow(0 0 20px rgba(0, 229, 255, 0.3))'
                     }}>
                         <style>
                             {`@keyframes nautical-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}
                         </style>
                         {/* Wheel Outer Ring */}
-                        <circle cx="50" cy="50" r="32" fill="none" stroke="#3D8A9C" strokeWidth="3" />
-                        <circle cx="50" cy="50" r="15" fill="none" stroke="#3D8A9C" strokeWidth="2" />
-                        {/* Spokes with handles */}
+                        <circle cx="50" cy="50" r="32" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+                        <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(0, 229, 255, 0.3)" strokeWidth="1" strokeDasharray="5,10" />
+                        
+                        {/* Spokes */}
                         {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => (
-                            <g key={deg} transform={`rotate(${deg} 50 50)`}>
-                                <rect x="48.5" y="5" width="3" height="30" fill="#3D8A9C" />
-                                <circle cx="50" cy="6" r="4" fill="#5BC0DE" />
-                            </g>
+                            <line 
+                                key={deg} 
+                                x1="50" y1="20" x2="50" y2="35" 
+                                stroke="#00e5ff" 
+                                strokeWidth="1" 
+                                transform={`rotate(${deg} 50 50)`} 
+                            />
                         ))}
                         {/* Central Hub */}
-                        <circle cx="50" cy="50" r="6" fill="white" stroke="#3D8A9C" strokeWidth="2" />
+                        <circle cx="50" cy="50" r="4" fill="none" stroke="#00e5ff" strokeWidth="1" />
                     </svg>
                 </div>
 
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ 
-                        fontSize: '0.7rem', 
-                        fontWeight: 800, 
-                        letterSpacing: '5px', 
-                        color: '#5D6D7E', 
+                        fontSize: '0.6rem', 
+                        fontWeight: 300, 
+                        letterSpacing: '0.4em', 
+                        color: 'rgba(255,255,255,0.4)', 
                         textTransform: 'uppercase',
-                        margin: '10px 0 5px 0'
+                        margin: '0 0 12px 0'
                     }}>
-                        Navigating
+                        Initializing Reality
                     </div>
-                    <div style={{ 
-                        fontSize: '1.2rem', 
-                        fontWeight: 400, 
-                        color: '#3D8A9C',
-                        fontFamily: 'Lobster, cursive'
+                    <div className="serif-title" style={{ 
+                        fontSize: '1.8rem', 
+                        color: '#fff',
+                        letterSpacing: '0.05em'
                     }}>
-                        Charting the course...
+                        MSC World Europa
                     </div>
                 </div>
 
-                {/* INTEGRATED NAVIGATION GUIDE */}
+                {/* Progress Indicator */}
+                <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.1)', position: 'relative' }}>
+                    <div style={{ 
+                        position: 'absolute', 
+                        left: 0, 
+                        top: 0, 
+                        height: '100%', 
+                        width: `${displayProgress}%`, 
+                        background: '#00e5ff',
+                        boxShadow: '0 0 15px #00e5ff',
+                        transition: 'width 0.3s ease'
+                    }} />
+                </div>
+
+                {/* NAVIGATION GUIDE */}
                 <div style={{
-                    marginTop: '20px',
+                    marginTop: '10px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '12px',
+                    gap: '20px',
                     width: '100%'
                 }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'center' }}>
                         <div>
-                            <div style={{ fontSize: '0.6rem', color: '#5D6D7E', letterSpacing: '2px', fontWeight: 800, marginBottom: '5px' }}>MOVE</div>
-                            <div style={{ fontSize: '0.9rem', color: '#3D8A9C', fontWeight: 900 }}>W A S D</div>
+                            <div className="metadata-label" style={{ fontSize: '0.5rem', marginBottom: '8px' }}>TRANSLATE</div>
+                            <div style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600, letterSpacing: '0.2em' }}>W A S D</div>
                         </div>
-                        <div style={{ width: '1px', height: '20px', background: 'rgba(61, 138, 156, 0.2)' }}></div>
                         <div>
-                            <div style={{ fontSize: '0.6rem', color: '#5D6D7E', letterSpacing: '2px', fontWeight: 800, marginBottom: '5px' }}>ELEVATION</div>
-                            <div style={{ fontSize: '0.9rem', color: '#3D8A9C', fontWeight: 900 }}>Q / E</div>
+                            <div className="metadata-label" style={{ fontSize: '0.5rem', marginBottom: '8px' }}>ELEVATE</div>
+                            <div style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600, letterSpacing: '0.2em' }}>Q / E</div>
                         </div>
                     </div>
                     
-                    <div style={{ borderTop: '1px solid rgba(61, 138, 156, 0.1)', paddingTop: '10px' }}>
-                        <div style={{ fontSize: '0.6rem', color: '#5D6D7E', letterSpacing: '2px', fontWeight: 800, marginBottom: '5px' }}>VISUALS</div>
-                        <div style={{ fontSize: '0.8rem', color: '#3D8A9C', fontWeight: 400 }}>CLICK + DRAG TO LOOK</div>
+                    <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
+                        <div className="metadata-label" style={{ fontSize: '0.5rem', marginBottom: '8px' }}>PANORAMIC LOOK</div>
+                        <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>DRAG CURSOR TO EXPLORE</div>
                     </div>
                 </div>
             </div>

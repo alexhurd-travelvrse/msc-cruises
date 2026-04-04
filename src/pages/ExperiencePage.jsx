@@ -313,6 +313,7 @@ const ExperiencePage = () => {
             }
 
             setBackpackUpdated(true);
+            window.dispatchEvent(new CustomEvent('orb-pulse'));
             setTimeout(() => setBackpackUpdated(false), 2000);
             setTimeout(() => setActiveLiveOffer(null), 3000);
         }
@@ -412,26 +413,126 @@ const ExperiencePage = () => {
                 />
             </div>
 
-            <div className="hud-overlay">
-                <div className="hud-top-bar">
-                    <div className="location-badge" onClick={() => navigate('/')}>{brandingTitle}</div>
+            <div className="hud-overlay" onMouseEnter={() => console.log('[HUD] ROOT OVERLAY ENTERED')} style={{ pointerEvents: 'none' }}>
+                <div className="hud-top-bar" style={{ padding: '20px 40px', pointerEvents: 'auto' }}>
+                    <div className="location-badge metadata-label" onClick={() => navigate('/')} style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}>
+                        {brandingTitle}
+                    </div>
                     
-                    <div className="hud-center-stats" style={{ display: 'flex', gap: '12px' }}>
+                    <div className="hud-center-stats" style={{ display: 'flex', gap: '24px' }}>
                         {isStarted && (
-                           <div className="vibe-badge-top glass-panel" style={{ borderLeft: `3px solid ${currentTheme.primary}` }}>
-                               <span className="vibe-label" style={{ color: currentTheme.primary }}>VIBE: {currentTheme.label}</span>
-                               <span className="vibe-val">{getTopInterest().toUpperCase()}</span>
+                           <div className="vibe-badge-top" style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}>
+                               <div className="metadata-label" style={{ color: currentTheme.primary, marginBottom: '4px' }}>Vibe Sector</div>
+                               <div className="serif-title" style={{ fontSize: '1.2rem' }}>{getTopInterest().toUpperCase()}</div>
                            </div>
                         )}
                     </div>
 
-                    <div className="hud-stats" style={{ display: 'flex', gap: '10px' }}>
-                        <div className="medal-box glass-panel" style={{ color: '#ffd700', padding: '8px 20px', fontSize: '0.85rem' }}>
-                            🏅 {getTotalCoins()} / 5
-                        </div>
-                        <div className={`backpack-box glass-panel ${backpackUpdated ? 'backpack-glow' : ''}`} style={{ padding: '8px 20px', fontSize: '0.85rem' }} onClick={() => setShowFavourites(true)}>
-                            🎒 {backpack.length} ITEMS
-                        </div>
+                    <div className="hud-right-actions">
+                         <button className="ghost-button" 
+                                 onMouseEnter={() => {
+                                     console.log('[HUD] Hover: Exit Button triggered');
+                                     window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 25, y: -25 } }));
+                                     window.dispatchEvent(new CustomEvent('orb-pulse'));
+                                 }}
+                                 onMouseLeave={() => {
+                                     console.log('[HUD] Leave: Exit Button');
+                                     window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 0, y: 0 } }));
+                                 }}
+                                 onClick={() => navigate('/')}>Exit HUD</button>
+                    </div>
+                </div>
+
+                {/* Vertical Side-Dock for Backpack & Medals */}
+                <div className="hud-side-dock" style={{ 
+                    position: 'fixed', 
+                    right: '40px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)', 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: '15px',
+                    zIndex: 9010, // Increased z-index
+                    fontFamily: 'Outfit, sans-serif',
+                    pointerEvents: 'auto' // Fix for backpack clickability
+                }}>
+                    <div className="metadata-label" style={{ 
+                        writingMode: 'vertical-rl', 
+                        transform: 'rotate(180deg)', 
+                        marginBottom: '15px',
+                        fontSize: '0.6rem',
+                        letterSpacing: '0.3em',
+                        color: 'rgba(255,255,255,0.4)',
+                        textAlign: 'center'
+                    }}>INVENTORY</div>
+                    
+                    <div className={`backpack-box ${backpackUpdated ? 'backpack-glow' : ''}`} 
+                         style={{ 
+                             width: '64px', 
+                             height: '84px', 
+                             display: 'flex', 
+                             alignItems: 'center', 
+                             justifyContent: 'center', 
+                             flexDirection: 'column',
+                             cursor: 'pointer',
+                             background: 'rgba(255, 255, 255, 0.03)',
+                             backdropFilter: 'blur(10px)',
+                             border: '0.5px solid rgba(255, 255, 255, 0.15)',
+                             borderRadius: '2px', // Leica Hard Edge
+                             transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
+                             boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                         }} 
+                         onMouseEnter={(e) => {
+                             window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 35, y: -15 } }));
+                             window.dispatchEvent(new CustomEvent('orb-pulse'));
+                             e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)';
+                             e.currentTarget.style.borderColor = 'rgba(255, 215, 0, 0.5)';
+                             e.currentTarget.style.transform = 'translateX(-10px)';
+                         }}
+                         onMouseLeave={(e) => {
+                             window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 0, y: 0 } }));
+                             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                             e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                             e.currentTarget.style.transform = 'translateX(0)';
+                         }}
+                         onClick={() => setShowFavourites(true)}>
+                        <span style={{ fontSize: '1.4rem', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.3))' }}>🎒</span>
+                        <span className="metadata-label" style={{ fontSize: '0.7rem', marginTop: '8px', color: '#fff' }}>{backpack.length}</span>
+                        <div style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.3)', marginTop: '2px', letterSpacing: '0.1em' }}>LOGS</div>
+                    </div>
+
+                    <div className="medal-box" 
+                         style={{ 
+                             width: '64px', 
+                             height: '84px', 
+                             display: 'flex', 
+                             alignItems: 'center', 
+                             justifyContent: 'center', 
+                             flexDirection: 'column',
+                             background: 'rgba(255, 255, 255, 0.03)',
+                             backdropFilter: 'blur(10px)',
+                             border: '0.5px solid rgba(255, 255, 255, 0.15)',
+                             borderRadius: '2px', // Leica Hard Edge
+                             transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
+                             boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                         }}
+                         onMouseEnter={(e) => {
+                             window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 35, y: 15 } }));
+                             window.dispatchEvent(new CustomEvent('orb-pulse'));
+                             e.currentTarget.style.background = 'rgba(0, 229, 255, 0.1)';
+                             e.currentTarget.style.borderColor = 'rgba(0, 229, 255, 0.5)';
+                             e.currentTarget.style.transform = 'translateX(-10px)';
+                         }}
+                         onMouseLeave={(e) => {
+                             window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 0, y: 0 } }));
+                             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                             e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                             e.currentTarget.style.transform = 'translateX(0)';
+                         }}
+                    >
+                        <span style={{ fontSize: '1.4rem', filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.3))' }}>🏅</span>
+                        <span className="metadata-label" style={{ fontSize: '0.7rem', marginTop: '8px', color: '#fff' }}>{getTotalCoins()}</span>
+                        <div style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.3)', marginTop: '2px', letterSpacing: '0.1em' }}>MERITS</div>
                     </div>
                 </div>
             </div>
@@ -449,21 +550,22 @@ const ExperiencePage = () => {
                             </div>
                         )}
                         
-                        <div className="modal-content-details">
-                            <h3 className="modal-title" style={{ color: modal.type === 'medal' ? '#FFD700' : currentTheme.primary }}>{modal.title.toUpperCase()}</h3>
-                            <p className="modal-desc">{modal.description}</p>
+                        <div className="modal-content-details" style={{ textAlign: 'left', padding: '20px 0' }}>
+                            <div className="metadata-label" style={{ color: modal.type === 'medal' ? '#FFD700' : currentTheme.primary, marginBottom: '8px' }}>Asset Identified</div>
+                            <h3 className="serif-title" style={{ fontSize: '2rem', marginBottom: '15px' }}>{modal.title}</h3>
+                            <p className="modal-desc" style={{ opacity: 0.8, fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '25px' }}>{modal.description}</p>
                             
                             {modal.collectible && (
-                                <div className="collectible-notice">
-                                    <span className="collectible-badge">🎒 COLLECTIBLE ITEM</span>
+                                <div className="collectible-notice" style={{ marginBottom: '30px' }}>
+                                    <span className="metadata-label" style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '4px 12px', borderRadius: '2px' }}>Personalized Profile Update Pending</span>
                                 </div>
                             )}
 
-                            <div className="modal-actions">
-                                <button onClick={handleAddToBackpackClick} className={modal.type === 'medal' ? 'btn-gold-pulse' : 'btn-primary'}>
-                                    {modal.type === 'medal' ? 'UNLOCK REWARD 🏅' : 'ADD TO BACKPACK'}
+                            <div className="modal-actions" style={{ display: 'flex', gap: '15px' }}>
+                                <button onClick={handleAddToBackpackClick} className="ghost-button" style={{ padding: '12px 30px', background: 'rgba(255,255,255,0.1)' }}>
+                                    {modal.type === 'medal' ? 'Log Interest' : 'Capture Asset'}
                                 </button>
-                                <button onClick={handleCloseModal} className="btn-close-minimal">✕ CLOSE</button>
+                                <button onClick={handleCloseModal} className="ghost-button" style={{ padding: '12px 30px' }}>Dismiss</button>
                             </div>
                         </div>
                     </div>
@@ -477,8 +579,37 @@ const ExperiencePage = () => {
                     const nextId = parseInt(id) + 1;
                     if (nextId <= 5) navigate(`/experience/${nextId}`);
                     else navigate('/completion');
-                }} className="btn-primary">NEXT EXPERIENCE &rarr;</button>
+                }} className="ghost-button" style={{ padding: '12px 40px', background: 'rgba(255,255,255,0.05)' }}>NEXT EXPERIENCE &rarr;</button>
             </div>
+
+            {/* Direct Lead Trigger (Toast Notification) */}
+            {activeLiveOffer && (
+                <div style={{
+                    position: 'fixed',
+                    bottom: '40px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 10000,
+                    padding: '1px' // For the thin border effect
+                }} className="animate-fade-in">
+                    <div className="glass-panel" style={{
+                        padding: '15px 30px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '20px',
+                        borderRadius: '2px', // Leica Hard Edge
+                        border: '0.5px solid rgba(255, 255, 255, 0.3)',
+                    }}>
+                        <div style={{ fontSize: '1.5rem' }}>{activeLiveOffer.icon}</div>
+                        <div>
+                            <div className="metadata-label" style={{ fontSize: '0.6rem', marginBottom: '4px', color: 'var(--color-accent-primary)' }}>Direct Lead Capture</div>
+                            <div className="serif-title" style={{ fontSize: '1.1rem', letterSpacing: '0.05em' }}>
+                                Profile Updated: {activeLiveOffer.baseTitle} Logged.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

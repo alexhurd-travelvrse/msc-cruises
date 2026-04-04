@@ -34,17 +34,17 @@ const FavouritesOverlay = ({ onClose }) => {
     return (
         <div className="favourites-overlay">
             <div className="favourites-panel glass-panel animate-fade-in">
-                <div className="favourites-header">
+                <div className="favourites-header" style={{ padding: '30px 40px', borderBottom: '0.5px solid rgba(255, 255, 255, 0.1)' }}>
                     <div>
-                        <h2 className="panel-title" style={{ margin: 0 }}>{(publicConfig?.teleport?.backpackTitle || "FAVOURITES & BACKPACK").toUpperCase()}</h2>
-                        <p className="panel-subtitle" style={{ margin: 0 }}>{(publicConfig?.teleport?.backpackDesc || "CURATED FOR YOUR NEXT VOYAGE").toUpperCase()}</p>
+                        <h2 className="serif-title" style={{ margin: 0, fontSize: '2rem' }}>{(publicConfig?.teleport?.backpackTitle || "Favourites & Backpack").toUpperCase()}</h2>
+                        <p className="metadata-label" style={{ margin: '5px 0 0 0', opacity: 0.6 }}>{(publicConfig?.teleport?.backpackDesc || "Curated For Your Next Voyage")}</p>
                     </div>
-                    <button onClick={onClose} className="close-btn">✕</button>
+                    <button onClick={onClose} className="ghost-button" style={{ fontSize: '1.2rem', padding: '5px 15px' }}>✕</button>
                 </div>
 
-                <div className="favourites-scroll">
+                <div className="favourites-scroll" style={{ padding: '30px 40px' }}>
                     {/* Vibe Grid */}
-                    <h3 className="panel-subtitle" style={{ color: '#FFD700', marginBottom: '1rem' }}>YOUR VIBE PROFILE</h3>
+                    <h3 className="metadata-label" style={{ color: 'var(--color-accent-primary)', marginBottom: '2rem' }}>Digital Guest Profile</h3>
                     <div className="vibe-grid">
                         {vibeCategories.map(vibe => {
                             const score = interestInsights ? (interestInsights[vibe.id] || 0) : 0;
@@ -63,7 +63,7 @@ const FavouritesOverlay = ({ onClose }) => {
                     </div>
 
                     {/* Backpack Items */}
-                    <h3 className="panel-subtitle" style={{ color: '#FFD700', marginBottom: '1.5rem' }}>BACKPACK ITEMS ({backpack.length})</h3>
+                    <h3 className="metadata-label" style={{ color: 'var(--color-accent-primary)', marginBottom: '1.5rem', marginTop: '3rem' }}>Captured Experience Assets ({backpack.length})</h3>
                     <div className="curated-feed">
                         {backpack.length === 0 ? (
                             <p style={{ textAlign: 'center', opacity: 0.5, padding: '2rem' }}>Your backpack is empty. Explore and find activities!</p>

@@ -99,18 +99,19 @@ function SceneEditor({
                     onClick={() => window.dispatchEvent(new CustomEvent('force-camera-reset'))}
                     style={{
                         padding: '10px 20px',
-                        background: 'rgba(0, 200, 83, 0.85)',
-                        color: 'white',
-                        border: '1px solid #00E676',
-                        borderRadius: '8px',
+                        background: 'rgba(255, 215, 0, 0.1)',
+                        color: '#FFD700',
+                        border: '1px solid rgba(255, 215, 0, 0.3)',
+                        borderRadius: '2px', // Leica Hard Edge
                         cursor: 'pointer',
-                        fontSize: '0.8rem',
-                        fontWeight: 'bold',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                        transition: 'all 0.2s ease',
-                        backdropFilter: 'blur(5px)',
+                        fontSize: '0.7rem',
+                        fontWeight: '400',
+                        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        backdropFilter: 'blur(10px)',
                         textTransform: 'uppercase',
-                        letterSpacing: '1px'
+                        letterSpacing: '0.2em',
+                        fontFamily: 'Outfit, sans-serif'
                     }}
                 >
                     🎯 RECENTER

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Montserrat:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@1,400&family=Inter:wght@400;700&display=swap');
 
 :root {
   /* Color Palette - Restored Dark Sleek with Aqua */
@@ -18,11 +18,16 @@
   --gradient-tropical: linear-gradient(135deg, #5BC0DE 0%, #3D8A9C 100%);
   --gradient-sunset: linear-gradient(90deg, #FF7E5F, #FEB47B);
 
-  /* Glassmorphism */
-  --glass-border: 1px solid rgba(255, 255, 255, 0.4);
-  --glass-shadow: 0 8px 32px rgba(91, 192, 222, 0.15);
-  --backdrop-blur: blur(12px);
-
+  /* Luxury HUD Glassmorphism System */
+  --luxury-glass-bg: rgba(255, 255, 255, 0.05);
+  --luxury-glass-blur: blur(25px) saturate(120%);
+  --luxury-glass-border: 0.5px solid rgba(255, 255, 255, 0.2);
+  --luxury-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  
+  /* Luxury Typography Hierarchy */
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
+  
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
@@ -85,37 +90,85 @@ h1, h2, h3, h4, h5, h6, .hero-title, .status-title, .panel-title {
   color: transparent;
 }
 
-.glass-panel {
-  background: var(--color-bg-card);
-  backdrop-filter: var(--backdrop-blur);
-  -webkit-backdrop-filter: var(--backdrop-blur);
-  border: var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: min(20px, 2.5vh);
+.glass-panel, .luxury-hud-panel {
+  background: var(--luxury-glass-bg);
+  backdrop-filter: var(--luxury-glass-blur);
+  -webkit-backdrop-filter: var(--luxury-glass-blur);
+  border: var(--luxury-glass-border);
+  box-shadow: var(--luxury-glass-shadow);
+  border-radius: 4px; /* Leica hard-edge design */
   transform: translateZ(0);
 }
 
 .vibe-box, .medal-box, .backpack-box, .vibe-badge-top {
-  backdrop-filter: blur(20px) saturate(200%);
-  -webkit-backdrop-filter: blur(20px) saturate(200%);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: var(--luxury-glass-bg);
+  backdrop-filter: var(--luxury-glass-blur);
+  -webkit-backdrop-filter: var(--luxury-glass-blur);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
+  border: var(--luxury-glass-border);
+  box-shadow: var(--luxury-glass-shadow);
+  border-radius: 4px;
 }
+
+.serif-title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  color: #FFFFFF;
+}
+
+.metadata-label {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ghost-button {
+  background: transparent;
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 8px 16px;
+  border-radius: 2px;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ghost-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
 
 .vibe-box:hover, .medal-box:hover, .backpack-box:hover, .vibe-badge-top:hover {
   transform: translateY(-4px) scale(1.05);
   box-shadow: 0 12px 40px rgba(0, 229, 255, 0.2);
 }
 
-.backpack-glow {
-  animation: backpack-pulse 2s infinite !important;
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
 }
 
 @keyframes backpack-pulse {
   0% { box-shadow: 0 8px 32px rgba(0, 229, 255, 0.15); }
   50% { box-shadow: 0 8px 32px rgba(0, 229, 255, 0.45); }
   100% { box-shadow: 0 8px 32px rgba(0, 229, 255, 0.15); }
+}
+
+/* Technical HUD Vignette */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.4) 100%);
+  pointer-events: none;
+  z-index: 9000;
 }
 
 .btn-primary {
@@ -1638,7 +1691,7 @@ h1, h2, h3, h4, h5, h6, .hero-title, .status-title, .panel-title {
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 9000;
+  z-index: 9500;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1828,7 +1881,7 @@ h1, h2, h3, h4, h5, h6, .hero-title, .status-title, .panel-title {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 3000;
+  z-index: 9550;
   display: flex;
   align-items: center;
   justify-content: center;
