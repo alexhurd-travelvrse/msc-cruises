@@ -12,8 +12,6 @@ export const InputManager = () => {
         let interactionMode = "instant";
 
         if (!isMobile) {
-            document.body.style.cursor = 'none';
-            
             const handleMouseMove = (e) => {
                 targetOrbPos.x = e.clientX;
                 targetOrbPos.y = e.clientY;
@@ -65,7 +63,6 @@ export const InputManager = () => {
 
             return () => {
                 isRunning = false;
-                document.body.style.cursor = 'auto';
                 window.removeEventListener('mousemove', handleMouseMove);
                 window.removeEventListener('mousedown', handleMouseDown);
                 window.removeEventListener('mouseup', handleMouseUp);
