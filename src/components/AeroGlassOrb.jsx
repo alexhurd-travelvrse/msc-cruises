@@ -7,8 +7,8 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
     const [showHint, setShowHint] = useState(true);
     
     const [{ pos }, api] = useSpring(() => ({
-        pos: [window.innerWidth / 2, window.innerHeight / 2],
-        config: { mass: 1, tension: 170, friction: 26 }
+        pos: [80, window.innerHeight / 2],
+        config: { tension: 120, friction: 14 }
     }));
     
     const [pulseProps, pulseApi] = useSpring(() => ({
@@ -27,13 +27,8 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
 
     useEffect(() => {
         const handleUpdate = (e) => {
-            const { screenPos, isMobile: eventIsMobile, tether } = e.detail;
+            const { tether } = e.detail;
             
-            // Only PC follows cursor entirely
-            if (!eventIsMobile) {
-                api.start({ pos: [screenPos.x, screenPos.y], immediate: true });
-            }
-
             if (tether) {
                 tetherApi.start({ tetherLength: tether.length, tetherAngle: tether.angle });
             } else {
@@ -41,13 +36,17 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
             }
         };
 
-        const handleScanStart = () => {
+        const handleScanStart = (e) => {
             interactState.current.isScanning = true;
             pulseApi.start({
-                scale: 1.1,
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(0, 150, 255, 0.8), inset 0 0 30px rgba(0, 229, 255, 0.5)',
-                borderColor: 'rgba(0, 229, 255, 0.8)'
+                scale: 1.15,
+                boxShadow: '0 0 40px rgba(0, 229, 255, 0.8), inset 0 0 20px rgba(0, 229, 255, 0.5)',
+                borderColor: 'rgba(0, 229, 255, 0.9)'
             });
+            // AI flies to the target coordinates
+            if (e.detail && e.detail.x !== undefined && e.detail.y !== undefined) {
+                api.start({ pos: [e.detail.x, e.detail.y] });
+            }
         };
 
         const handleScanEnd = () => {
@@ -57,6 +56,8 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
                 boxShadow: '0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)',
                 borderColor: 'rgba(255, 255, 255, 0.2)'
             });
+            // Returns to resting dock on left side
+            api.start({ pos: [80, window.innerHeight / 2] });
         };
 
         const handleSelect = () => {
@@ -68,7 +69,6 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
             if(onClick) onClick();
         };
 
-        window.addEventListener('orb-update', handleUpdate);
         window.addEventListener('orb-scan-start', handleScanStart);
         window.addEventListener('orb-scan-end', handleScanEnd);
         window.addEventListener('orb-select', handleSelect);
@@ -76,64 +76,12 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
         const hintTimer = setTimeout(() => setShowHint(false), 7000);
 
         return () => {
-            window.removeEventListener('orb-update', handleUpdate);
             window.removeEventListener('orb-scan-start', handleScanStart);
             window.removeEventListener('orb-scan-end', handleScanEnd);
             window.removeEventListener('orb-select', handleSelect);
             clearTimeout(hintTimer);
         };
     }, []);
-
-    // Mobile Pointer Events
-    const handlePointerDown = (e) => {
-        if (!isMobile) return;
-        e.currentTarget.setPointerCapture(e.pointerId);
-        interactState.current.pointerDown = true;
-    };
-
-    const handlePointerMove = (e) => {
-        if (!isMobile || !interactState.current.pointerDown) return;
-        
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2 - 100; // offset slightly for mobile thumb
-        const dx = e.clientX - cx;
-        const dy = e.clientY - cy;
-
-        api.start({ pos: [e.clientX, e.clientY], immediate: true });
-
-        window.dispatchEvent(new CustomEvent('orb-update', { 
-            detail: { 
-                screenPos: { x: e.clientX, y: e.clientY }, 
-                cameraMove: { x: 0, y: 0 }, 
-                isMobile: true,
-                tether: { 
-                    length: Math.sqrt(dx*dx + dy*dy), 
-                    angle: Math.atan2(dy, dx) 
-                } 
-            } 
-        }));
-    };
-
-    const handlePointerUp = (e) => {
-        if (!isMobile) return;
-        interactState.current.pointerDown = false;
-        e.currentTarget.releasePointerCapture(e.pointerId);
-        
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2 - 100;
-        
-        api.start({ pos: [cx, cy] });
-        tetherApi.start({ tetherLength: 0 });
-        
-        window.dispatchEvent(new CustomEvent('orb-update', { 
-            detail: { 
-                screenPos: { x: cx, y: cy }, 
-                cameraMove: { x: 0, y: 0 }, 
-                isMobile: true,
-                tether: { length: 0, angle: 0 }
-            } 
-        }));
-    };
 
     return (
         <>
@@ -156,10 +104,6 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
 
             <animated.div
                 ref={orbRef}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerUp}
                 style={{
                     position: 'fixed',
                     top: 0, left: 0,
@@ -170,7 +114,7 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
                     background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), rgba(0,0,0,0.6))',
                     backdropFilter: 'blur(30px) saturate(140%)',
                     zIndex: 9999,
-                    pointerEvents: isMobile ? 'auto' : 'none', // Active on mobile for touch, passive on PC
+                    pointerEvents: 'none', // AI driven, passive
                     transform: pos.to((x, y) => `translate3d(${x}px, ${y}px, 0)`),
                     boxShadow: pulseProps.boxShadow,
                     borderColor: pulseProps.borderColor,

@@ -76,10 +76,10 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
             const dy = orbPos.current.y - py;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            // If Orb is within generous 175px holding radius
+            // If focus point (mouse or center screen) is within generous 175px radius
             if (dist < 175 && vec.z < 1) { // vec.z < 1 ensures it's in front of camera
                 if (!isScanning.current) {
-                    window.dispatchEvent(new CustomEvent('orb-scan-start'));
+                    window.dispatchEvent(new CustomEvent('orb-scan-start', { detail: { x: px, y: py } }));
                     isScanning.current = true;
                 }
                 
