@@ -53,14 +53,28 @@ const AvatarController = ({ startPos = [0, 0, 0], boundaries = [] }) => {
             }
         };
 
+        const handleJoystickMove = (e) => {
+            input.current.orbMoveX = e.detail.x;
+            input.current.orbMoveY = e.detail.y;
+        };
+        
+        const handleJoystickEnd = () => {
+            input.current.orbMoveX = 0;
+            input.current.orbMoveY = 0;
+        };
+
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
         window.addEventListener('orb-update', handleOrbUpdate);
+        window.addEventListener('joystick-move', handleJoystickMove);
+        window.addEventListener('joystick-end', handleJoystickEnd);
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
             window.removeEventListener('orb-update', handleOrbUpdate);
+            window.removeEventListener('joystick-move', handleJoystickMove);
+            window.removeEventListener('joystick-end', handleJoystickEnd);
         };
     }, [startPos, camera]);
 

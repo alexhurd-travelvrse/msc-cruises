@@ -101,14 +101,10 @@ export const AeroGlassOrb = ({ onClick, avatarUrl }) => {
 
         api.start({ pos: [e.clientX, e.clientY], immediate: true });
 
-        // Dispatch to camera
-        const normalizedX = Math.max(-1, Math.min(1, dx / (window.innerWidth / 3)));
-        const normalizedY = Math.max(-1, Math.min(1, dy / (window.innerHeight / 3)));
-        
         window.dispatchEvent(new CustomEvent('orb-update', { 
             detail: { 
                 screenPos: { x: e.clientX, y: e.clientY }, 
-                cameraMove: { x: normalizedX, y: normalizedY }, 
+                cameraMove: { x: 0, y: 0 }, 
                 isMobile: true,
                 tether: { 
                     length: Math.sqrt(dx*dx + dy*dy), 

@@ -82,6 +82,11 @@ const ExperiencePage = () => {
     const brandingSubtitle = publicConfig?.home?.subtitle || "Virtual Cruise Experience";
 
     const location = useLocation();
+    
+    // Joystick toggle state
+    const [isMobile] = useState(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
+    const [activeCompanyId, setActiveCompanyId] = useState(import.meta.env.VITE_ACTIVE_COMPANY || null);
     const queryParams = new URLSearchParams(location.search);
     const showEditor = queryParams.get('editor') === 'true';
 
@@ -346,6 +351,7 @@ const ExperiencePage = () => {
                 }}
             />}
 
+            {isStarted && isMobile && <Joystick color={currentTheme.primary} />}
 
             {isStarted && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9005, pointerEvents: 'none' }}>

@@ -56,26 +56,8 @@ export const InputManager = () => {
                 orbPos.x += (targetOrbPos.x - orbPos.x) * 0.1;
                 orbPos.y += (targetOrbPos.y - orbPos.y) * 0.1;
 
-                const cx = window.innerWidth / 2;
-                const cy = window.innerHeight / 2;
-                const dx = orbPos.x - cx;
-                const dy = orbPos.y - cy;
-                const MathDistSq = dx * dx + dy * dy;
-                const maxDim = Math.min(window.innerWidth, window.innerHeight);
-                const deadzoneRadiusSq = (maxDim * 0.1) * (maxDim * 0.1);
-
-                let moveX = 0;
-                let moveY = 0;
-                
-                if (MathDistSq > deadzoneRadiusSq) {
-                     const dist = Math.sqrt(MathDistSq);
-                     const factor = Math.min(1, Math.abs(dist - maxDim * 0.1) / (maxDim * 0.4));
-                     moveX = (dx / dist) * factor;
-                     moveY = (dy / dist) * factor;
-                }
-
                 window.dispatchEvent(new CustomEvent('orb-update', { 
-                    detail: { screenPos: orbPos, cameraMove: { x: moveX, y: moveY }, isMobile: false } 
+                    detail: { screenPos: orbPos, cameraMove: { x: 0, y: 0 }, isMobile: false } 
                 }));
                 requestAnimationFrame(loop);
             };
