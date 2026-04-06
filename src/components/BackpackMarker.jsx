@@ -1,40 +1,161 @@
-import React, { useRef } from 'react';
-import { Billboard, Text, Float } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import React, { useRef, useState, useEffect } from 'react';
+import { Billboard, Text, Float, PositionalAudio } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Vector3 } from 'three';
 
-/**
- * Premium Backpack Marker - Minimal Luxury Version
- */
-const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type }, ref) => {
+const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant' }, ref) => {
     const groupRef = useRef();
+    const ringRef = useRef();
+    const bgRef = useRef();
+    const borderRef = useRef();
+    const textRef = useRef();
     
-    // Luxury Scene-specific color mapping
+    const [isMaterialized, setIsMaterialized] = useState(discoveryMode === 'instant');
+    const scanProgress = useRef(0);
+    const orbPos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    const isScanning = useRef(false);
+    
+    const { camera } = useThree();
+
     const sceneColors = {
-        '1': '#d4af37', // Yacht Club - Gold
-        '2': '#00e5ff', // Spa - Teal
-        '3': '#ff8c00', // Dining - Social Orange
-        '4': '#ff3d00', // Arcade - Racing Red
-        '5': '#ffcc00'  // Culture - Culture Yellow
+        '1': '#d4af37',
+        '2': '#00e5ff',
+        '3': '#ff8c00',
+        '4': '#ff3d00',
+        '5': '#ffcc00'
     };
-    
     const color = sceneColors[experienceId] || '#ffffff';
 
-    // Pulse animation for the glow ring
-    useFrame(({ clock }) => {
-        if (groupRef.current) {
-            const time = clock.getElapsedTime();
-            const ring = groupRef.current.getObjectByName('glowRing');
-            if (ring) {
-                ring.scale.setScalar(1 + Math.sin(time * 3) * 0.1);
-                ring.material.opacity = 0.4 + Math.sin(time * 3) * 0.2;
+    useEffect(() => {
+        const handleOrbUpdate = (e) => {
+            orbPos.current = e.detail.screenPos;
+        };
+        const handleScanStart = () => { isScanning.current = true; };
+        const handleScanEnd = () => { 
+            isScanning.current = false;
+            if (!isMaterialized && discoveryMode === 'scan') scanProgress.current = 0; 
+        };
+
+        window.addEventListener('orb-update', handleOrbUpdate);
+        window.addEventListener('orb-scan-start', handleScanStart);
+        window.addEventListener('orb-scan-end', handleScanEnd);
+        return () => {
+            window.removeEventListener('orb-update', handleOrbUpdate);
+            window.removeEventListener('orb-scan-start', handleScanStart);
+            window.removeEventListener('orb-scan-end', handleScanEnd);
+        };
+    }, [isMaterialized, discoveryMode]);
+
+    // Track hot-reloaded changes from the SceneEditor
+    useEffect(() => {
+        setIsMaterialized(discoveryMode === 'instant');
+        scanProgress.current = 0;
+    }, [discoveryMode]);
+
+    useFrame(({ clock, camera, size: viewportSize }) => {
+        if (!groupRef.current) return;
+
+        // Visual pulse
+        const time = clock.getElapsedTime();
+        if (ringRef.current && isMaterialized) {
+            ringRef.current.scale.setScalar(1 + Math.sin(time * 3) * 0.1);
+            ringRef.current.material.opacity = 0.4 + Math.sin(time * 3) * 0.2;
+        }
+
+        // Logic for Scan Mode
+        if (discoveryMode === 'scan' && !isMaterialized) {
+            // Project 3D pos to 2D
+            const vec = new Vector3();
+            groupRef.current.getWorldPosition(vec);
+            vec.project(camera);
+
+            const px = (vec.x * 0.5 + 0.5) * viewportSize.width;
+            const py = (vec.y * -0.5 + 0.5) * viewportSize.height;
+
+            const dx = orbPos.current.x - px;
+            const dy = orbPos.current.y - py;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            // If Orb is within generous 175px holding radius
+            if (dist < 175 && vec.z < 1) { // vec.z < 1 ensures it's in front of camera
+                if (!isScanning.current) {
+                    window.dispatchEvent(new CustomEvent('orb-scan-start'));
+                    isScanning.current = true;
+                }
+                
+                scanProgress.current += 1.0 / 60.0; // Assume 60fps
+                
+                if (scanProgress.current >= 0.6) { // Reduced from 1.5s to 0.6s for easier discovery
+                    setIsMaterialized(true);
+                    window.dispatchEvent(new CustomEvent('orb-scan-end')); // stop pulsar
+                    isScanning.current = false;
+                    console.log("Direct Lead Captured: High Intent/Qualified Lead (Scan Mode)");
+                    window.dispatchEvent(new CustomEvent('captureLead', { 
+                        detail: { 
+                            timestamp: Date.now(),
+                            interaction_mode: 'scan',
+                            discovery_target: `Target_${experienceId}`,
+                            user_segment: 'High_Intent_Luxury',
+                            device_type: /Android|webOS|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                        } 
+                    }));
+                }
+            } else {
+                if (isScanning.current) {
+                    window.dispatchEvent(new CustomEvent('orb-scan-end'));
+                    isScanning.current = false;
+                }
+                // Very slow decay instead of aggressive hiding, acting as "stickiness"
+                scanProgress.current = Math.max(0, scanProgress.current - 0.005);
+            }
+            
+            // Visuals while not materialized
+            if (bgRef.current && borderRef.current && textRef.current && ringRef.current && groupRef.current) {
+                const alpha = Math.min(1, scanProgress.current / 0.6);
+                
+                // Aggressively hide the entire object from the Engine if alpha is 0
+                groupRef.current.visible = alpha > 0.02;
+
+                bgRef.current.material.opacity = alpha * 0.8;
+                borderRef.current.material.opacity = alpha;
+                textRef.current.fillOpacity = alpha; // Drei Text uses fillOpacity
+                ringRef.current.material.opacity = alpha * 0.4;
+                
+                // Ring expands as progress fills (like a circular progress ring filling)
+                borderRef.current.scale.setScalar(0.5 + alpha * 0.5);
+            }
+        } else if (discoveryMode === 'sonic' && !isMaterialized) {
+            if (groupRef.current) groupRef.current.visible = false; // Sonic relies on distance
+        } else {
+            // Instant or already materialized
+            if (groupRef.current) groupRef.current.visible = true;
+        }
+
+        // Logic for Sonic Mode vibrations on mobile
+        if (discoveryMode === 'sonic' && !isMaterialized) {
+            const vec = new Vector3();
+            groupRef.current.getWorldPosition(vec);
+            const dist = camera.position.distanceTo(vec);
+            if (dist < 1.0 && navigator.vibrate) {
+                navigator.vibrate(40);
+                setIsMaterialized(true);
+                console.log("Direct Lead Captured: Sensory Engagement (Sonic Mode)");
+                window.dispatchEvent(new CustomEvent('captureLead', { 
+                    detail: { 
+                        timestamp: Date.now(),
+                        interaction_mode: 'sonic',
+                        discovery_target: `Target_${experienceId}`,
+                        user_segment: 'Sensory_Engagement',
+                        device_type: /Android|webOS|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                    } 
+                }));
             }
         }
     });
 
-    // Standardization: Use a single premium 'Backpack' icon for all items
-    const icon = '🎒';
-
     if (isCollected) return null;
+
+    const icon = '🎒';
 
     return (
         <group position={pos} ref={(el) => {
@@ -43,49 +164,73 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
             else if (ref) ref.current = el;
         }}>
             <Float
-                speed={2} 
-                rotationIntensity={0.5} 
-                floatIntensity={0.5}
+                speed={isMaterialized ? 2 : 0} 
+                rotationIntensity={isMaterialized ? 0.5 : 0} 
+                floatIntensity={isMaterialized ? 0.5 : 0}
                 floatingRange={[-0.05, 0.05]}
             >
                 <Billboard
                     follow={true}
                     onClick={(e) => {
                         e.stopPropagation();
-                        onClick(e);
+                        // Only clickable if materialized
+                        if (isMaterialized) {
+                            if (discoveryMode === 'instant') {
+                                console.log("Direct Lead Captured: General Interest (Instant Mode)");
+                                window.dispatchEvent(new CustomEvent('captureLead', { 
+                                    detail: { 
+                                        timestamp: Date.now(),
+                                        interaction_mode: 'instant',
+                                        discovery_target: `Target_${experienceId}`,
+                                        user_segment: 'General_Interest',
+                                        device_type: /Android|webOS|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                                    } 
+                                }));
+                            }
+                            window.dispatchEvent(new CustomEvent('orb-select')); // Dispatch select visually
+                            onClick(e);
+                        }
                     }}
                 >
-                    {/* Glow Ring */}
-                    <mesh name="glowRing" position={[0, 0, -0.01]}>
+                    <mesh ref={ringRef} position={[0, 0, -0.01]}>
                         <ringGeometry args={[size * 0.45, size * 0.52, 64]} />
-                        <meshBasicMaterial color={color} transparent opacity={0.6} depthTest={false} />
+                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : color} transparent opacity={isMaterialized ? 0.6 : 0} depthTest={false} />
                     </mesh>
                     
-                    {/* Background Disc - Premium Glass Effect */}
-                    <mesh>
+                    <mesh ref={bgRef}>
                         <circleGeometry args={[size * 0.42, 64]} />
-                        <meshBasicMaterial color="#0b1e3b" transparent opacity={0.8} depthTest={false} />
+                        <meshBasicMaterial color="#0b1e3b" transparent opacity={isMaterialized ? 0.8 : 0} depthTest={false} />
                     </mesh>
 
-                    {/* Outer Border */}
-                    <mesh position={[0, 0, 0.001]}>
+                    <mesh ref={borderRef} position={[0, 0, 0.001]}>
                         <ringGeometry args={[size * 0.4, size * 0.42, 64]} />
-                        <meshBasicMaterial color={color} transparent opacity={1} depthTest={false} />
+                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : color} transparent opacity={isMaterialized ? 1 : 0} depthTest={false} />
                     </mesh>
 
-                    {/* Icon - Minimal Emoji Asset with dynamic tinting */}
                     <Text 
+                        ref={textRef}
                         position={[0, 0, 0.02]} 
                         fontSize={size * 0.45} 
                         depthTest={false}
                         color={color}
+                        fillOpacity={isMaterialized ? 1 : 0}
                     >
                         {icon}
                     </Text>
                 </Billboard>
 
-                {/* Light source for the marker itself */}
-                <pointLight intensity={1.5} color={color} distance={2} decay={2} />
+                {discoveryMode === 'sonic' && !isMaterialized && (
+                     <PositionalAudio 
+                         url="/assets/placeholder_sonic_ping.mp3" 
+                         distanceModel="exponential" 
+                         rolloffFactor={2} 
+                         refDistance={0.5} 
+                         autoplay 
+                         loop 
+                     />
+                )}
+
+                {isMaterialized && <pointLight intensity={1.5} color={color} distance={2} decay={2} />}
             </Float>
         </group>
     );

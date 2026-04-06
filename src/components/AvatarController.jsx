@@ -16,6 +16,8 @@ const AvatarController = ({ startPos = [0, 0, 0], boundaries = [] }) => {
         backward: false,
         left: false,
         right: false,
+        orbMoveX: 0,
+        orbMoveY: 0,
     });
 
     useEffect(() => {
@@ -43,19 +45,29 @@ const AvatarController = ({ startPos = [0, 0, 0], boundaries = [] }) => {
             if (code === 'KeyD' || code === 'ArrowRight') input.current.right = false;
         };
 
+        const handleOrbUpdate = (e) => {
+            const { cameraMove } = e.detail;
+            if (cameraMove) {
+                input.current.orbMoveX = cameraMove.x;
+                input.current.orbMoveY = cameraMove.y;
+            }
+        };
+
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
+        window.addEventListener('orb-update', handleOrbUpdate);
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
+            window.removeEventListener('orb-update', handleOrbUpdate);
         };
     }, [startPos, camera]);
 
     useFrame((state, delta) => {
-        const { forward, backward, left, right } = input.current;
+        const { forward, backward, left, right, orbMoveX, orbMoveY } = input.current;
 
-        if (forward || backward || left || right) {
+        if (forward || backward || left || right || orbMoveX !== 0 || orbMoveY !== 0) {
             const camForward = new Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
             camForward.y = 0;
             if (camForward.lengthSq() > 0.0001) {
@@ -77,6 +89,12 @@ const AvatarController = ({ startPos = [0, 0, 0], boundaries = [] }) => {
             if (backward) moveDir.sub(camForward);
             if (left) moveDir.sub(camRight);
             if (right) moveDir.add(camRight);
+            
+            // Orb movement (analog)
+            if (orbMoveY < 0) moveDir.add(camForward.clone().multiplyScalar(-orbMoveY));
+            if (orbMoveY > 0) moveDir.sub(camForward.clone().multiplyScalar(orbMoveY));
+            if (orbMoveX < 0) moveDir.sub(camRight.clone().multiplyScalar(-orbMoveX));
+            if (orbMoveX > 0) moveDir.add(camRight.clone().multiplyScalar(orbMoveX));
 
             if (moveDir.lengthSq() > 0) {
                 moveDir.normalize();

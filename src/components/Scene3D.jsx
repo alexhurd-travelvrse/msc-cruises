@@ -686,6 +686,7 @@ const Scene3D = ({
 
     const [localPositions, setLocalPositions] = React.useState({});
     const [localRotations, setLocalRotations] = React.useState({});
+    const [localDiscoveryModes, setLocalDiscoveryModes] = React.useState({});
     const [editorMode, setEditorMode] = React.useState('translate');
 
     const currentCoinPos = localPositions['coin'] || coinPos;
@@ -731,12 +732,14 @@ const Scene3D = ({
             items.forEach((item, idx) => {
                 const id = item.id || `item-${experienceId}-${idx}`;
                 const pos = localPositions[id] || item.position || [0, 0, 0];
+                const mode = localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3];
                 
                 objs.push({
                     id: id,
                     name: item.name || `Item ${idx + 1}`,
                     pos: [pos[0], pos[1], pos[2]],
-                    rot: getDegrees(id, item.rotation || [0, 0, 0])
+                    rot: getDegrees(id, item.rotation || [0, 0, 0]),
+                    discoveryMode: mode
                 });
             });
             config.extraObjects?.forEach((obj, index) => {
@@ -770,6 +773,10 @@ const Scene3D = ({
                     // Convert degrees from UI to radians for 3D
                     const rads = e.detail.rot.map(d => d * (Math.PI / 180));
                     setLocalRotations(prev => ({ ...prev, [e.detail.id]: rads }));
+                }
+                if (e.detail.discoveryMode !== undefined) {
+                    console.log("[Scene3D] Manual Discovery Mode sync received:", e.detail.id, e.detail.discoveryMode);
+                    setLocalDiscoveryModes(prev => ({ ...prev, [e.detail.id]: e.detail.discoveryMode }));
                 }
             }
         };
@@ -896,6 +903,7 @@ const Scene3D = ({
                                             size={0.65} // Standardized premium size
                                             isCollected={isItemCollected}
                                             type={item.type}
+                                            discoveryMode={localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3]}
                                             onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
                                                 detail: { 
                                                     name: 'BackpackItem', 

@@ -182,7 +182,8 @@ function SceneEditor({
                     objects: objects.map(obj => ({
                         id: obj.id,
                         pos: obj.pos,
-                        rot: obj.rot
+                        rot: obj.rot,
+                        discoveryMode: obj.discoveryMode
                     }))
                 })
             });
@@ -397,6 +398,36 @@ function SceneEditor({
                             />
                         ))}
                     </div>
+
+                    {selectedObj.id !== 'camera' && selectedObj.id !== 'coin' && !selectedObj.id.startsWith('extra-') && (
+                        <div style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                            <label style={{ fontSize: '0.7rem', color: '#888', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                Discovery Mode (Lead Magnet)
+                            </label>
+                            <select 
+                                value={selectedObj.discoveryMode || 'instant'}
+                                onChange={(e) => {
+                                    window.dispatchEvent(new CustomEvent('scene-editor-manual-update', {
+                                        detail: { id: selectedObj.id, discoveryMode: e.target.value }
+                                    }));
+                                }}
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '10px', 
+                                    background: 'rgba(0,0,0,0.5)', 
+                                    color: '#00e5ff', 
+                                    border: '1px solid rgba(0,229,255,0.3)', 
+                                    borderRadius: '6px',
+                                    outline: 'none',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <option value="instant">Instant (Passive Interest)</option>
+                                <option value="scan">Scan / Magnifying Glass (High Intent)</option>
+                                <option value="sonic">Sonic Proximity (Sensory Lead)</option>
+                            </select>
+                        </div>
+                    )}
                 </div>
             )}
 

@@ -52,12 +52,14 @@ const sceneEditorPlugin = () => ({
                          if (itemIdx !== -1) {
                              exp.items[itemIdx].position = obj.pos;
                              exp.items[itemIdx].rotation = obj.rot;
+                             if (obj.discoveryMode) exp.items[itemIdx].discoveryMode = obj.discoveryMode;
                          } else {
                              // Fallback for named IDs like 'activity' or 'remote' to indices 0 and 1
                              const fallbackIdx = (obj.id === 'remote') ? 0 : (obj.id === 'activity' ? 1 : -1);
                              if (fallbackIdx !== -1 && exp.items && exp.items[fallbackIdx]) {
                                  exp.items[fallbackIdx].position = obj.pos;
                                  exp.items[fallbackIdx].rotation = obj.rot;
+                                 if (obj.discoveryMode) exp.items[fallbackIdx].discoveryMode = obj.discoveryMode;
                              }
                          }
                      } else if (obj.id.startsWith('extra-')) {
@@ -135,7 +137,6 @@ export default defineConfig({
   plugins: [react(), sceneEditorPlugin(), voiceoverPlugin()],
   server: {
     allowedHosts: true,
-    hmr: { clientPort: 443 },
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp'
@@ -143,7 +144,6 @@ export default defineConfig({
   },
   preview: {
     allowedHosts: true,
-    hmr: { clientPort: 443 }
   },
   build: {
     chunkSizeWarningLimit: 2000,

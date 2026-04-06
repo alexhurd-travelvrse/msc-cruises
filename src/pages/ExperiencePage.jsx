@@ -3,7 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import ExperienceCanvas from '../components/ExperienceCanvas';
 import NauticalLoader from '../components/NauticalLoader';
 import FavouritesOverlay from '../components/FavouritesOverlay';
-import DigitalGuideOverlay from '../components/DigitalGuideOverlay';
+import { AeroGlassOrb } from '../components/AeroGlassOrb';
+import { InputManager } from '../components/InputManager';
 import Joystick from '../components/Joystick';
 import { useGame } from '../context/GameContext';
 import { useInfluencer } from '../context/InfluencerContext';
@@ -334,12 +335,16 @@ const ExperiencePage = () => {
                 <NauticalLoader isVisible={true} isSplatLoaded={false} />
             )}
 
-            <DigitalGuideOverlay 
+            <InputManager />
+
+            {isStarted && <AeroGlassOrb 
                 avatarUrl={publicConfig?.home?.influencerPhoto || '/assets/Alexhurd1.jpg'} 
-                name={`${publicInfluencer?.name || 'Alex'} - Guide`}
-                isVisible={isStarted}
-                positionStyle={{ left: '20px', top: '50%', transform: 'translateY(-50%)', bottom: 'auto', right: 'auto' }}
-            />
+                onClick={() => {
+                    // Tap on Orb acts as a global scan pulse
+                    window.dispatchEvent(new CustomEvent('orb-scan-start', { detail: { x: window.innerWidth/2, y: window.innerHeight/2 } }));
+                    setTimeout(() => window.dispatchEvent(new CustomEvent('orb-scan-end')), 1000);
+                }}
+            />}
 
 
             {isStarted && (
@@ -384,6 +389,7 @@ const ExperiencePage = () => {
                                         if (idx !== -1) {
                                             exp.items[idx].position = obj.pos;
                                             exp.items[idx].rotation = obj.rot;
+                                            if (obj.discoveryMode) exp.items[idx].discoveryMode = obj.discoveryMode;
                                         }
                                     }
                                 });

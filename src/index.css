@@ -26,7 +26,7 @@
   
   /* Luxury Typography Hierarchy */
   --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Montserrat', sans-serif;
   
   /* Spacing */
   --spacing-xs: 0.5rem;
@@ -102,10 +102,10 @@ h1, h2, h3, h4, h5, h6, .hero-title, .status-title, .panel-title {
 
 .vibe-box, .medal-box, .backpack-box, .vibe-badge-top {
   background: var(--luxury-glass-bg);
-  backdrop-filter: var(--luxury-glass-blur);
-  -webkit-backdrop-filter: var(--luxury-glass-blur);
+  backdrop-filter: blur(25px) saturate(120%);
+  -webkit-backdrop-filter: blur(25px) saturate(120%);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
-  border: var(--luxury-glass-border);
+  border: 0.5px solid rgba(255, 255, 255, 1);
   box-shadow: var(--luxury-glass-shadow);
   border-radius: 4px;
 }
