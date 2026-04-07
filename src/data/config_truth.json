@@ -197,9 +197,9 @@
                         "description": "A 5-minute relaxing soundscape from the Aurea Spa."
                     },
                     "rotation": [
-                        -421530.4198127225,
-                        177632.75146809878,
-                        441137.4324807457
+                        -1383802738.8843215,
+                        583133924.4895326,
+                        1448168764.575669
                     ],
                     "discoveryMode": "instant",
                     "video": "https://www.youtube.com/shorts/5C2o05somtY"
@@ -216,11 +216,12 @@
                     "media": "/assets/spa_grab.png",
                     "text": "Energize in our state-of-the-art fitness center.",
                     "rotation": [
-                        -421530.4198127225,
-                        177632.75146809878,
-                        441137.4324807457
+                        -1383802738.8843215,
+                        583133924.4895326,
+                        1448168764.575669
                     ],
-                    "discoveryMode": "instant"
+                    "discoveryMode": "instant",
+                    "video": "https://www.youtube.com/shorts/M6ksgrJ7t28"
                 }
             ],
             "coin": {
