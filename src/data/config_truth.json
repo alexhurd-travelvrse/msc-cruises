@@ -191,9 +191,9 @@
                     "media": "/assets/spa_grab.png",
                     "text": "Relax in our celestial thermal waters.",
                     "collectible": {
-                        "type": "mp3",
+                        "type": "pdf",
                         "title": "Spa Ambient Mix",
-                        "url": "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
+                        "url": "models/cruise tips.pdf",
                         "description": "A 5-minute relaxing soundscape from the Aurea Spa."
                     },
                     "rotation": [
@@ -201,7 +201,8 @@
                         54.11003042182592,
                         134.37814645361814
                     ],
-                    "discoveryMode": "sonic"
+                    "discoveryMode": "sonic",
+                    "video": "https://www.youtube.com/shorts/5C2o05somtY"
                 },
                 {
                     "id": "2-2",
