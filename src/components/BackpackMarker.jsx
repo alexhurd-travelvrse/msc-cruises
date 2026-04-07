@@ -219,16 +219,7 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                     </Text>
                 </Billboard>
 
-                {discoveryMode === 'sonic' && !isMaterialized && (
-                     <PositionalAudio 
-                         url="/assets/placeholder_sonic_ping.mp3" 
-                         distanceModel="exponential" 
-                         rolloffFactor={2} 
-                         refDistance={0.5} 
-                         autoplay 
-                         loop 
-                     />
-                )}
+                {/* PositionalAudio omitted until final spatial audio assets are provided to prevent WebGL compilation crashes */}
 
                 {isMaterialized && <pointLight intensity={1.5} color={color} distance={2} decay={2} />}
             </Float>
