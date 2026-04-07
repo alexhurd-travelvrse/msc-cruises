@@ -3,7 +3,7 @@ import { Billboard, Text, Float, PositionalAudio } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 
-const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant' }, ref) => {
+const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl }, ref) => {
     const groupRef = useRef();
     const ringRef = useRef();
     const bgRef = useRef();
@@ -219,7 +219,16 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                     </Text>
                 </Billboard>
 
-                {/* PositionalAudio omitted until final spatial audio assets are provided to prevent WebGL compilation crashes */}
+                {discoveryMode === 'sonic' && !isMaterialized && audioUrl && (
+                     <PositionalAudio 
+                         url={audioUrl} 
+                         distanceModel="exponential" 
+                         rolloffFactor={2} 
+                         refDistance={0.5} 
+                         autoplay 
+                         loop 
+                     />
+                )}
 
                 {isMaterialized && <pointLight intensity={1.5} color={color} distance={2} decay={2} />}
             </Float>

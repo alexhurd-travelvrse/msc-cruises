@@ -904,6 +904,7 @@ const Scene3D = ({
                                             isCollected={isItemCollected}
                                             type={item.type}
                                             discoveryMode={localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3]}
+                                            audioUrl={item.collectible?.url}
                                             onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
                                                 detail: { 
                                                     name: 'BackpackItem', 
