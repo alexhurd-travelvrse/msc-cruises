@@ -126,22 +126,26 @@ h1, h2, h3, h4, h5, h6, .hero-title, .status-title, .panel-title {
 }
 
 .ghost-button {
-  background: transparent;
-  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(112, 0, 255, 0.15) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.5);
   color: #FFFFFF;
-  padding: 8px 16px;
-  border-radius: 2px;
+  padding: 14px 28px;
+  border-radius: 6px;
   font-family: var(--font-sans);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.1);
 }
 
 .ghost-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.3) 0%, rgba(112, 0, 255, 0.3) 100%);
+  border-color: rgba(0, 229, 255, 1);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 229, 255, 0.3);
 }
 
 

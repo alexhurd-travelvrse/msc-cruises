@@ -219,7 +219,7 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                     </Text>
                 </Billboard>
 
-                {discoveryMode === 'sonic' && !isMaterialized && audioUrl && (
+                {discoveryMode === 'sonic' && !isMaterialized && audioUrl && !String(audioUrl).match(/\.(jpg|jpeg|png|gif|webp|mp4|webm|pdf|glb|gltf)$/i) && (
                      <PositionalAudio 
                          url={audioUrl} 
                          distanceModel="exponential" 

@@ -46,20 +46,30 @@ const sceneEditorPlugin = () => ({
                          if (!exp.coin) exp.coin = {};
                          exp.coin.position = obj.pos;
                          exp.coin.rotation = obj.rot;
-                     } else if (obj.id === 'activity' || obj.id === 'remote' || obj.id.match(/^\d+-\d+$/)) {
+                     } else if (obj.id === 'activity' || obj.id === 'remote' || obj.id.match(/^(item-)?\d+-\d+$/)) {
                          // Find item in items array by id or default index
                          const itemIdx = exp.items ? exp.items.findIndex(i => i.id === obj.id) : -1;
                          if (itemIdx !== -1) {
                              exp.items[itemIdx].position = obj.pos;
                              exp.items[itemIdx].rotation = obj.rot;
-                             if (obj.discoveryMode) exp.items[itemIdx].discoveryMode = obj.discoveryMode;
+                              if (obj.discoveryMode) exp.items[itemIdx].discoveryMode = obj.discoveryMode;
+                              if (obj.audioUrl) {
+                                  if (!exp.items[itemIdx].collectible) exp.items[itemIdx].collectible = {};
+                                  exp.items[itemIdx].collectible.url = obj.audioUrl;
+                                  exp.items[itemIdx].collectible.type = 'mp3';
+                              }
                          } else {
                              // Fallback for named IDs like 'activity' or 'remote' to indices 0 and 1
                              const fallbackIdx = (obj.id === 'remote') ? 0 : (obj.id === 'activity' ? 1 : -1);
                              if (fallbackIdx !== -1 && exp.items && exp.items[fallbackIdx]) {
                                  exp.items[fallbackIdx].position = obj.pos;
                                  exp.items[fallbackIdx].rotation = obj.rot;
-                                 if (obj.discoveryMode) exp.items[fallbackIdx].discoveryMode = obj.discoveryMode;
+                                  if (obj.discoveryMode) exp.items[fallbackIdx].discoveryMode = obj.discoveryMode;
+                                  if (obj.audioUrl) {
+                                      if (!exp.items[fallbackIdx].collectible) exp.items[fallbackIdx].collectible = {};
+                                      exp.items[fallbackIdx].collectible.url = obj.audioUrl;
+                                      exp.items[fallbackIdx].collectible.type = 'mp3';
+                                  }
                              }
                          }
                      } else if (obj.id.startsWith('extra-')) {

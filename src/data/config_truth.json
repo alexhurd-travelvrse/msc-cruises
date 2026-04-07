@@ -97,9 +97,9 @@
                     "media": "/assets/balcony_new.png",
                     "text": "Uninterrupted views of the ocean.",
                     "collectible": {
-                        "type": "image",
+                        "type": "mp3",
                         "title": "Sunset Photo Filler",
-                        "url": "/models/MSCWorldEuropaswimmingpool.jpg",
+                        "url": "/models/Salt_and_Soft_Light.mp3",
                         "description": "A beautiful sunset filler for your photos."
                     },
                     "discoveryMode": "sonic"

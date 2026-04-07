@@ -405,6 +405,7 @@ const ExperiencePage = () => {
                                             if (obj.audioUrl !== undefined) {
                                                 if (!exp.items[idx].collectible) exp.items[idx].collectible = {};
                                                 exp.items[idx].collectible.url = obj.audioUrl;
+                                                exp.items[idx].collectible.type = 'mp3';
                                             }
                                         }
                                     }
@@ -465,7 +466,6 @@ const ExperiencePage = () => {
                     </div>
                 </div>
 
-                {/* Vertical Side-Dock for Backpack & Medals */}
                 <div className="hud-side-dock" style={{ 
                     position: 'fixed', 
                     right: '40px', 
@@ -473,34 +473,24 @@ const ExperiencePage = () => {
                     transform: 'translateY(-50%)', 
                     display: 'flex', 
                     flexDirection: 'column', 
-                    gap: '15px',
-                    zIndex: 9010, // Increased z-index
+                    gap: '24px',
+                    zIndex: 9010, 
                     fontFamily: 'Outfit, sans-serif',
-                    pointerEvents: 'auto' // Fix for backpack clickability
+                    pointerEvents: 'auto' 
                 }}>
-                    <div className="metadata-label" style={{ 
-                        writingMode: 'vertical-rl', 
-                        transform: 'rotate(180deg)', 
-                        marginBottom: '15px',
-                        fontSize: '0.6rem',
-                        letterSpacing: '0.3em',
-                        color: 'rgba(255,255,255,0.4)',
-                        textAlign: 'center'
-                    }}>INVENTORY</div>
                     
                     <div className={`backpack-box ${backpackUpdated ? 'backpack-glow' : ''}`} 
                          style={{ 
-                             width: '64px', 
-                             height: '84px', 
+                             width: '90px', 
+                             height: '120px', 
                              display: 'flex', 
                              alignItems: 'center', 
                              justifyContent: 'center', 
                              flexDirection: 'column',
                              cursor: 'pointer',
                              background: 'rgba(255, 255, 255, 0.03)',
-                             backdropFilter: 'blur(10px)',
                              border: '0.5px solid rgba(255, 255, 255, 0.15)',
-                             borderRadius: '2px', // Leica Hard Edge
+                             borderRadius: '8px',
                              transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
                              boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
                          }} 
@@ -518,25 +508,25 @@ const ExperiencePage = () => {
                              e.currentTarget.style.transform = 'translateX(0)';
                          }}
                          onClick={() => setShowFavourites(true)}>
-                        <span style={{ fontSize: '1.4rem', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.3))' }}>🎒</span>
-                        <span className="metadata-label" style={{ fontSize: '0.7rem', marginTop: '8px', color: '#fff' }}>{backpack.length}</span>
-                        <div style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.3)', marginTop: '2px', letterSpacing: '0.1em' }}>LOGS</div>
+                        <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.3))' }}>🎒</span>
+                        <span className="metadata-label" style={{ fontSize: '0.9rem', marginTop: '12px', color: '#fff', fontWeight: 'bold' }}>{backpack.length}</span>
+                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px', letterSpacing: '0.15em' }}>ITEMS</div>
                     </div>
 
                     <div className="medal-box" 
                          style={{ 
-                             width: '64px', 
-                             height: '84px', 
+                             width: '90px', 
+                             height: '120px', 
                              display: 'flex', 
                              alignItems: 'center', 
                              justifyContent: 'center', 
                              flexDirection: 'column',
                              background: 'rgba(255, 255, 255, 0.03)',
-                             backdropFilter: 'blur(10px)',
                              border: '0.5px solid rgba(255, 255, 255, 0.15)',
-                             borderRadius: '2px', // Leica Hard Edge
+                             borderRadius: '8px',
                              transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
-                             boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                             boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                             cursor: 'pointer'
                          }}
                          onMouseEnter={(e) => {
                              window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 35, y: 15 } }));
@@ -552,9 +542,9 @@ const ExperiencePage = () => {
                              e.currentTarget.style.transform = 'translateX(0)';
                          }}
                     >
-                        <span style={{ fontSize: '1.4rem', filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.3))' }}>🏅</span>
-                        <span className="metadata-label" style={{ fontSize: '0.7rem', marginTop: '8px', color: '#fff' }}>{getTotalCoins()}</span>
-                        <div style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.3)', marginTop: '2px', letterSpacing: '0.1em' }}>MERITS</div>
+                        <span style={{ fontSize: '2.5rem', filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.3))' }}>🏅</span>
+                        <span className="metadata-label" style={{ fontSize: '0.9rem', marginTop: '12px', color: '#fff', fontWeight: 'bold' }}>{getTotalCoins()}</span>
+                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px', letterSpacing: '0.15em' }}>MERITS</div>
                     </div>
                 </div>
             </div>
@@ -584,10 +574,10 @@ const ExperiencePage = () => {
                             )}
 
                             <div className="modal-actions" style={{ display: 'flex', gap: '15px' }}>
-                                <button onClick={handleAddToBackpackClick} className="ghost-button" style={{ padding: '12px 30px', background: 'rgba(255,255,255,0.1)' }}>
+                                <button onClick={handleAddToBackpackClick} className="ghost-button">
                                     {modal.type === 'medal' ? 'Log Interest' : 'Capture Asset'}
                                 </button>
-                                <button onClick={handleCloseModal} className="ghost-button" style={{ padding: '12px 30px' }}>Dismiss</button>
+                                <button onClick={handleCloseModal} className="ghost-button" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.2)' }}>Dismiss</button>
                             </div>
                         </div>
                     </div>
@@ -601,7 +591,7 @@ const ExperiencePage = () => {
                     const nextId = parseInt(id) + 1;
                     if (nextId <= 5) navigate(`/experience/${nextId}`);
                     else navigate('/completion');
-                }} className="ghost-button" style={{ padding: '12px 40px', background: 'rgba(255,255,255,0.05)' }}>NEXT EXPERIENCE &rarr;</button>
+                }} className="ghost-button">NEXT EXPERIENCE &rarr;</button>
             </div>
 
             {/* Direct Lead Trigger (Toast Notification) */}

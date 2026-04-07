@@ -734,7 +734,7 @@ const Scene3D = ({
                 const id = item.id || `item-${experienceId}-${idx}`;
                 const pos = localPositions[id] || item.position || [0, 0, 0];
                 const mode = localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3];
-                const audio = localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.url || '');
+                const audio = localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.type === 'mp3' ? item.collectible?.url : '');
                 
                 objs.push({
                     id: id,
@@ -832,7 +832,7 @@ const Scene3D = ({
             window.removeEventListener('scene-editor-mode-change', handleModeChange);
             window.removeEventListener('scene-editor-use-camera-pos', handleUseCameraPos);
         };
-    }, [localPositions, localRotations, experienceId, coinPos, activityPos, config.avatarPos, config.remotePos, config.extraObjects, config.menuPos, config.winePos, config.rewardPos, config.gaudiPos, showWineGlass, showGelato, currentCoinPos, currentActivityPos, currentRemotePos, activityRot]);
+    }, [localPositions, localRotations, localDiscoveryModes, localAudioUrls, experienceId, coinPos, activityPos, config.avatarPos, config.remotePos, config.extraObjects, config.menuPos, config.winePos, config.rewardPos, config.gaudiPos, showWineGlass, showGelato, currentCoinPos, currentActivityPos, currentRemotePos, activityRot]);
 
     const handleTransform = (id, e) => {
         if (!e.target.object) return;
@@ -912,7 +912,7 @@ const Scene3D = ({
                                             isCollected={isItemCollected}
                                             type={item.type}
                                             discoveryMode={localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3]}
-                                            audioUrl={localAudioUrls[id] !== undefined ? localAudioUrls[id] : item.collectible?.url}
+                                            audioUrl={localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.type === 'mp3' ? item.collectible?.url : undefined)}
                                             onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
                                                 detail: { 
                                                     name: 'BackpackItem', 
