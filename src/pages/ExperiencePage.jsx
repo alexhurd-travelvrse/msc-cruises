@@ -19,55 +19,27 @@ const YouTubePlayer = ({ url, previewImage }) => {
         if (!url) return null;
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|youtube.com\/shorts\/)([^#&?]*).*/;
         const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
+        return (match && (match[2].length === 11 || match[2].length === 12)) ? match[2] : null;
     };
 
     const videoId = getYouTubeId(url);
 
+    if (!videoId) return (
+        <div style={{ width: '100%', height: '200px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }}>
+            <span className="metadata-label">Invalid Video URL</span>
+        </div>
+    );
+
     return (
-        <div 
-            onClick={() => window.open(url, '_blank')}
-            className="video-click-to-play"
-            style={{ 
-                width: '100%', 
-                height: '200px', 
-                borderRadius: '12px', 
-                background: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${previewImage || '/assets/balcony_grab.png'})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-                border: '1px solid rgba(255,215,0,0.3)'
-            }}
-        >
-            <div style={{ 
-                width: '60px', 
-                height: '60px', 
-                background: '#FFD700', 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                boxShadow: '0 0 20px rgba(255,215,0,0.5)',
-                fontSize: '1.5rem'
-            }}>
-                ▶
-            </div>
-            <div style={{
-                position: 'absolute',
-                bottom: '10px',
-                right: '10px',
-                fontSize: '0.7rem',
-                color: '#fff',
-                background: 'rgba(0,0,0,0.6)',
-                padding: '4px 8px',
-                borderRadius: '4px'
-            }}>
-                OPEN ON YOUTUBE ↗
-            </div>
+        <div className="video-container" style={{ borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: '#000' }}>
+            <iframe 
+                src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+                title="YouTube video player" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+                style={{ border: 'none' }}
+            ></iframe>
         </div>
     );
 };
@@ -266,6 +238,12 @@ const ExperiencePage = () => {
         return () => window.removeEventListener('object-clicked', handleObjectClick);
     }, [id, publicConfig]);
 
+    useEffect(() => {
+        // Signal to pause background world audio when a modal OR favourites panel is open
+        const isPanelActive = !!modal || showFavourites;
+        window.dispatchEvent(new CustomEvent('msc-sensory-audio-active', { detail: { active: isPanelActive } }));
+    }, [modal, showFavourites]);
+
     const handleCloseModal = () => {
         if (modal && modal.id) {
             const newViewed = [...new Set([...itemsViewed, modal.id])];
@@ -435,6 +413,7 @@ const ExperiencePage = () => {
                     isItemsAllowed={isItemsAllowed}
                     isOrbAllowed={isOrbAllowed}
                     itemsViewed={itemsViewed} 
+                    isModalOpen={!!modal || showFavourites}
                 />
             </div>
 
@@ -570,8 +549,34 @@ const ExperiencePage = () => {
                             <p className="modal-desc" style={{ opacity: 0.8, fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '25px' }}>{modal.description}</p>
                             
                             {modal.collectible && (
-                                <div className="collectible-notice" style={{ marginBottom: '30px' }}>
-                                    <span className="metadata-label" style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '4px 12px', borderRadius: '2px' }}>Personalized Profile Update Pending</span>
+                                <div className="collectible-profile-reveal glass-panel" style={{ 
+                                    marginBottom: '30px', 
+                                    padding: '15px', 
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    display: 'flex',
+                                    gap: '15px',
+                                    alignItems: 'center'
+                                }}>
+                                    <div style={{ 
+                                        width: '45px', 
+                                        height: '45px', 
+                                        background: 'rgba(255,255,255,0.1)', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        fontSize: '1.2rem',
+                                        borderRadius: '2px'
+                                    }}>
+                                        {modal.collectible.type === 'pdf' ? '📄' : (modal.collectible.type === 'mp3' ? '🔉' : '🏅')}
+                                    </div>
+                                    <div>
+                                        <div className="metadata-label" style={{ fontSize: '0.65rem', color: currentTheme.primary, marginBottom: '2px' }}>Inventory Asset Detected</div>
+                                        <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{modal.collectible.title || modal.title}</div>
+                                        {modal.collectible.description && (
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{modal.collectible.description}</div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 

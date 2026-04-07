@@ -3,7 +3,7 @@ import { Billboard, Text, Float, PositionalAudio } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 
-const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl, isStarted }, ref) => {
+const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl, isStarted, isModalOpen }, ref) => {
     const groupRef = useRef();
     const ringRef = useRef();
     const bgRef = useRef();
@@ -43,6 +43,8 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
             window.removeEventListener('orb-update', handleOrbUpdate);
             window.removeEventListener('orb-scan-start', handleScanStart);
             window.removeEventListener('orb-scan-end', handleScanEnd);
+            // Ensure audio signal is cleared on unmount
+            window.dispatchEvent(new CustomEvent('msc-sensory-audio-active', { detail: { active: false } }));
         };
     }, [isMaterialized, discoveryMode]);
 
@@ -71,7 +73,24 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
         // Update audio range state (2.5m threshold)
         if (discoveryMode === 'sonic' && !isCollected) {
             const inRange = distanceToCamera < 2.5;
-            if (inRange !== isInsideAudioRange) setIsInsideAudioRange(inRange);
+            if (inRange !== isInsideAudioRange) {
+                setIsInsideAudioRange(inRange);
+                // Dispatch event to global narrator to pause/duck
+                window.dispatchEvent(new CustomEvent('msc-sensory-audio-active', { detail: { active: inRange } }));
+            }
+            
+            // Hard real-time sync for audio instance
+            if (audioRef.current) {
+                const shouldPlay = inRange && isStarted && !isModalOpen;
+                if (shouldPlay && !audioRef.current.isPlaying) {
+                     // Auto-resume context if needed
+                    if (audioRef.current.context.state === 'suspended') audioRef.current.context.resume();
+                    audioRef.current.play();
+                } else if (!shouldPlay && audioRef.current.isPlaying) {
+                    audioRef.current.stop();
+                    audioRef.current.setVolume(0);
+                }
+            }
         }
 
         // Logic for Scan Mode
@@ -182,6 +201,8 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
         }
     });
 
+    const audioRef = useRef();
+
     if (isCollected) return null;
 
     const icon = '🎒';
@@ -249,13 +270,15 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                     </Text>
                 </Billboard>
 
-                {isStarted && isInsideAudioRange && !isCollected && audioUrl && (
+                {isStarted && !isCollected && discoveryMode === 'sonic' && audioUrl && (
                     <PositionalAudio 
+                        ref={audioRef}
                         url={audioUrl} 
                         distanceModel="exponential" 
-                        rolloffFactor={2.5} 
-                        refDistance={0.75} 
-                        autoplay 
+                        rolloffFactor={8.0} // Even steeper for absolute silence
+                        refDistance={0.5} 
+                        volume={isInsideAudioRange ? 1 : 0} 
+                        autoplay={false}
                         loop 
                     />
                 )}

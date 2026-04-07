@@ -198,6 +198,34 @@ const AudioController = ({ audioKey, active, script }) => {
         };
     }, [audioKey, active, script]);
 
+    // Implement "One Audio Asset" Rule
+    useEffect(() => {
+        const handleSensoryActive = (e) => {
+            const isSensoryActive = e.detail.active;
+            
+            // If sensory audio starts, pause/mute main narrator
+            if (isSensoryActive) {
+                if (audioInstanceRef.current) {
+                    audioInstanceRef.current.volume = 0;
+                    audioInstanceRef.current.pause();
+                }
+                if (window.speechSynthesis) window.speechSynthesis.pause();
+                console.log("[AudioController] 🔉 Sensory audio prioritized. Narration paused.");
+            } else {
+                // If sensory audio stops, resume main narrator if it was active
+                if (audioInstanceRef.current && active) {
+                    audioInstanceRef.current.play().catch(e => console.log("Narration resume blocked:", e));
+                    fadeIn(audioInstanceRef.current);
+                }
+                if (window.speechSynthesis) window.speechSynthesis.resume();
+                console.log("[AudioController] 🔉 Narration resumed.");
+            }
+        };
+
+        window.addEventListener('msc-sensory-audio-active', handleSensoryActive);
+        return () => window.removeEventListener('msc-sensory-audio-active', handleSensoryActive);
+    }, [active]);
+
     return null;
 };
 

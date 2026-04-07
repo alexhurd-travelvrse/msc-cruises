@@ -82,7 +82,7 @@
                 },
                 {
                     "id": "1-2",
-                    "name": "Suite View",
+                    "name": "Yacht Club",
                     "type": "star",
                     "position": [
                         1.3120055705983988,
@@ -95,14 +95,15 @@
                         2966768454484.753
                     ],
                     "media": "/assets/balcony_new.png",
-                    "text": "Uninterrupted views of the ocean.",
+                    "text": "For best views,private concierge and exclusive ppols check out the yacht club. We'even got a free soundtrack to help you imagine it - curated exclusively by the onboard team",
                     "collectible": {
                         "type": "mp3",
-                        "title": "Sunset Photo Filler",
+                        "title": "Yacht Club",
                         "url": "/models/Salt_and_Soft_Light.mp3",
-                        "description": "A beautiful sunset filler for your photos."
+                        "description": "Exclusive soundtrack to play in yacht club"
                     },
-                    "discoveryMode": "sonic"
+                    "discoveryMode": "sonic",
+                    "video": "https://www.youtube.com/shorts/hveF68HPGBs"
                 }
             ],
             "coin": {
@@ -118,7 +119,8 @@
                     0,
                     0,
                     0
-                ]
+                ],
+                "discoveryMode": "scan"
             },
             "hotspots": [
                 {
@@ -198,7 +200,8 @@
                         -128.4055088449596,
                         54.11003042182592,
                         134.37814645361814
-                    ]
+                    ],
+                    "discoveryMode": "sonic"
                 },
                 {
                     "id": "2-2",
@@ -215,7 +218,8 @@
                         -128.4055088449596,
                         54.11003042182592,
                         134.37814645361814
-                    ]
+                    ],
+                    "discoveryMode": "instant"
                 }
             ],
             "coin": {
@@ -231,7 +235,8 @@
                     -128.4055088449596,
                     54.11003042182592,
                     134.37814645361814
-                ]
+                ],
+                "discoveryMode": "scan"
             },
             "hotspots": [
                 {
@@ -312,7 +317,8 @@
                         -13.407212406061264,
                         -3.7815214478634336,
                         -0.9167324722093172
-                    ]
+                    ],
+                    "discoveryMode": "instant"
                 }
             ],
             "coin": {
@@ -328,7 +334,8 @@
                     -13.407212406061264,
                     -3.7815214478634336,
                     -0.9167324722093172
-                ]
+                ],
+                "discoveryMode": "scan"
             },
             "hotspots": [
                 {
@@ -387,7 +394,8 @@
                         "title": "3D Gamer Badge",
                         "url": "/models/racingcar.glb",
                         "description": "A special 3D trophy for your racing performance."
-                    }
+                    },
+                    "discoveryMode": "instant"
                 },
                 {
                     "id": "4-2",
@@ -399,7 +407,8 @@
                         -1
                     ],
                     "media": "/assets/arcade_grab.png",
-                    "text": "Unlimited access to retro classics."
+                    "text": "Unlimited access to retro classics.",
+                    "discoveryMode": "instant"
                 }
             ],
             "coin": {
@@ -410,7 +419,8 @@
                     1.2,
                     -1
                 ],
-                "media": "/textures/coin.png"
+                "media": "/textures/coin.png",
+                "discoveryMode": "scan"
             },
             "hotspots": [
                 {
@@ -454,7 +464,8 @@
                     ],
                     "media": "/assets/excursion_filler.jpg",
                     "video": "https://v.ftcdn.net/06/17/84/44/700_F_617844445_h8vX0BvL4v3Y6H8H1Z8B1v8v8v8v8v8v_ST.mp4",
-                    "text": "Discover the architectural genius of Antoni Gaudí."
+                    "text": "Discover the architectural genius of Antoni Gaudí.",
+                    "discoveryMode": "instant"
                 },
                 {
                     "id": "5-2",
@@ -472,7 +483,8 @@
                         "title": "Hidden City Tips",
                         "url": "/assets/tips_placeholder.pdf",
                         "description": "Exclusive insider tips for exploring Barcelona like a local."
-                    }
+                    },
+                    "discoveryMode": "instant"
                 }
             ],
             "coin": {
@@ -483,7 +495,8 @@
                     1.2,
                     0.5
                 ],
-                "media": "/textures/coin.png"
+                "media": "/textures/coin.png",
+                "discoveryMode": "scan"
             },
             "hotspots": [
                 {

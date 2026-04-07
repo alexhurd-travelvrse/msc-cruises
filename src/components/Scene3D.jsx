@@ -507,7 +507,8 @@ const Scene3D = ({
     isStarted = false, 
     isItemsAllowed: isItemsAllowedProp = false,
     isOrbAllowed: isOrbAllowedProp = false,
-    itemsViewed = [] 
+    itemsViewed = [],
+    isModalOpen = false
 }) => {
     const { publicConfig } = useInfluencer();
     const staticConfig = sceneConfig[experienceId] || sceneConfig['default'];
@@ -911,13 +912,15 @@ const Scene3D = ({
                                             size={0.65} // Standardized premium size
                                             isCollected={isItemCollected}
                                             type={item.type}
-                                            discoveryMode={localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3]}
+                                            discoveryMode={localDiscoveryModes[id] || item.discoveryMode || 'instant'}
                                             audioUrl={(() => {
                                                 const url = localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.type === 'mp3' ? item.collectible?.url : undefined);
                                                 // Stable timestamp to prevent 60fps re-renders
                                                 return url ? `${url}${url.includes('?') ? '&' : '?'}v=stable-sync` : undefined;
                                             })()}
+                                            id={id}
                                             isStarted={isStarted}
+                                            isModalOpen={isModalOpen}
                                             onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
                                                 detail: { 
                                                     name: 'BackpackItem', 

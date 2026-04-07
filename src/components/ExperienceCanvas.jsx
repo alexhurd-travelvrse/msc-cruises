@@ -37,7 +37,8 @@ const ExperienceCanvas = React.memo(({
     isStarted = false, 
     isItemsAllowed = false, 
     isOrbAllowed = false, 
-    itemsViewed = [] 
+    itemsViewed = [],
+    isModalOpen = false 
 }) => {
     return (
         <Canvas
@@ -97,6 +98,7 @@ const ExperienceCanvas = React.memo(({
                     isItemsAllowed={isItemsAllowed}
                     isOrbAllowed={isOrbAllowed}
                     itemsViewed={itemsViewed}
+                    isModalOpen={isModalOpen}
                 />
             </Suspense>
         </Canvas>
