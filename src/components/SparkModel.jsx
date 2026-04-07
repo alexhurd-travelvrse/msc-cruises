@@ -83,8 +83,9 @@ const SparkModel = ({ url, scale = 1, rotation = [0, 0, 0], position = [0, 0, 0]
         }
 
         frameCountRef.current++;
-        if (frameCountRef.current >= 10) {
+        if (frameCountRef.current >= 3) { // Reduced for faster signal response
             firedRef.current = true;
+            console.log(`%c[Spark.js] ✓ Scene Materialized: ${url}`, 'color: #00ff00; font-weight: bold;');
             onLoadRef.current();
         }
     });

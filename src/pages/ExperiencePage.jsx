@@ -429,6 +429,8 @@ const ExperiencePage = () => {
                 <ExperienceCanvas 
                     experienceId={id} 
                     isInteractionActive={showFavourites || !!modal || isEditorMode} 
+                    isEditorMode={isEditorMode}
+                    activeEditorObject={activeEditorObject}
                     isStarted={isStarted} 
                     isItemsAllowed={isItemsAllowed}
                     isOrbAllowed={isOrbAllowed}

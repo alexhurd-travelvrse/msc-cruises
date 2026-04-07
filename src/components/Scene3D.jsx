@@ -912,7 +912,12 @@ const Scene3D = ({
                                             isCollected={isItemCollected}
                                             type={item.type}
                                             discoveryMode={localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3]}
-                                            audioUrl={localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.type === 'mp3' ? item.collectible?.url : undefined)}
+                                            audioUrl={(() => {
+                                                const url = localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.type === 'mp3' ? item.collectible?.url : undefined);
+                                                // Stable timestamp to prevent 60fps re-renders
+                                                return url ? `${url}${url.includes('?') ? '&' : '?'}v=stable-sync` : undefined;
+                                            })()}
+                                            isStarted={isStarted}
                                             onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
                                                 detail: { 
                                                     name: 'BackpackItem', 

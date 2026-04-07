@@ -3,7 +3,7 @@ import { Billboard, Text, Float, PositionalAudio } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 
-const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl }, ref) => {
+const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl, isStarted }, ref) => {
     const groupRef = useRef();
     const ringRef = useRef();
     const bgRef = useRef();
@@ -52,6 +52,9 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
         scanProgress.current = 0;
     }, [discoveryMode]);
 
+    const [isInsideAudioRange, setIsInsideAudioRange] = useState(false);
+    const tempVec = useRef(new Vector3());
+    
     useFrame(({ clock, camera, size: viewportSize }) => {
         if (!groupRef.current) return;
 
@@ -60,6 +63,15 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
         if (ringRef.current && isMaterialized) {
             ringRef.current.scale.setScalar(1 + Math.sin(time * 3) * 0.1);
             ringRef.current.material.opacity = 0.4 + Math.sin(time * 3) * 0.2;
+        }
+
+        groupRef.current.getWorldPosition(tempVec.current);
+        const distanceToCamera = camera.position.distanceTo(tempVec.current);
+        
+        // Update audio range state (2.5m threshold)
+        if (discoveryMode === 'sonic' && !isCollected) {
+            const inRange = distanceToCamera < 2.5;
+            if (inRange !== isInsideAudioRange) setIsInsideAudioRange(inRange);
         }
 
         // Logic for Scan Mode
@@ -124,20 +136,37 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                 // Ring expands as progress fills (like a circular progress ring filling)
                 borderRef.current.scale.setScalar(0.5 + alpha * 0.5);
             }
-        } else if (discoveryMode === 'sonic' && !isMaterialized) {
-            if (groupRef.current) groupRef.current.visible = false; // Sonic relies on distance
+            // Sonic visibility logic: Fades in as you get closer
+            if (groupRef.current) {
+                const vec = new Vector3();
+                groupRef.current.getWorldPosition(vec);
+                const dist = camera.position.distanceTo(vec);
+                const proximityAlpha = Math.max(0, 1 - (dist / 5.0)); // Fades in from 5m away
+                
+                groupRef.current.visible = true; 
+                bgRef.current.material.opacity = proximityAlpha * 0.4;
+                borderRef.current.material.opacity = proximityAlpha * 0.6;
+                textRef.current.fillOpacity = proximityAlpha * 0.5;
+                ringRef.current.material.opacity = proximityAlpha * 0.2;
+                borderRef.current.scale.setScalar(0.7 + proximityAlpha * 0.3);
+            }
         } else {
             // Instant or already materialized
             if (groupRef.current) groupRef.current.visible = true;
         }
 
-        // Logic for Sonic Mode vibrations on mobile
+        // Logic for Sonic Mode vibrations and automatic discovery
         if (discoveryMode === 'sonic' && !isMaterialized) {
             const vec = new Vector3();
             groupRef.current.getWorldPosition(vec);
             const dist = camera.position.distanceTo(vec);
-            if (dist < 1.0 && navigator.vibrate) {
-                navigator.vibrate(40);
+            
+            // Proximity thresholds
+            const hearRange = 5.0; // Audio already handled by PositionalAudio, but we use this for faint visibility
+            const materialRange = 1.5; // Automatic unlock distance
+            
+            if (dist < materialRange) {
+                if (navigator.vibrate) navigator.vibrate(40);
                 setIsMaterialized(true);
                 console.log("Direct Lead Captured: Sensory Engagement (Sonic Mode)");
                 window.dispatchEvent(new CustomEvent('captureLead', { 
@@ -176,7 +205,6 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                         // Only clickable if materialized
                         if (isMaterialized) {
                             if (discoveryMode === 'instant') {
-                                console.log("Direct Lead Captured: General Interest (Instant Mode)");
                                 window.dispatchEvent(new CustomEvent('captureLead', { 
                                     detail: { 
                                         timestamp: Date.now(),
@@ -186,15 +214,17 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                                         device_type: /Android|webOS|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
                                     } 
                                 }));
+                                window.dispatchEvent(new CustomEvent('orb-select')); 
+                            } else if (discoveryMode === 'scan') {
+                                window.dispatchEvent(new CustomEvent('orb-select')); 
                             }
-                            window.dispatchEvent(new CustomEvent('orb-select')); // Dispatch select visually
                             onClick(e);
                         }
                     }}
                 >
                     <mesh ref={ringRef} position={[0, 0, -0.01]}>
                         <ringGeometry args={[size * 0.45, size * 0.52, 64]} />
-                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : color} transparent opacity={isMaterialized ? 0.6 : 0} depthTest={false} />
+                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : (discoveryMode === 'sonic' ? '#FFD700' : color)} transparent opacity={isMaterialized ? 0.6 : 0} depthTest={false} />
                     </mesh>
                     
                     <mesh ref={bgRef}>
@@ -204,7 +234,7 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
 
                     <mesh ref={borderRef} position={[0, 0, 0.001]}>
                         <ringGeometry args={[size * 0.4, size * 0.42, 64]} />
-                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : color} transparent opacity={isMaterialized ? 1 : 0} depthTest={false} />
+                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : (discoveryMode === 'sonic' ? '#FFD700' : color)} transparent opacity={isMaterialized ? 1 : 0} depthTest={false} />
                     </mesh>
 
                     <Text 
@@ -219,18 +249,25 @@ const BackpackMarker = React.forwardRef(({ pos, size = 0.4, onClick, experienceI
                     </Text>
                 </Billboard>
 
-                {discoveryMode === 'sonic' && !isMaterialized && audioUrl && !String(audioUrl).match(/\.(jpg|jpeg|png|gif|webp|mp4|webm|pdf|glb|gltf)$/i) && (
-                     <PositionalAudio 
-                         url={audioUrl} 
-                         distanceModel="exponential" 
-                         rolloffFactor={2} 
-                         refDistance={0.5} 
-                         autoplay 
-                         loop 
-                     />
+                {isStarted && isInsideAudioRange && !isCollected && audioUrl && (
+                    <PositionalAudio 
+                        url={audioUrl} 
+                        distanceModel="exponential" 
+                        rolloffFactor={2.5} 
+                        refDistance={0.75} 
+                        autoplay 
+                        loop 
+                    />
                 )}
 
-                {isMaterialized && <pointLight intensity={1.5} color={color} distance={2} decay={2} />}
+                {isStarted && ((discoveryMode === 'sonic' && !isCollected) || isMaterialized) && (
+                    <pointLight 
+                        intensity={discoveryMode === 'sonic' ? 0.8 + Math.sin(Date.now()*0.003)*0.4 : 1.5} 
+                        color={discoveryMode === 'sonic' ? '#FFD700' : color} 
+                        distance={3} 
+                        decay={1.5} 
+                    />
+                )}
             </Float>
         </group>
     );

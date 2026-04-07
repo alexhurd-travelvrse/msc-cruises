@@ -3,7 +3,7 @@ const activeCompany = import.meta.env.VITE_ACTIVE_COMPANY || 'msc-cruises';
 const mscConfig = {
     "1": {
         name: 'Yacht Club Owner\'s Suite',
-        modelPath: '/models/1.splat',
+        modelPath: '/models/1.spz',
         modelRotation: [Math.PI, 0, 0],
         startPos: [-1.138, -1.178, 0.071],
         startRot: [2.015, -0.747, 2.182],
@@ -140,8 +140,8 @@ const mscConfig = {
     },
     "6": {
         name: 'Ocean View',
-        modelPath: '/models/1.splat',
-        modelRotation: [Math.PI, 0, 0],
+        modelPath: '/models/1.ply',
+        modelRotation: [0, 0, 0],
         startPos: [0, 2, 5],
         startRot: [0, 0, 0],
         scale: 1.0,
