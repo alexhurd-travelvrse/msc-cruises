@@ -734,7 +734,7 @@ const Scene3D = ({
             items.forEach((item, idx) => {
                 const id = item.id || `item-${experienceId}-${idx}`;
                 const pos = localPositions[id] || item.position || [0, 0, 0];
-                const mode = localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3];
+                const mode = localDiscoveryModes[id] || item.discoveryMode || 'instant';
                 const audio = localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.type === 'mp3' ? item.collectible?.url : '');
                 
                 objs.push({
