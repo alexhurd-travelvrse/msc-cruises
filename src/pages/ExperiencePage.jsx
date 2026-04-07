@@ -373,6 +373,12 @@ const ExperiencePage = () => {
                                 downloadAnchorNode.click();
                                 downloadAnchorNode.remove();
                             }}
+                            onImport={async (importedConfig) => {
+                                const companyId = publicConfig?.id || 'msc-cruises';
+                                await saveConfig(null, companyId, importedConfig);
+                                console.log("[ExperiencePage] Successfully imported JSON payload from file.");
+                                alert("JSON imported and saved! Please hard-refresh your browser.");
+                            }}
                             onSaveToContext={async (objs) => {
                                 // Merge editor objects into the current public config
                                 const newConfig = { ...publicConfig };
@@ -396,6 +402,10 @@ const ExperiencePage = () => {
                                             exp.items[idx].position = obj.pos;
                                             exp.items[idx].rotation = obj.rot;
                                             if (obj.discoveryMode) exp.items[idx].discoveryMode = obj.discoveryMode;
+                                            if (obj.audioUrl !== undefined) {
+                                                if (!exp.items[idx].collectible) exp.items[idx].collectible = {};
+                                                exp.items[idx].collectible.url = obj.audioUrl;
+                                            }
                                         }
                                     }
                                 });

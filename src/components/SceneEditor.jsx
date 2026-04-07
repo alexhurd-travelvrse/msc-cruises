@@ -426,6 +426,37 @@ function SceneEditor({
                                 <option value="scan">Scan / Magnifying Glass (High Intent)</option>
                                 <option value="sonic">Sonic Proximity (Sensory Lead)</option>
                             </select>
+
+                            {selectedObj.discoveryMode === 'sonic' && (
+                                <div style={{ marginTop: '15px' }}>
+                                    <label style={{ fontSize: '0.7rem', color: '#FFD700', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                        Sensory Audio MP3 Path
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="/assets/my_audio.mp3"
+                                        value={selectedObj.audioUrl || ''}
+                                        onChange={(e) => {
+                                            window.dispatchEvent(new CustomEvent('scene-editor-manual-update', {
+                                                detail: { id: selectedObj.id, audioUrl: e.target.value }
+                                            }));
+                                        }}
+                                        style={{ 
+                                            width: '100%', 
+                                            padding: '10px', 
+                                            background: 'rgba(0,0,0,0.5)', 
+                                            color: '#fff', 
+                                            border: '1px solid rgba(255,215,0,0.3)', 
+                                            borderRadius: '6px',
+                                            outline: 'none',
+                                            fontSize: '0.8rem'
+                                        }}
+                                    />
+                                    <div style={{ fontSize: '0.65rem', color: '#aaa', marginTop: '6px' }}>
+                                        E.g "/assets/my_sound.mp3"
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -452,7 +483,7 @@ function SceneEditor({
                         transition: '0.3s'
                     }}
                 >
-                    {localSaved ? '✓ LOCAL CONFIG SAVED' : '💾 SAVE CONFIGURATION (LOCAL)'}
+                    {localSaved ? '✓ LIVE DEMO READY' : '1. UPDATE LIVE PREVIEW (NO CACHE)'}
                 </button>
 
                 <button
@@ -472,7 +503,7 @@ function SceneEditor({
                         fontSize: '0.85rem'
                     }}
                 >
-                    {publishSaved ? '✓ READY FOR GITHUB' : '🚀 PUBLISH CHANGES (FOR GITHUB DESKTOP)'}
+                    {publishSaved ? '✓ SAVED TO DISK' : '2. BURN TO HARD DRIVE (PERMANENT)'}
                 </button>
 
                 {saveError && (
@@ -491,7 +522,7 @@ function SceneEditor({
             </div>
 
             <p style={{ fontSize: '0.7rem', marginTop: '20px', color: '#666', textAlign: 'center', lineHeight: '1.4' }}>
-                Use <b>Save Configuration</b> to preview locally. Use <b>Publish Changes</b> to update the source code for your next GitHub Push.
+                Use <b>Update Live Preview</b> to test your changes instantly in the current tab. Once perfect, hit <b>Burn to Hard Drive</b> to permanently save the JSON logic!
             </p>
         </div>
     );

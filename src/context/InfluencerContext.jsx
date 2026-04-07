@@ -36,17 +36,7 @@ export const InfluencerProvider = ({ children }) => {
         } catch (e) { return 'msc-cruises'; }
     });
 
-    const [configs, setConfigs] = useState(() => {
-        try {
-            const saved = localStorage.getItem('influencerConfigs_v17');
-            const cached = saved ? JSON.parse(saved) : {};
-            console.log("[InfluencerContext] Initializing configs with truth + cache", { cachedKeys: Object.keys(cached) });
-            return { ...configTruth, ...cached };
-        } catch (e) { 
-            console.error("[InfluencerContext] Config initialization error:", e);
-            return { ...configTruth }; 
-        }
-    });
+    const [configs, setConfigs] = useState({ ...configTruth });
 
     useEffect(() => {
         console.log("[InfluencerContext] Active Company:", activeCompanyId);
@@ -56,7 +46,6 @@ export const InfluencerProvider = ({ children }) => {
 
     const resetToTruth = () => {
         setConfigs({ ...configTruth });
-        localStorage.setItem('influencerConfigs_v17', JSON.stringify(configTruth));
         console.log("%c[InfluencerContext] REVERTED TO GITHUB TRUTH", "color: #ff9800; font-weight: bold;");
     };
 
@@ -91,12 +80,8 @@ export const InfluencerProvider = ({ children }) => {
 
     useEffect(() => {
         const loadConfigs = () => {
+            setConfigs({ ...configTruth });
             try {
-                const savedConfigs = localStorage.getItem('influencerConfigs_v17');
-                if (savedConfigs) {
-                    const parsed = JSON.parse(savedConfigs);
-                    setConfigs(prev => ({ ...configTruth, ...parsed }));
-                }
                 const savedEarnings = localStorage.getItem('influencerEarnings_v17');
                 if (savedEarnings) setEarnings(JSON.parse(savedEarnings));
             } catch (e) {
@@ -104,7 +89,7 @@ export const InfluencerProvider = ({ children }) => {
             }
         };
         const handleStorageChange = (e) => {
-            if (e.key === 'influencerConfigs_v17' || e.key === 'influencerEarnings_v17') loadConfigs();
+            if (e.key === 'influencerEarnings_v17') loadConfigs();
         };
         window.addEventListener('storage', handleStorageChange);
         loadConfigs();
@@ -180,7 +165,7 @@ export const InfluencerProvider = ({ children }) => {
         const key = `${id}_${companyId}`;
         const updatedConfigs = { ...configs, [key]: newConfig };
         setConfigs(updatedConfigs);
-        localStorage.setItem('influencerConfigs_v17', JSON.stringify(updatedConfigs));
+        // Removed localStorage save to rely entirely on Publisher
     }, [configs, currentDestination]);
 
     const updateEarnings = React.useCallback((influencerId, amount) => {

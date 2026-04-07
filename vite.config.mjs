@@ -72,6 +72,11 @@ const sceneEditorPlugin = () => ({
                  });
              }
           }
+          
+          if (parsed.config && Object.keys(parsed.config).length > 0) {
+              console.log("[Vite API] Received full configuration payload from Dashboard, replacing master truth disk file.");
+              masterTruth = parsed.config;
+          }
 
           fs.writeFileSync(truthPath, JSON.stringify(masterTruth, null, 4), 'utf-8');
           res.statusCode = 200; res.setHeader('Content-Type', 'application/json');

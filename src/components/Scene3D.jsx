@@ -687,6 +687,7 @@ const Scene3D = ({
     const [localPositions, setLocalPositions] = React.useState({});
     const [localRotations, setLocalRotations] = React.useState({});
     const [localDiscoveryModes, setLocalDiscoveryModes] = React.useState({});
+    const [localAudioUrls, setLocalAudioUrls] = React.useState({});
     const [editorMode, setEditorMode] = React.useState('translate');
 
     const currentCoinPos = localPositions['coin'] || coinPos;
@@ -733,13 +734,15 @@ const Scene3D = ({
                 const id = item.id || `item-${experienceId}-${idx}`;
                 const pos = localPositions[id] || item.position || [0, 0, 0];
                 const mode = localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3];
+                const audio = localAudioUrls[id] !== undefined ? localAudioUrls[id] : (item.collectible?.url || '');
                 
                 objs.push({
                     id: id,
                     name: item.name || `Item ${idx + 1}`,
                     pos: [pos[0], pos[1], pos[2]],
                     rot: getDegrees(id, item.rotation || [0, 0, 0]),
-                    discoveryMode: mode
+                    discoveryMode: mode,
+                    audioUrl: audio
                 });
             });
             config.extraObjects?.forEach((obj, index) => {
@@ -775,9 +778,14 @@ const Scene3D = ({
                     setLocalRotations(prev => ({ ...prev, [e.detail.id]: rads }));
                 }
                 if (e.detail.discoveryMode !== undefined) {
-                    console.log("[Scene3D] Manual Discovery Mode sync received:", e.detail.id, e.detail.discoveryMode);
+                    console.log("[Scene3D] Manual DISCOVERY MODE sync received:", e.detail.id, e.detail.discoveryMode);
                     setLocalDiscoveryModes(prev => ({ ...prev, [e.detail.id]: e.detail.discoveryMode }));
                 }
+                if (e.detail.audioUrl !== undefined) {
+                    console.log("[Scene3D] Manual AUDIO URL sync received:", e.detail.id, e.detail.audioUrl);
+                    setLocalAudioUrls(prev => ({ ...prev, [e.detail.id]: e.detail.audioUrl }));
+                }
+                setTimeout(reportObjects, 50);
             }
         };
         const handleModeChange = (e) => {
@@ -904,7 +912,7 @@ const Scene3D = ({
                                             isCollected={isItemCollected}
                                             type={item.type}
                                             discoveryMode={localDiscoveryModes[id] || item.discoveryMode || ['instant', 'scan', 'sonic'][idx % 3]}
-                                            audioUrl={item.collectible?.url}
+                                            audioUrl={localAudioUrls[id] !== undefined ? localAudioUrls[id] : item.collectible?.url}
                                             onClick={() => window.dispatchEvent(new CustomEvent('object-clicked', { 
                                                 detail: { 
                                                     name: 'BackpackItem', 
