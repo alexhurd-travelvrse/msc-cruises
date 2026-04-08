@@ -281,7 +281,7 @@ const CompletionPage = () => {
                 </div>
 
                 {/* ─── DIGITAL COLLECTIBLES ─── */}
-                {backpack.some(item => item.collectible) && (
+                {backpack.length > 0 && (
                     <div className="collectibles-section glass-panel animate-fade-in-up" style={{
                         padding: '30px',
                         textAlign: 'left',
@@ -292,10 +292,10 @@ const CompletionPage = () => {
                         animationDelay: '0.2s'
                     }}>
                         <h3 style={{ color: '#00e5ff', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontSize: '1.5rem' }}>🎁</span> YOUR DIGITAL COLLECTIBLES
+                            <span style={{ fontSize: '1.5rem' }}>🎁</span> YOUR REWARDS & COLLECTIBLES
                         </h3>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-                            {backpack.filter(item => item.collectible).map((item, idx) => (
+                            {backpack.filter(item => item.title || item.collectible?.title).map((item, idx) => (
                                 <div key={idx} style={{
                                     background: 'rgba(255,255,255,0.06)',
                                     borderRadius: '16px',
