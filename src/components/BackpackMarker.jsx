@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Billboard, Text, Float, PositionalAudio } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
+import { useGame } from '../context/GameContext';
 
 const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl, isStarted, isModalOpen }, ref) => {
     const groupRef = useRef();
