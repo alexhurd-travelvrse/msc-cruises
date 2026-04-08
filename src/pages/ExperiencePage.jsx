@@ -14,38 +14,33 @@ import StartOverlay from '../components/StartOverlay';
 import AudioController from '../components/AudioController';
 import { offerDatabase, calculateLiveOfferDiscount } from '../data/offerDatabase';
 
-const YouTubePlayer = ({ url, previewImage }) => {
+const YouTubePlayer = ({ url }) => {
     const getYouTubeId = (url) => {
         if (!url) return null;
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/|youtube.com\/shorts\/)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return (match && (match[2].length === 11 || match[2].length === 12)) ? match[2] : null;
+        if (url.includes('shorts/')) return url.split('shorts/')[1].split(/[?#&/]/)[0];
+        if (url.includes('v=')) return url.split('v=')[1].split(/[?#&/]/)[0];
+        if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split(/[?#&/]/)[0];
+        if (url.includes('embed/')) return url.split('embed/')[1].split(/[?#&/]/)[0];
+        return null;
     };
 
     const isRawVideo = (url) => {
         if (!url) return false;
-        return url.match(/\.(mp4|webm|ogg|mov)$|^https:\/\/v\.ftcdn\.net/);
+        return url.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || url.includes('v.ftcdn.net');
     };
 
     if (!url) return null;
 
     if (isRawVideo(url)) {
         return (
-            <div className="video-container" style={{ borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: '#000' }}>
+            <div className="video-container" style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
                 <video 
                     src={url} 
                     controls 
                     autoPlay 
                     muted 
                     playsInline
-                    style={{ 
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                    }}
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain' }}
                 />
             </div>
         );
@@ -54,21 +49,19 @@ const YouTubePlayer = ({ url, previewImage }) => {
     const videoId = getYouTubeId(url);
 
     if (!videoId) return (
-        <div style={{ width: '100%', height: '200px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }}>
-            <span className="metadata-label">Invalid Video URL</span>
+        <div style={{ width: '100%', height: '150px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
+            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>Video preview unavailable</span>
         </div>
     );
 
     return (
-        <div className="video-container" style={{ borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: '#000' }}>
+        <div className="video-container" style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
             <iframe 
-                src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&mute=1`}
-                title="YouTube video player" 
-                frameBorder="0" 
+                src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&autoplay=1&mute=1`}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
-                style={{ border: 'none' }}
-            ></iframe>
+            />
         </div>
     );
 };
@@ -224,7 +217,12 @@ const ExperiencePage = () => {
                     image: dynamicCoin?.image || '/textures/coin.png',
                     type: 'medal',
                     icon: '🏅',
-                    collectible: true
+                    collectible: {
+                        type: 'medal',
+                        title: dynamicCoin?.title || 'Sovereign Reward',
+                        description: dynamicCoin?.text || 'Standardized Reward',
+                        url: dynamicCoin?.image || '/textures/coin.png'
+                    }
                 };
                 
                 addToBackpack(itemToAdd);

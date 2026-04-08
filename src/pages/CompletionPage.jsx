@@ -302,20 +302,20 @@ const CompletionPage = () => {
                                     gap: '10px'
                                 }}>
                                     <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: '8px', overflow: 'hidden', background: '#000' }}>
-                                        {item.collectible.type === 'video' || item.collectible.type === 'mp4' ? (
-                                            <video src={item.collectible.url} autoPlay loop muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                        ) : item.collectible.type === 'image' ? (
-                                            <img src={item.collectible.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={item.collectible.title} />
+                                        {item.collectible?.type === 'video' || item.collectible?.type === 'mp4' ? (
+                                            <video src={item.collectible?.url} autoPlay loop muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : item.collectible?.type === 'image' || item.collectible === true ? (
+                                            <img src={item.collectible?.url || item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt={item.collectible?.title || item.title} />
                                         ) : (
                                             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>
-                                                {item.collectible.type === 'mp3' ? '🎵' : item.collectible.type === 'pdf' ? '📄' : '🏆'}
+                                                {item.collectible?.type === 'mp3' ? '🎵' : item.collectible?.type === 'pdf' ? '📄' : item.collectible?.type === 'medal' ? '🏅' : '🏆'}
                                             </div>
                                         )}
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#fff' }}>{item.collectible.title}</h4>
-                                    <p style={{ margin: 0, fontSize: '0.7rem', opacity: 0.6, color: 'white' }}>{item.collectible.description}</p>
+                                    <h4 style={{ margin: 0, fontSize: '0.9rem', color: '#fff' }}>{item.collectible?.title || item.title}</h4>
+                                    <p style={{ margin: 0, fontSize: '0.7rem', opacity: 0.6, color: 'white' }}>{item.collectible?.description || item.description}</p>
                                     <button
-                                        onClick={() => window.open(item.collectible.url, '_blank')}
+                                        onClick={() => window.open(item.collectible?.url || item.url, '_blank')}
                                         className="btn-primary"
                                         style={{ padding: '8px', fontSize: '0.7rem', width: '100%', marginTop: 'auto' }}
                                     >
