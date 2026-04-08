@@ -170,9 +170,13 @@ const CompletionPage = () => {
                                 animation: 'pulse-qr 2.5s infinite ease-in-out'
                             }}>
                                 <img
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MSC_REWARD_${topPersona.toUpperCase()}_v17`}
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`MSC_REWARD_${(topPersona || 'VOYAGER').toUpperCase()}_v17`)}`}
                                     alt="Speakeasy QR"
                                     style={{ width: '120px', height: '120px', display: 'block' }}
+                                    onError={(e) => {
+                                        console.error('QR Code failed to load');
+                                        e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MSC_REWARD_GENERIC_v17';
+                                    }}
                                 />
                                 <div style={{ color: '#050510', fontSize: '0.6rem', fontWeight: '900', letterSpacing: '1.5px', textAlign: 'center' }}>SCAN TO REDEEM</div>
                             </div>
