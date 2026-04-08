@@ -200,24 +200,15 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
                     follow={true}
                     onClick={(e) => {
                         e.stopPropagation();
-                        // Clickable if materialized OR if in sonic mode (for easier interaction)
-                        if (isMaterialized || (discoveryMode === 'sonic' && groupRef.current?.visible)) {
-                            if (!isMaterialized) setIsMaterialized(true); // Auto-reveal on click
-                            
-                            if (discoveryMode === 'instant') {
-                                window.dispatchEvent(new CustomEvent('captureLead', { 
-                                    detail: { 
-                                        timestamp: Date.now(),
-                                        interaction_mode: 'instant',
-                                        discovery_target: `Target_${experienceId}`,
-                                        user_segment: 'General_Interest',
-                                        device_type: /Android|webOS|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
-                                    } 
-                                }));
-                                window.dispatchEvent(new CustomEvent('orb-select')); 
-                            } else if (discoveryMode === 'scan') {
-                                window.dispatchEvent(new CustomEvent('orb-select')); 
+                        // USER REQUEST: Always clickable regardless of state (Robustness)
+                        if (groupRef.current?.visible) {
+                            if (!isMaterialized) {
+                                setIsMaterialized(true);
+                                window.dispatchEvent(new CustomEvent('orb-scan-end')); 
+                                window.dispatchEvent(new CustomEvent('trigger-confetti'));
                             }
+                            
+                            window.dispatchEvent(new CustomEvent('orb-select')); 
                             onClick(e);
                         }
                     }}
