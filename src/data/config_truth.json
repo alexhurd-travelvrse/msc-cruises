@@ -189,19 +189,19 @@
                         1.023128780046892
                     ],
                     "media": "/assets/spa_grab.png",
-                    "text": "Relax in our celestial thermal waters.",
+                    "text": "Relax in our celestial thermal waters. Check out the vid and grabour collectible - tips on how to look great exclusively curated by the onboard team.",
                     "collectible": {
                         "type": "pdf",
-                        "title": "Spa Ambient Mix",
+                        "title": "How to feel great on a cruise",
                         "url": "models/cruise tips.pdf",
-                        "description": "A 5-minute relaxing soundscape from the Aurea Spa."
+                        "description": "Onboard health tips from the onboard team"
                     },
                     "rotation": [
-                        -1383802738.8843215,
-                        583133924.4895326,
-                        1448168764.575669
+                        -14912989616791800,
+                        6284327900754657,
+                        15606650530906714
                     ],
-                    "discoveryMode": "instant",
+                    "discoveryMode": "scan",
                     "video": "https://www.youtube.com/shorts/5C2o05somtY"
                 },
                 {
@@ -214,14 +214,20 @@
                         -0.6354813007036985
                     ],
                     "media": "/assets/spa_grab.png",
-                    "text": "Energize in our state-of-the-art fitness center.",
+                    "text": "Energize in our state-of-the-art fitness center. Check put the vid and add this exclusive soundtrack to your backpack - put together by the gym team!",
                     "rotation": [
-                        -1383802738.8843215,
-                        583133924.4895326,
-                        1448168764.575669
+                        -14912989616791800,
+                        6284327900754657,
+                        15606650530906714
                     ],
                     "discoveryMode": "scan",
-                    "video": "https://www.youtube.com/shorts/M6ksgrJ7t28"
+                    "video": "https://www.youtube.com/shorts/M6ksgrJ7t28",
+                    "collectible": {
+                        "url": "models/Glass_Podium.mp3",
+                        "description": "Funky beat music for the gym",
+                        "type": "mp3",
+                        "title": "Funky Gym Music"
+                    }
                 }
             ],
             "coin": {
@@ -291,10 +297,10 @@
                         -1.313
                     ],
                     "media": "/assets/hola_grab.png",
-                    "text": "Authentic flavors from Mexico.",
+                    "text": "Authentic flavors from Mexico. Check out the vibe and grap our secret Sagrina recipe",
                     "collectible": {
                         "type": "pdf",
-                        "title": "Signature Drinks Recipe",
+                        "title": "Sagria Drinks Recipe",
                         "url": "/assets/recipe_placeholder.pdf",
                         "description": "Learn how to make our signature cocktails at home."
                     },
@@ -302,11 +308,12 @@
                         0,
                         0,
                         0
-                    ]
+                    ],
+                    "video": "https://www.youtube.com/shorts/U706-7o5JDQ"
                 },
                 {
                     "id": "3-2",
-                    "name": "Fresh Margarita",
+                    "name": "Fine Dining ",
                     "type": "wineglass",
                     "position": [
                         -1.6811511276260984,
@@ -314,13 +321,20 @@
                         -2.3920515721114604
                     ],
                     "media": "/assets/hola_grab.png",
-                    "text": "Hand-crafted at our tequila bar.",
+                    "text": "More interested in Fine Dinning? The Chefs market kitchen has everything you can need. Check out the vid and add the special tasting menu to your backpack",
                     "rotation": [
                         -13.407212406061264,
                         -3.7815214478634336,
                         -0.9167324722093172
                     ],
-                    "discoveryMode": "instant"
+                    "discoveryMode": "instant",
+                    "video": "https://www.youtube.com/shorts/pPNyI-8W1VU",
+                    "collectible": {
+                        "type": "pdf",
+                        "title": "Tasting menu",
+                        "url": "models/MENU CHEF_GARDEN_ENG",
+                        "description": "Tasting Menu"
+                    }
                 }
             ],
             "coin": {
