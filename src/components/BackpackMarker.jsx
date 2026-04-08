@@ -5,11 +5,13 @@ import { Vector3 } from 'three';
 import { useGame } from '../context/GameContext';
 
 const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl, isStarted, isModalOpen }, ref) => {
+    const { dismissedItems } = useGame();
     const groupRef = useRef();
     const ringRef = useRef();
     const bgRef = useRef();
     const borderRef = useRef();
     const textRef = useRef();
+    const audioRef = useRef();
     
     const [isMaterialized, setIsMaterialized] = useState(discoveryMode === 'instant');
     const scanProgress = useRef(0);
@@ -17,6 +19,8 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
     const isScanning = useRef(false);
     
     const { camera } = useThree();
+    const [isInsideAudioRange, setIsInsideAudioRange] = useState(false);
+    const tempVec = useRef(new Vector3());
 
     const sceneColors = {
         '1': '#d4af37',
@@ -55,10 +59,6 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
         scanProgress.current = 0;
     }, [discoveryMode]);
 
-    const { dismissedItems } = useGame();
-    const [isInsideAudioRange, setIsInsideAudioRange] = useState(false);
-    const tempVec = useRef(new Vector3());
-    
     // Explicit unmount cleanup for positional audio to handle React-Three-Fiber unmount lag
     useEffect(() => {
         return () => {
@@ -212,8 +212,6 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
             }
         }
     });
-
-    const audioRef = useRef();
 
     if (isCollected) return null;
 

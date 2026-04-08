@@ -47,7 +47,7 @@ const YouTubePlayer = ({ url, previewImage }) => {
 const ExperiencePage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { resetProgress, updateChallenge, addToBackpack, getTotalCoins, influencer, backpack, trackTime, getTopInterest, itemsViewed, setItemsViewed } = useGame();
+    const { resetProgress, updateChallenge, addToBackpack, getTotalCoins, influencer, backpack, trackTime, getTopInterest, itemsViewed, setItemsViewed, dismissItem } = useGame();
     const { publicConfig, publicInfluencer, resetToTruth, saveConfig } = useInfluencer();
     const curatorName = publicInfluencer?.name || 'Alex';
     const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "MSC WORLD EUROPA";
