@@ -22,6 +22,35 @@ const YouTubePlayer = ({ url, previewImage }) => {
         return (match && (match[2].length === 11 || match[2].length === 12)) ? match[2] : null;
     };
 
+    const isRawVideo = (url) => {
+        if (!url) return false;
+        return url.match(/\.(mp4|webm|ogg|mov)$|^https:\/\/v\.ftcdn\.net/);
+    };
+
+    if (!url) return null;
+
+    if (isRawVideo(url)) {
+        return (
+            <div className="video-container" style={{ borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: '#000' }}>
+                <video 
+                    src={url} 
+                    controls 
+                    autoPlay 
+                    muted 
+                    playsInline
+                    style={{ 
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                    }}
+                />
+            </div>
+        );
+    }
+
     const videoId = getYouTubeId(url);
 
     if (!videoId) return (
@@ -33,7 +62,7 @@ const YouTubePlayer = ({ url, previewImage }) => {
     return (
         <div className="video-container" style={{ borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: '#000' }}>
             <iframe 
-                src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+                src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&mute=1`}
                 title="YouTube video player" 
                 frameBorder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
