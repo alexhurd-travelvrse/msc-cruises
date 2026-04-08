@@ -493,16 +493,21 @@
                         "title": "Gaudi Park Gueill",
                         "url": "models/gaudi_barcelona_en",
                         "description": "Gaudi Tips in Barcelona"
-                    }
+                    },
+                    "rotation": [
+                        0,
+                        0,
+                        0
+                    ]
                 },
                 {
                     "id": "5-2",
                     "name": "Park Panorama",
                     "type": "star",
                     "position": [
-                        1.2,
-                        1.2,
-                        -1.5
+                        -0.35119368227524805,
+                        1.263108509897043,
+                        -1.6167523346892103
                     ],
                     "media": "/assets/excursion_filler.jpg",
                     "text": "Other tips Barcelona excursions",
@@ -513,7 +518,12 @@
                         "description": "Exclusive insider tips for exploring Barcelona like a local."
                     },
                     "discoveryMode": "instant",
-                    "video": "https://www.youtube.com/shorts/1xA6B_dOktU"
+                    "video": "https://www.youtube.com/shorts/1xA6B_dOktU",
+                    "rotation": [
+                        -151.66980049530613,
+                        3.769626590239383,
+                        177.98701329990547
+                    ]
                 }
             ],
             "coin": {
@@ -525,7 +535,12 @@
                     0.5
                 ],
                 "media": "/textures/coin.png",
-                "discoveryMode": "scan"
+                "discoveryMode": "scan",
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ]
             },
             "hotspots": [
                 {
@@ -553,7 +568,17 @@
                     "label": "Tower View"
                 }
             ],
-            "extraObjects": []
+            "extraObjects": [],
+            "startPos": [
+                0.173,
+                1.06,
+                1.551
+            ],
+            "startRot": [
+                -2.4064227395494577,
+                41.25296124941927,
+                1.604281826366305
+            ]
         }
     },
     "personas": {
