@@ -249,6 +249,9 @@ const ExperiencePage = () => {
             const newViewed = [...new Set([...itemsViewed, modal.id])];
             setItemsViewed(newViewed);
             
+            // USER REQUEST: Persistent dismissal to stop sensory audio for this session
+            dismissItem(modal.id);
+
             // USER REQUEST: Only show coin after 2 items are viewed
             if (newViewed.length >= 2) {
                 setIsOrbAllowed(true);
@@ -443,7 +446,7 @@ const ExperiencePage = () => {
                                      console.log('[HUD] Leave: Exit Button');
                                      window.dispatchEvent(new CustomEvent('orb-look-at', { detail: { x: 0, y: 0 } }));
                                  }}
-                                 onClick={() => navigate('/')}>Exit HUD</button>
+                                 onClick={() => navigate('/')}>Home Page</button>
                     </div>
                 </div>
 
@@ -571,7 +574,7 @@ const ExperiencePage = () => {
                                         {modal.collectible.type === 'pdf' ? '📄' : (modal.collectible.type === 'mp3' ? '🔉' : '🏅')}
                                     </div>
                                     <div>
-                                        <div className="metadata-label" style={{ fontSize: '0.65rem', color: currentTheme.primary, marginBottom: '2px' }}>Inventory Asset Detected</div>
+                                        <div className="metadata-label" style={{ fontSize: '0.65rem', color: currentTheme.primary, marginBottom: '2px' }}>Inventory Collectible Detected</div>
                                         <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{modal.collectible.title || modal.title}</div>
                                         {modal.collectible.description && (
                                             <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>{modal.collectible.description}</div>
@@ -582,9 +585,9 @@ const ExperiencePage = () => {
 
                             <div className="modal-actions" style={{ display: 'flex', gap: '15px' }}>
                                 <button onClick={handleAddToBackpackClick} className="ghost-button">
-                                    {modal.type === 'medal' ? 'Log Interest' : 'Capture Asset'}
+                                    {modal.type === 'medal' ? 'Log Interest' : 'Capture Collectible'}
                                 </button>
-                                <button onClick={handleCloseModal} className="ghost-button" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.2)' }}>Dismiss</button>
+                                <button onClick={handleCloseModal} className="ghost-button" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.2)' }}>Close</button>
                             </div>
                         </div>
                     </div>

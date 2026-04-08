@@ -18,13 +18,13 @@ const Layout = ({ children }) => {
                                 src="/models/msc.logo.png"
                                 alt="MSC Cruises"
                                 className="nav-logo"
-                                style={{ height: '44px' }}
+                                style={{ height: '55px' }}
                             />
                         </Link>
                         <img
                             src="/models/travelvrse logo.png"
                             alt="Travelvrse"
-                            style={{ height: '44px' }}
+                            style={{ height: '55px' }}
                         />
                     </div>
                 </header>

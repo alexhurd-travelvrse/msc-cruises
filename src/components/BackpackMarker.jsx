@@ -54,9 +54,19 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
         scanProgress.current = 0;
     }, [discoveryMode]);
 
+    const { dismissedItems } = useGame();
     const [isInsideAudioRange, setIsInsideAudioRange] = useState(false);
     const tempVec = useRef(new Vector3());
     
+    // Explicit unmount cleanup for positional audio to handle React-Three-Fiber unmount lag
+    useEffect(() => {
+        return () => {
+            if (audioRef.current && audioRef.current.isPlaying) {
+                audioRef.current.stop();
+            }
+        };
+    }, []);
+
     useFrame(({ clock, camera, size: viewportSize }) => {
         if (!groupRef.current) return;
 
@@ -81,14 +91,15 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
             
             // Hard real-time sync for audio instance
             if (audioRef.current) {
-                const shouldPlay = inRange && isStarted && !isModalOpen;
+                const isDismissed = dismissedItems && dismissedItems.includes(id);
+                const shouldPlay = inRange && isStarted && !isModalOpen && !isDismissed && !isCollected;
+                
                 if (shouldPlay && !audioRef.current.isPlaying) {
                      // Auto-resume context if needed
                     if (audioRef.current.context.state === 'suspended') audioRef.current.context.resume();
                     audioRef.current.play();
                 } else if (!shouldPlay && audioRef.current.isPlaying) {
                     audioRef.current.stop();
-                    audioRef.current.setVolume(0);
                 }
             }
         }

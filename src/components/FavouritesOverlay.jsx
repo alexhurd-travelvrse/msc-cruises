@@ -63,7 +63,7 @@ const FavouritesOverlay = ({ onClose }) => {
                     </div>
 
                     {/* Backpack Items */}
-                    <h3 className="metadata-label" style={{ color: 'var(--color-accent-primary)', marginBottom: '1.5rem', marginTop: '3rem' }}>Captured Experience Assets ({backpack.length})</h3>
+                    <h3 className="metadata-label" style={{ color: 'var(--color-accent-primary)', marginBottom: '1.5rem', marginTop: '3rem' }}>Captured Experience Collectibles ({backpack.length})</h3>
                     <div className="curated-feed">
                         {backpack.length === 0 ? (
                             <p style={{ textAlign: 'center', opacity: 0.5, padding: '2rem' }}>Your backpack is empty. Explore and find activities!</p>

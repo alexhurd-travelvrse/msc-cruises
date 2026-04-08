@@ -150,7 +150,7 @@ const CompletionPage = () => {
                                 <h4 style={{ color: details.color, letterSpacing: '3px', fontSize: '0.7rem', margin: '0 0 4px 0', fontWeight: '800' }}>OFFICIAL SPEAKEASY ACCESS</h4>
                                 <h2 style={{ fontSize: '1.6rem', margin: '0', color: 'white', fontWeight: '800', lineHeight: 1.1 }}>{publicConfig.home.title}</h2>
                             </div>
-                            <img src="/assets/msc.logo.png" style={{ height: '40px', flexShrink: 0 }} onError={e => e.target.style.display = 'none'} />
+                            <img src="/assets/msc.logo.png" style={{ height: '50px', flexShrink: 0 }} onError={e => e.target.style.display = 'none'} />
                         </div>
 
                         {/* QR + Identity row */}
@@ -159,21 +159,22 @@ const CompletionPage = () => {
                             <div style={{
                                 background: 'white',
                                 borderRadius: '14px',
-                                padding: '10px',
+                                padding: '12px',
                                 flexShrink: 0,
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                                gap: '6px',
-                                border: `2px solid ${details.color}`,
+                                gap: '8px',
+                                border: `3px solid ${details.color}`,
+                                boxShadow: `0 0 25px ${details.color}50`,
                                 animation: 'pulse-qr 2.5s infinite ease-in-out'
                             }}>
                                 <img
-                                    src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=MSC_SPEAKEASY_ACCESS"
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=MSC_REWARD_${topPersona.toUpperCase()}_v17`}
                                     alt="Speakeasy QR"
-                                    style={{ width: '100px', height: '100px', display: 'block' }}
+                                    style={{ width: '120px', height: '120px', display: 'block' }}
                                 />
-                                <div style={{ color: '#050510', fontSize: '0.5rem', fontWeight: '900', letterSpacing: '1.5px', textAlign: 'center' }}>SCAN TO ENTER</div>
+                                <div style={{ color: '#050510', fontSize: '0.6rem', fontWeight: '900', letterSpacing: '1.5px', textAlign: 'center' }}>SCAN TO REDEEM</div>
                             </div>
 
                             {/* Voyager status */}

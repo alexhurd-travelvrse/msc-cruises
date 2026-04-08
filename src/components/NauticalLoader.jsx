@@ -110,28 +110,44 @@ const NauticalLoader = ({ progress, isSplatLoaded, isVisible }) => {
                     }} />
                 </div>
 
-                {/* NAVIGATION GUIDE */}
+                {/* NAVIGATION GUIDE - ENHANCED VISUALS */}
                 <div style={{
-                    marginTop: '10px',
+                    marginTop: '15px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '20px',
-                    width: '100%'
+                    gap: '24px',
+                    width: '100%',
+                    padding: '20px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '8px'
                 }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', alignItems: 'center' }}>
-                        <div>
-                            <div className="metadata-label" style={{ fontSize: '0.5rem', marginBottom: '8px' }}>TRANSLATE</div>
-                            <div style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600, letterSpacing: '0.2em' }}>W A S D</div>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '30px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                            <div className="metadata-label" style={{ fontSize: '0.6rem', color: '#00e5ff', opacity: 0.8 }}>TRANSLATE</div>
+                            <div style={{ display: 'flex', gap: '4px' }}>
+                                <div style={{ border: '1px solid #fff', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 800 }}>W</div>
+                                <div style={{ border: '1px solid #fff', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 800 }}>A</div>
+                                <div style={{ border: '1px solid #fff', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 800 }}>S</div>
+                                <div style={{ border: '1px solid #fff', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 800 }}>D</div>
+                            </div>
                         </div>
-                        <div>
-                            <div className="metadata-label" style={{ fontSize: '0.5rem', marginBottom: '8px' }}>ELEVATE</div>
-                            <div style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600, letterSpacing: '0.2em' }}>Q / E</div>
+                        <div style={{ width: '1px', height: '30px', background: 'rgba(255,255,255,0.1)' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                            <div className="metadata-label" style={{ fontSize: '0.6rem', color: '#00e5ff', opacity: 0.8 }}>ELEVATE</div>
+                            <div style={{ display: 'flex', gap: '4px' }}>
+                                <div style={{ border: '1px solid #fff', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 800 }}>Q</div>
+                                <div style={{ border: '1px solid #fff', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 800 }}>E</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
-                        <div className="metadata-label" style={{ fontSize: '0.5rem', marginBottom: '8px' }}>PANORAMIC LOOK</div>
-                        <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>DRAG CURSOR TO EXPLORE</div>
+                    <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.1)', paddingTop: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px' }}>
+                        <div style={{ fontSize: '1.8rem' }}>🖱️</div>
+                        <div style={{ textAlign: 'left' }}>
+                            <div className="metadata-label" style={{ fontSize: '0.6rem', color: '#00e5ff', opacity: 0.8 }}>PANORAMIC LOOK</div>
+                            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', letterSpacing: '0.05em', fontWeight: 600 }}>CLICK + DRAG TO EXPLORE</div>
+                        </div>
                     </div>
                 </div>
             </div>
