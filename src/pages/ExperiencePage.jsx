@@ -14,7 +14,9 @@ import StartOverlay from '../components/StartOverlay';
 import AudioController from '../components/AudioController';
 import { offerDatabase, calculateLiveOfferDiscount } from '../data/offerDatabase';
 
-const YouTubePlayer = ({ url }) => {
+const YouTubePlayer = ({ url, previewImage }) => {
+    const [isLoaded, setIsLoaded] = useState(false);
+    
     const getYouTubeId = (url) => {
         if (!url) return null;
         if (url.includes('shorts/')) return url.split('shorts/')[1].split(/[?#&/]/)[0];
@@ -37,8 +39,6 @@ const YouTubePlayer = ({ url }) => {
                 <video 
                     src={url} 
                     controls 
-                    autoPlay 
-                    muted 
                     playsInline
                     style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain' }}
                 />
@@ -54,10 +54,32 @@ const YouTubePlayer = ({ url }) => {
         </div>
     );
 
+    if (!isLoaded && previewImage) {
+        return (
+            <div className="video-container" 
+                onClick={() => setIsLoaded(true)}
+                style={{ 
+                    position: 'relative', 
+                    width: '100%', 
+                    paddingBottom: '56.25%', 
+                    height: 0, 
+                    background: '#000', 
+                    borderRadius: '8px', 
+                    overflow: 'hidden',
+                    cursor: 'pointer'
+                }}>
+                <img src={previewImage} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '60px', height: '60px', background: 'rgba(0,229,255,0.8)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(0,229,255,0.4)' }}>
+                    <div style={{ width: 0, height: 0, borderTop: '12px solid transparent', borderBottom: '12px solid transparent', borderLeft: '20px solid white', marginLeft: '5px' }}></div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="video-container" style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
             <iframe 
-                src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&autoplay=1&mute=1`}
+                src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&autoplay=1`}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
