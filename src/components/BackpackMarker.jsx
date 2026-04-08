@@ -105,111 +105,78 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
             }
         }
 
-        // Logic for Scan Mode
-        if (discoveryMode === 'scan' && !isMaterialized) {
-            // Project 3D pos to 2D
-            const vec = new Vector3();
-            groupRef.current.getWorldPosition(vec);
-            vec.project(camera);
+        // Discovery Logic
+        if (!isMaterialized) {
+            if (discoveryMode === 'scan') {
+                // Project 3D pos to 2D
+                const vec = new Vector3();
+                groupRef.current.getWorldPosition(vec);
+                vec.project(camera);
 
-            const px = (vec.x * 0.5 + 0.5) * viewportSize.width;
-            const py = (vec.y * -0.5 + 0.5) * viewportSize.height;
+                const px = (vec.x * 0.5 + 0.5) * viewportSize.width;
+                const py = (vec.y * -0.5 + 0.5) * viewportSize.height;
 
-            const dx = orbPos.current.x - px;
-            const dy = orbPos.current.y - py;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+                const dx = orbPos.current.x - px;
+                const dy = orbPos.current.y - py;
+                const dist = Math.sqrt(dx * dx + dy * dy);
 
-            // If focus point (mouse or center screen) is within generous 175px radius
-            if (dist < 175 && vec.z < 1) { // vec.z < 1 ensures it's in front of camera
-                if (!isScanning.current) {
-                    window.dispatchEvent(new CustomEvent('orb-scan-start', { detail: { x: px, y: py } }));
-                    isScanning.current = true;
+                if (dist < 175 && vec.z < 1) { 
+                    if (!isScanning.current) {
+                        window.dispatchEvent(new CustomEvent('orb-scan-start', { detail: { x: px, y: py } }));
+                        isScanning.current = true;
+                    }
+                    scanProgress.current += 1.0 / 60.0;
+                    if (scanProgress.current >= 0.6) {
+                        setIsMaterialized(true);
+                        window.dispatchEvent(new CustomEvent('orb-scan-end')); 
+                        isScanning.current = false;
+                        window.dispatchEvent(new CustomEvent('trigger-confetti'));
+                    }
+                } else {
+                    if (isScanning.current) {
+                        window.dispatchEvent(new CustomEvent('orb-scan-end'));
+                        isScanning.current = false;
+                    }
+                    scanProgress.current = Math.max(0, scanProgress.current - 0.005);
                 }
                 
-                scanProgress.current += 1.0 / 60.0; // Assume 60fps
-                
-                if (scanProgress.current >= 0.6) { // Reduced from 1.5s to 0.6s for easier discovery
-                    setIsMaterialized(true);
-                    window.dispatchEvent(new CustomEvent('orb-scan-end')); // stop pulsar
-                    isScanning.current = false;
-                    console.log("Direct Lead Captured: High Intent/Qualified Lead (Scan Mode)");
-                    window.dispatchEvent(new CustomEvent('captureLead', { 
-                        detail: { 
-                            timestamp: Date.now(),
-                            interaction_mode: 'scan',
-                            discovery_target: `Target_${experienceId}`,
-                            user_segment: 'High_Intent_Luxury',
-                            device_type: /Android|webOS|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
-                        } 
-                    }));
-                }
-            } else {
-                if (isScanning.current) {
-                    window.dispatchEvent(new CustomEvent('orb-scan-end'));
-                    isScanning.current = false;
-                }
-                // Very slow decay instead of aggressive hiding, acting as "stickiness"
-                scanProgress.current = Math.max(0, scanProgress.current - 0.005);
-            }
-            
-            // Visuals while not materialized
-            if (bgRef.current && borderRef.current && textRef.current && ringRef.current && groupRef.current) {
+                // Scan Visuals
                 const alpha = Math.min(1, scanProgress.current / 0.6);
-                
-                // Aggressively hide the entire object from the Engine if alpha is 0
-                groupRef.current.visible = alpha > 0.02;
-
+                groupRef.current.visible = true; 
                 bgRef.current.material.opacity = alpha * 0.8;
                 borderRef.current.material.opacity = alpha;
-                textRef.current.fillOpacity = alpha; // Drei Text uses fillOpacity
+                textRef.current.fillOpacity = alpha;
                 ringRef.current.material.opacity = alpha * 0.4;
-                
-                // Ring expands as progress fills (like a circular progress ring filling)
                 borderRef.current.scale.setScalar(0.5 + alpha * 0.5);
-            }
-            // Sonic visibility logic: Fades in as you get closer
-            if (groupRef.current) {
+
+            } else if (discoveryMode === 'sonic') {
                 const vec = new Vector3();
                 groupRef.current.getWorldPosition(vec);
                 const dist = camera.position.distanceTo(vec);
-                const proximityAlpha = Math.max(0, 1 - (dist / 5.0)); // Fades in from 5m away
                 
-                groupRef.current.visible = true; 
+                // Proximity visibility: Fades in as you get closer
+                const proximityAlpha = Math.max(0, 1 - (dist / 6.0)); 
+                groupRef.current.visible = proximityAlpha > 0.05;
                 bgRef.current.material.opacity = proximityAlpha * 0.4;
-                borderRef.current.material.opacity = proximityAlpha * 0.6;
-                textRef.current.fillOpacity = proximityAlpha * 0.5;
+                borderRef.current.material.opacity = proximityAlpha * 0.8;
+                textRef.current.fillOpacity = proximityAlpha * 0.7;
                 ringRef.current.material.opacity = proximityAlpha * 0.2;
                 borderRef.current.scale.setScalar(0.7 + proximityAlpha * 0.3);
+
+                // Auto-materialize when very close
+                if (dist < 1.8) {
+                    if (navigator.vibrate) navigator.vibrate(40);
+                    setIsMaterialized(true);
+                }
             }
         } else {
-            // Instant or already materialized
-            if (groupRef.current) groupRef.current.visible = true;
-        }
-
-        // Logic for Sonic Mode vibrations and automatic discovery
-        if (discoveryMode === 'sonic' && !isMaterialized) {
-            const vec = new Vector3();
-            groupRef.current.getWorldPosition(vec);
-            const dist = camera.position.distanceTo(vec);
-            
-            // Proximity thresholds
-            const hearRange = 5.0; // Audio already handled by PositionalAudio, but we use this for faint visibility
-            const materialRange = 1.5; // Automatic unlock distance
-            
-            if (dist < materialRange) {
-                if (navigator.vibrate) navigator.vibrate(40);
-                setIsMaterialized(true);
-                console.log("Direct Lead Captured: Sensory Engagement (Sonic Mode)");
-                window.dispatchEvent(new CustomEvent('captureLead', { 
-                    detail: { 
-                        timestamp: Date.now(),
-                        interaction_mode: 'sonic',
-                        discovery_target: `Target_${experienceId}`,
-                        user_segment: 'Sensory_Engagement',
-                        device_type: /Android|webOS|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
-                    } 
-                }));
-            }
+            // Fully Materialized
+            groupRef.current.visible = true;
+            bgRef.current.material.opacity = 0.8;
+            borderRef.current.material.opacity = 1.0;
+            textRef.current.fillOpacity = 1.0;
+            ringRef.current.material.opacity = 0.6;
+            borderRef.current.scale.setScalar(1);
         }
     });
 
@@ -233,8 +200,10 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
                     follow={true}
                     onClick={(e) => {
                         e.stopPropagation();
-                        // Only clickable if materialized
-                        if (isMaterialized) {
+                        // Clickable if materialized OR if in sonic mode (for easier interaction)
+                        if (isMaterialized || (discoveryMode === 'sonic' && groupRef.current?.visible)) {
+                            if (!isMaterialized) setIsMaterialized(true); // Auto-reveal on click
+                            
                             if (discoveryMode === 'instant') {
                                 window.dispatchEvent(new CustomEvent('captureLead', { 
                                     detail: { 
