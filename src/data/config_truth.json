@@ -411,11 +411,12 @@
                         "url": "/models/racingcar.glb",
                         "description": "A special 3D trophy for your racing performance."
                     },
-                    "discoveryMode": "instant"
+                    "discoveryMode": "instant",
+                    "video": "https://www.youtube.com/shorts/L0LlYc8ysu0"
                 },
                 {
                     "id": "4-2",
-                    "name": "Arcade Pass",
+                    "name": "Venom Drop",
                     "type": "remote",
                     "position": [
                         2.5,
@@ -423,8 +424,13 @@
                         -1
                     ],
                     "media": "/assets/arcade_grab.png",
-                    "text": "Unlimited access to retro classics.",
-                    "discoveryMode": "instant"
+                    "text": "Wow - you have to try the venom drop - it takes 30 secs. Check out the vid and the free badge",
+                    "discoveryMode": "instant",
+                    "video": "https://www.youtube.com/shorts/0c8rxlJ2On4",
+                    "collectible": {
+                        "type": "badge",
+                        "description": "Free Venom Drop Badge"
+                    }
                 }
             ],
             "coin": {
@@ -471,7 +477,7 @@
             "items": [
                 {
                     "id": "5-1",
-                    "name": "Gaudí Inspiration",
+                    "name": "Gaudí Inspiration - Park Gueill",
                     "type": "ring",
                     "position": [
                         0,
@@ -479,9 +485,15 @@
                         -2.5
                     ],
                     "media": "/assets/excursion_filler.jpg",
-                    "video": "https://v.ftcdn.net/06/17/84/44/700_F_617844445_h8vX0BvL4v3Y6H8H1Z8B1v8v8v8v8v8v_ST.mp4",
-                    "text": "Discover the architectural genius of Antoni Gaudí.",
-                    "discoveryMode": "instant"
+                    "video": "https://www.youtube.com/shorts/3EVA1U8b0Kc",
+                    "text": "Discover the architectural genius of Antoni Gaudí in Park Gueill - check out the Vid and grab the exclusive guide on Gaudi in Barcelona - put together by our onboard team",
+                    "discoveryMode": "instant",
+                    "collectible": {
+                        "type": "pdf",
+                        "title": "Gaudi Park Gueill",
+                        "url": "models/gaudi_barcelona_en",
+                        "description": "Gaudi Tips in Barcelona"
+                    }
                 },
                 {
                     "id": "5-2",
@@ -493,14 +505,15 @@
                         -1.5
                     ],
                     "media": "/assets/excursion_filler.jpg",
-                    "text": "Breathtaking views of the city from Park Güell.",
+                    "text": "Other tips Barcelona excursions",
                     "collectible": {
                         "type": "pdf",
                         "title": "Hidden City Tips",
                         "url": "/assets/tips_placeholder.pdf",
                         "description": "Exclusive insider tips for exploring Barcelona like a local."
                     },
-                    "discoveryMode": "instant"
+                    "discoveryMode": "instant",
+                    "video": "https://www.youtube.com/shorts/1xA6B_dOktU"
                 }
             ],
             "coin": {
