@@ -1,6 +1,6 @@
 import React, { Suspense, useMemo } from 'react';
 import { Canvas, useThree, extend } from '@react-three/fiber';
-import { useTexture, Html, useProgress, Environment } from '@react-three/drei';
+import { useTexture, Html, useProgress, Environment, PerspectiveCamera } from '@react-three/drei';
 import { SparkRenderer as SparkRendererCore, SplatMesh } from '@sparkjsdev/spark';
 import Scene3D from './Scene3D';
 
@@ -12,7 +12,11 @@ const SparkSystem = () => {
     const { gl } = useThree();
     const options = useMemo(() => ({
         renderer: gl,
-        autoUpdate: true
+        autoUpdate: true,
+        pixelRatio: 2, 
+        antialias: false, // Spark JS recommends false for Gaussian rasterization
+        precision: 'float32', // Improved sorting precision
+        sortRadial: true // Better accuracy for wide-angle views
     }), [gl]);
 
     console.log('%c[SparkSystem] Initializing Spark.js renderer', 'color: #00e5ff; font-weight: bold;');
@@ -43,23 +47,34 @@ const ExperienceCanvas = React.memo(({
     return (
         <Canvas
             id="canvas-container"
-            style={{ width: '100%', height: '100vh', background: '#050510' }}
-            camera={{ position: [0, 2, 5], fov: 75 }}
-            dpr={0.75} // Reduced from 1 to save GPU memory
+            style={{ 
+                width: '100%', 
+                height: '100vh', 
+                background: '#050510',
+                filter: 'brightness(1.3) contrast(1.08) saturate(1.05)' // Sharpened contrast for clarity
+            }}
+            dpr={1.5} // High fidelity with smoother performance headroom
             gl={{
-                antialias: false,
+                antialias: true,
                 alpha: false,
                 depth: true,
-                stencil: false,
+                stencil: true, 
                 powerPreference: 'high-performance',
                 preserveDrawingBuffer: false,
                 failIfMajorPerformanceCaveat: false,
-                logarithmicDepthBuffer: false,
-                precision: 'mediump'
+                logarithmicDepthBuffer: false, 
+                precision: 'highp',
+                outputColorSpace: 'srgb', 
+                toneMapping: 4, 
+                toneMappingExposure: 1.2 
             }}
             onCreated={({ gl }) => {
                 const canvas = gl.domElement;
-
+                canvas.id = 'webgl-canvas';
+                // Force Marble-spec color management at the engine level
+                gl.outputColorSpace = 'srgb'; 
+                gl.toneMapping = 4; // ACESFilmic
+                gl.toneMappingExposure = 1.2; 
                 // Cap Max Texture Size to prevent mobile crashes
                 const maxTexSize = gl.capabilities.maxTextureSize;
                 console.log(`[Canvas] GPU Info: Max Texture Size: ${maxTexSize}`);
@@ -78,9 +93,10 @@ const ExperienceCanvas = React.memo(({
                 }, false);
             }}
         >
-            <SparkSystem />
+            <PerspectiveCamera makeDefault position={[0, 2, 5]} fov={75} near={0.2} far={200}>
+                <SparkSystem />
+            </PerspectiveCamera>
             <Suspense fallback={null}>
-                {/* Simplified environment for specific heavy rooms */}
                 {(experienceId === '2' || experienceId === '3') ? (
                     <Environment preset="night" />
                 ) : (

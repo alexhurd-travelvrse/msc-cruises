@@ -101,7 +101,9 @@ const SparkModel = ({ url, scale = 1, rotation = [0, 0, 0], position = [0, 0, 0]
             rotation={rotation}
             scale={[scale, scale, scale]}
             renderOrder={-1}
-            toneMapped={false}
+            toneMapped={false} 
+            lodSplatScale={2.0} // High-density rendering
+            maxStdDev={3.0} // Preserves splat footprints for softness/clarity
             raycast={() => null}
         />
     );

@@ -2,10 +2,11 @@ import { useRef, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3, Euler } from 'three';
 
-const MAX_SPEED = 10.0;
-const ACCELERATION = 25.0;
-const FRICTION = 10.0;
-const LOOK_SPEED = 0.002;
+const MAX_SPEED = 8.5; 
+const ACCELERATION = 15.0; // Smoother ramp-up
+const FRICTION = 6.0; // Cinematic glide for less jerkiness
+const LOOK_SPEED = 0.0012; 
+
 
 export const usePlayerControls = (startPos, startRot = [0, 0, 0], boundaries = [], enabled = true) => {
     const { camera } = useThree();
@@ -97,9 +98,9 @@ export const usePlayerControls = (startPos, startRot = [0, 0, 0], boundaries = [
 
             previousMouse.current = { x: e.clientX, y: e.clientY };
 
-            // Set rotation velocity based on mouse delta
-            rotationVelocity.current.y = -deltaX * LOOK_SPEED * 6.0;
-            rotationVelocity.current.x = -deltaY * LOOK_SPEED * 6.0;
+            // Set rotation velocity based on mouse delta (reduced multiplier)
+            rotationVelocity.current.y = -deltaX * LOOK_SPEED * 2.0;
+            rotationVelocity.current.x = -deltaY * LOOK_SPEED * 2.0;
 
             const euler = new Euler(0, 0, 0, 'YXZ').setFromQuaternion(camera.quaternion);
             euler.y -= deltaX * LOOK_SPEED;
@@ -236,8 +237,8 @@ export const usePlayerControls = (startPos, startRot = [0, 0, 0], boundaries = [
             camera.quaternion.setFromEuler(euler);
 
             // Damping for rotation
-            rotationVelocity.current.x *= 0.95;
-            rotationVelocity.current.y *= 0.95;
+            rotationVelocity.current.x *= 0.9;
+            rotationVelocity.current.y *= 0.9;
         }
 
         const { forward, backward, left, right, up, down, targetPos } = moveState.current;

@@ -659,6 +659,10 @@ const Scene3D = ({
     const activityRot = toRad(roomConfig.items?.[0]?.rotation) || config.activityRot || [0, 0, 0];
     const boundaries = config.boundaries || [];
 
+    // Global Scene Lighting for brightness parity with Marble
+    const ambientIntensity = 1.0;
+    const hemisphereIntensity = 2.0;
+
     // Feature: Scene Matching Lighting
     const lightColor = config.lightColor || '#ffffff';
     const shadowOpacity = config.shadowOpacity || 0.5;
@@ -854,8 +858,10 @@ const Scene3D = ({
 
     return (
         <>
-            <ambientLight intensity={lightingIntensity * 0.5} color={lightColor} />
-            <pointLight position={[5, 5, 5]} intensity={1.5} color={lightColor} />
+            <ambientLight intensity={1.2} color="#ffffff" />
+            <hemisphereLight intensity={1.2} groundColor="#444444" color="#ffffff" />
+            <directionalLight position={[10, 10, 5]} intensity={1.8} castShadow />
+            <pointLight position={[5, 10, 5]} intensity={2.0} color="#ffffff" />
 
             {/* 1. RENDER SPLAT MAP */}
             <DynamicModel config={config} modelScale={modelScale} onSplatLoad={() => {

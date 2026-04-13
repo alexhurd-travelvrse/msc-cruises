@@ -83,6 +83,7 @@ const YouTubePlayer = ({ url, previewImage }) => {
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
             />
         </div>
     );
@@ -147,6 +148,16 @@ const ExperiencePage = () => {
         setLastId(id);
         startTimeRef.current = Date.now();
     }
+
+    useEffect(() => {
+        const updateInteraction = () => { window.lastInteractionTime = window.performance.now(); };
+        window.addEventListener('mousedown', updateInteraction);
+        window.addEventListener('touchstart', updateInteraction);
+        return () => {
+            window.removeEventListener('mousedown', updateInteraction);
+            window.removeEventListener('touchstart', updateInteraction);
+        };
+    }, []);
 
     // Apply editor mode from URL
     useEffect(() => {

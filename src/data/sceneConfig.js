@@ -2,9 +2,9 @@ const activeCompany = import.meta.env.VITE_ACTIVE_COMPANY || 'msc-cruises';
 
 const mscConfig = {
     "1": {
-        name: 'Yacht Club Owner\'s Suite',
-        modelPath: '/models/1.spz',
-        modelRotation: [Math.PI, 0, 0],
+        name: 'Cruise Ship Balcony Cabin Interior',
+        modelPath: '/models/Cruise Ship Balcony Cabin Interior.spz',
+        modelRotation: [0, 0, 0],
         startPos: [-1.138, -1.178, 0.071],
         startRot: [2.015, -0.747, 2.182],
         scale: 1,

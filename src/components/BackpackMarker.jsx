@@ -165,7 +165,9 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
 
                 // Auto-materialize when very close
                 if (dist < 1.8) {
-                    if (navigator.vibrate) navigator.vibrate(40);
+                    // Prevent intervention error if user hasn't touched the screen
+                    const hasInteracted = (window.performance.now() - (window.lastInteractionTime || 0) < 5000);
+                    try { if (navigator.vibrate && hasInteracted) navigator.vibrate(20); } catch(e) {}
                     setIsMaterialized(true);
                 }
             }
