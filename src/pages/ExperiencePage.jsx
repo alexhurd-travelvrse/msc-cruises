@@ -44,8 +44,8 @@ const YouTubePlayer = ({ url, previewImage }) => {
         );
     }
 
-    const videoId = getYouTubeId(url);
-
+    const videoId = getYouTubeId(url)?.trim();
+    
     if (!videoId) return (
         <div style={{ width: '100%', height: '150px', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
             <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>Video preview unavailable</span>
@@ -79,10 +79,12 @@ const YouTubePlayer = ({ url, previewImage }) => {
             <iframe 
                 key={videoId}
                 title="YouTube video player"
-                src={`https://www.youtube.com/embed/${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&rel=0`}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+                sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-forms"
             />
         </div>
     );
