@@ -340,6 +340,12 @@ const ExperiencePage = () => {
             };
             addToBackpack(itemToAdd);
             
+            // USER REQUEST: Immediately stop proximity audio by marking as viewed
+            const newViewed = [...new Set([...itemsViewed, modal.id])];
+            setItemsViewed(newViewed);
+            dismissItem(modal.id);
+            window.dispatchEvent(new CustomEvent('stop-collectible-audio'));
+
             // Mark challenge as complete for this room if a medal is found
             if (modal.type === 'medal') {
                 updateChallenge(`exp-${id}`, { coinFound: true });
@@ -500,7 +506,7 @@ const ExperiencePage = () => {
                         )}
                     </div>
 
-                    <div className="hud-right-actions">
+                     <div className="hud-right-actions">
                          <button className="ghost-button" 
                                  onMouseEnter={() => {
                                      console.log('[HUD] Hover: Exit Button triggered');

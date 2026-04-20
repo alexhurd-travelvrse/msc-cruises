@@ -81,9 +81,9 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
         groupRef.current.getWorldPosition(tempVec.current);
         const distanceToCamera = camera.position.distanceTo(tempVec.current);
         
-        // Update audio range state (2.5m threshold)
+        // Update audio range state (3.5m threshold for premium feel)
         if (discoveryMode === 'sonic' && !isCollected) {
-            const inRange = distanceToCamera < 2.5;
+            const inRange = distanceToCamera < 3.5;
             if (inRange !== isInsideAudioRange) {
                 setIsInsideAudioRange(inRange);
                 // Dispatch event to global narrator to pause/duck
