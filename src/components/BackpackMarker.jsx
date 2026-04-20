@@ -142,7 +142,7 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
                 
                 // Scan Visuals
                 const alpha = Math.min(1, scanProgress.current / 0.6);
-                groupRef.current.visible = true; 
+                groupRef.current.visible = alpha > 0.01; 
                 bgRef.current.material.opacity = alpha * 0.8;
                 borderRef.current.material.opacity = alpha;
                 textRef.current.fillOpacity = alpha;

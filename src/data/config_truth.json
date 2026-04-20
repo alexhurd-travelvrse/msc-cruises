@@ -196,11 +196,7 @@
                         "url": "models/cruise tips.pdf",
                         "description": "Onboard health tips from the onboard team"
                     },
-                    "rotation": [
-                        -14912989616791800,
-                        6284327900754657,
-                        15606650530906714
-                    ],
+                    "rotation": [0, 0, 0],
                     "discoveryMode": "scan",
                     "video": "https://www.youtube.com/shorts/5C2o05somtY"
                 },
@@ -215,12 +211,8 @@
                     ],
                     "media": "/assets/spa_grab.png",
                     "text": "Energize in our state-of-the-art fitness center. Check put the vid and add this exclusive soundtrack to your backpack - put together by the gym team!",
-                    "rotation": [
-                        -14912989616791800,
-                        6284327900754657,
-                        15606650530906714
-                    ],
-                    "discoveryMode": "scan",
+                    "rotation": [0, 0, 0],
+                    "discoveryMode": "instant",
                     "video": "https://www.youtube.com/shorts/M6ksgrJ7t28",
                     "collectible": {
                         "url": "models/Glass_Podium.mp3",
