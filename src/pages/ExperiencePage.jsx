@@ -19,11 +19,9 @@ const YouTubePlayer = ({ url, previewImage }) => {
     
     const getYouTubeId = (url) => {
         if (!url) return null;
-        if (url.includes('shorts/')) return url.split('shorts/')[1].split(/[?#&/]/)[0];
-        if (url.includes('v=')) return url.split('v=')[1].split(/[?#&/]/)[0];
-        if (url.includes('youtu.be/')) return url.split('youtu.be/')[1].split(/[?#&/]/)[0];
-        if (url.includes('embed/')) return url.split('embed/')[1].split(/[?#&/]/)[0];
-        return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
     };
 
     const isRawVideo = (url) => {
@@ -79,7 +77,7 @@ const YouTubePlayer = ({ url, previewImage }) => {
     return (
         <div className="video-container" style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
             <iframe 
-                src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&autoplay=1`}
+                src={`https://www.youtube-nocookie.com/embed/${videoId}?modestbranding=1&rel=0&autoplay=1&mute=1&enablejsapi=1&origin=${window.location.origin}`}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
