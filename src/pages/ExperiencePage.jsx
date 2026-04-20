@@ -382,7 +382,7 @@ const ExperiencePage = () => {
 
             <InputManager />
 
-            {isStarted && <AeroGlassOrb 
+            {isStarted && !modal && <AeroGlassOrb 
                 avatarUrl={publicConfig?.home?.influencerPhoto || '/assets/Alexhurd1.jpg'} 
                 onClick={() => {
                     // Tap on Orb acts as a global scan pulse
@@ -593,7 +593,7 @@ const ExperiencePage = () => {
             </div>
 
             {modal && (
-                <div className="modal-overlay" onClick={handleCloseModal}>
+                <div className="modal-overlay" onClick={handleCloseModal} style={{ zIndex: 100000 }}>
                     <div className={`interaction-modal glass-panel animate-fade-in ${modal.type === 'medal' ? 'medal-modal' : ''}`} onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header-accent" style={{ background: modal.type === 'medal' ? 'linear-gradient(90deg, transparent, #FFD700, transparent)' : `linear-gradient(90deg, transparent, ${currentTheme.primary}, transparent)` }}></div>
                         
