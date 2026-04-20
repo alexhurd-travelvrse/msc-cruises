@@ -39,7 +39,10 @@ const FavouritesOverlay = ({ onClose }) => {
                         <h2 className="serif-title" style={{ margin: 0, fontSize: '2rem' }}>{(publicConfig?.teleport?.backpackTitle || "Favourites & Backpack").toUpperCase()}</h2>
                         <p className="metadata-label" style={{ margin: '5px 0 0 0', opacity: 0.6 }}>{(publicConfig?.teleport?.backpackDesc || "Curated For Your Next Voyage")}</p>
                     </div>
-                    <button onClick={onClose} className="ghost-button" style={{ fontSize: '1.2rem', padding: '5px 15px' }}>✕</button>
+                    <button onClick={() => {
+                        onClose();
+                        window.dispatchEvent(new CustomEvent('stop-collectible-audio'));
+                    }} className="ghost-button" style={{ fontSize: '1.2rem', padding: '5px 15px' }}>✕</button>
                 </div>
 
                 <div className="favourites-scroll" style={{ padding: '30px 40px' }}>

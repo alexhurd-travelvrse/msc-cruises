@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useInfluencer } from './InfluencerContext';
 
 const GameContext = createContext();
@@ -174,6 +174,20 @@ export const GameProvider = ({ children }) => {
         themeColor: '#0070f3'
     });
 
+    const playingCollectibleRef = useRef(null);
+
+    useEffect(() => {
+        const stopAudio = () => {
+            if (playingCollectibleRef.current) {
+                playingCollectibleRef.current.pause();
+                playingCollectibleRef.current.src = "";
+                playingCollectibleRef.current = null;
+            }
+        };
+        window.addEventListener('stop-collectible-audio', stopAudio);
+        return () => window.removeEventListener('stop-collectible-audio', stopAudio);
+    }, []);
+
     const [loyaltyPrograms, setLoyaltyPrograms] = useState({
         msc: false,
         accor: false,
@@ -233,11 +247,6 @@ export const GameProvider = ({ children }) => {
 
             if (item.collectible) {
                 weight += 50;
-                if (item.collectible.type === 'mp3' && item.collectible.url) {
-                    const audio = new Audio(item.collectible.url);
-                    audio.volume = 0.5;
-                    audio.play().catch(e => console.log("Audio play blocked"));
-                }
             }
 
             updateInterest(category, weight);

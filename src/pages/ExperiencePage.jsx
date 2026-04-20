@@ -122,8 +122,8 @@ const ExperiencePage = () => {
     const [dialValues, setDialValues] = useState([0, 0, 0, 0]);
     const [puzzleError, setPuzzleError] = useState(false);
     const [activeLiveOffer, setActiveLiveOffer] = useState(null);
-    const [nextRoomProgress, setNextRoomProgress] = useState(0);
     const [nextRoomReady, setNextRoomReady] = useState(false);
+    const [nextRoomProgress, setNextRoomProgress] = useState(0);
     const startTimeRef = useRef(Date.now());
 
     // URL-driven state reset for robustness
@@ -315,11 +315,15 @@ const ExperiencePage = () => {
 
             // USER REQUEST: Only show coin after 2 items are viewed
             if (newViewed.length >= 2) {
-                setIsOrbAllowed(true);
-                window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
+                if (typeof setIsOrbAllowed === 'function') {
+                    setIsOrbAllowed(true);
+                    window.dispatchEvent(new CustomEvent('msc-orb-allowed'));
+                }
             }
         }
         setModal(null);
+        // Stop any preview audio that might be playing
+        window.dispatchEvent(new CustomEvent('stop-collectible-audio'));
     };
 
     const handleAddToBackpackClick = () => {
