@@ -150,6 +150,32 @@ const ExperiencePage = () => {
         startTimeRef.current = Date.now();
     }
 
+    // USER REQUEST: Background preloading for next experience
+    useEffect(() => {
+        if (!id || !publicConfig) return;
+
+        const currentId = parseInt(id);
+        // Only preload if we are in a valid room sequence (1-4)
+        if (currentId >= 1 && currentId < 5) {
+            const nextId = currentId + 1;
+            const nextRoomConfig = sceneConfig[String(nextId)];
+            
+            if (nextRoomConfig && nextRoomConfig.modelPath) {
+                console.log(`%c[Preload] Initiating background prefetch for Experience ${nextId}: ${nextRoomConfig.modelPath}`, 'color: #00e5ff; font-weight: bold;');
+                
+                // Fetch to browser cache
+                fetch(nextRoomConfig.modelPath)
+                    .then(response => {
+                        if (response.ok) {
+                            setNextRoomReady(true);
+                            console.log(`%c[Preload] ✓ Experience ${nextId} is now cached and ready for seamless transition`, 'color: #00ff00; font-weight: bold;');
+                        }
+                    })
+                    .catch(err => console.warn('[Preload] Failed to prefetch next experience', err));
+            }
+        }
+    }, [id, publicConfig]);
+
     useEffect(() => {
         const updateInteraction = () => { window.lastInteractionTime = window.performance.now(); };
         window.addEventListener('mousedown', updateInteraction);
