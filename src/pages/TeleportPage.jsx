@@ -18,10 +18,11 @@ const TeleportPage = () => {
 
     const { travelStatus, setTravelStatus, updateInterest, challenges, updateChallenge } = useGame();
     const { publicConfig, publicInfluencer } = useInfluencer();
+    const teleportConfig = publicConfig?.teleport || {};
 
     const curatorName = publicInfluencer ? publicInfluencer.name : 'Alex Hurd';
-    const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "MSC WORLD EUROPA";
-    const voyageTitle = publicConfig?.home?.title || "MSC World Europa";
+    const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "VIRTUAL EXPERIENCE";
+    const voyageTitle = publicConfig?.home?.title || "Virtual Experience";
     const introText = isFinalMode
         ? "FINAL STEP: Complete the loyalty challenge to unlock your total 2,500 points!"
         : "First - Choose Order of Challenges";
@@ -30,31 +31,13 @@ const TeleportPage = () => {
     const [isArriving, setIsArriving] = useState(false);
     const [webglError, setWebglError] = useState(false);
 
-    const experiences = [
-        { id: 1, title: 'Luxury Room', category: 'The Sovereign', img: '/assets/balcony_grab.png', reward: 'exclusive soundtrack' },
-        { id: 2, title: 'The Spa', category: 'Wellness Voyager', img: '/assets/spa_grab.png', reward: 'exclusive soundtrack' },
-        { id: 3, title: 'Tacos Restaurant', category: 'Social Foodie', img: '/assets/hola_grab.png', reward: 'exclusive mojito recipe' },
-        { id: 4, title: 'Kids Activities', category: 'Family Planner', img: '/assets/arcade_grab.png', reward: 'exclusive badge' },
-        { id: 5, title: 'Excursion', category: 'Culture Seeker', img: '/assets/park.png', reward: 'exclusive concierge guide' },
-    ];
-
-    const tieredPromoA = {
-        id: 6,
-        title: '5% OFF CRUISES & PACKAGES',
-        img: '/assets/spa_grab.png',
-        reward: 'Access Pass',
-        desc: 'Add 1 activity per experience to your backpack to unlock basic status',
-        link: 'https://www.msccruises.co.uk/account/callback'
-    };
-
-    const tieredPromoB = {
-        id: 7,
-        title: '10% OFF CRUISES & PACKAGES',
-        img: '/assets/balcony_preview.jpg',
-        reward: 'Premium Status',
-        desc: 'Unlock our premium membership deals for maximum discounts',
-        link: 'https://www.msccruises.co.uk/account/callback'
-    };
+    const experiences = Object.entries(publicConfig.experiences || {}).map(([id, exp]) => ({
+        id,
+        title: exp.name,
+        category: exp.items?.find(i => i.data_tag)?.data_tag || 'Culture Seeker',
+        img: exp.items?.[0]?.media || '/assets/hero.png',
+        reward: exp.items?.[0]?.name || 'exclusive reward'
+    }));
 
     const [selected, setSelected] = useState([]);
     const [isLoyaltyJoined, setIsLoyaltyJoined] = useState(false);
@@ -80,6 +63,20 @@ const TeleportPage = () => {
         const dy = bagRect.top + bagRect.height / 2 - (itemRect.top + itemRect.height / 2);
         setFlyingItems(prev => ({ ...prev, [key]: { dx, dy, visible: true } }));
         setTimeout(() => setFlyingItems(prev => ({ ...prev, [key]: { ...prev[key], visible: false } })), 500);
+    };
+
+    const toggleBadge = (id, tag) => {
+        if (isFinalMode) return;
+        const activeBadges = travelStatus.activeBadges || [];
+        const isActive = activeBadges.includes(id);
+        if (isActive) {
+            setTravelStatus({ ...travelStatus, activeBadges: activeBadges.filter(b => b !== id) });
+            playUISound('pop');
+        } else {
+            setTravelStatus({ ...travelStatus, activeBadges: [...activeBadges, id] });
+            triggerBackpackPing();
+            if (tag) updateInterest(tag, 15);
+        }
     };
 
     const toggleExperience = (id) => {
@@ -133,7 +130,24 @@ const TeleportPage = () => {
     return (
         <div className={`teleport-page ${isArriving ? 'arriving' : ''}`}>
 
-            {!isArriving && <TeleportBackground voyageTitle={voyageTitle} />}
+            {!isArriving && <TeleportBackground voyageTitle={voyageTitle} heroImage={teleportConfig.heroImage} />}
+
+            {/* PARTNER LOGO */}
+            {publicConfig.home?.partnerLogo && !isArriving && (
+                <div style={{
+                    position: 'fixed',
+                    top: '40px',
+                    left: '40px',
+                    zIndex: 100,
+                    pointerEvents: 'none'
+                }}>
+                    <img 
+                        src={publicConfig.home.partnerLogo} 
+                        alt="Partner Logo" 
+                        style={{ height: '40px', objectFit: 'contain', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.5))' }} 
+                    />
+                </div>
+            )}
 
             <AudioController audioKey="teleport" active={!isArriving && !isFinalMode} />
 
@@ -237,36 +251,24 @@ const TeleportPage = () => {
                             
                             {!isFinalMode && (
                                 <div style={{ display: 'flex', gap: '10px' }}>
-                                    <button
-                                        onClick={() => {
-                                            setTravelStatus({ ...travelStatus, hasFirstTimeBadge: !travelStatus.hasFirstTimeBadge });
-                                            if (!travelStatus.hasFirstTimeBadge) triggerBackpackPing();
-                                        }}
-                                        className={`badge-chip-top ${travelStatus.hasFirstTimeBadge ? 'active' : ''}`}
-                                        style={{
-                                            padding: '8px 16px', borderRadius: '4px', fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase',
-                                            background: travelStatus.hasFirstTimeBadge ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.05)',
-                                            border: `1px solid ${travelStatus.hasFirstTimeBadge ? '#d4af37' : 'rgba(255,255,255,0.1)'}`,
-                                            color: travelStatus.hasFirstTimeBadge ? '#d4af37' : '#fff', cursor: 'pointer'
-                                        }}
-                                    >
-                                        ✨ First Time Cruiser
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setTravelStatus({ ...travelStatus, hasSpecialOccasionBadge: !travelStatus.hasSpecialOccasionBadge });
-                                            if (!travelStatus.hasSpecialOccasionBadge) triggerBackpackPing();
-                                        }}
-                                        className={`badge-chip-top ${travelStatus.hasSpecialOccasionBadge ? 'active' : ''}`}
-                                        style={{
-                                            padding: '8px 16px', borderRadius: '4px', fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase',
-                                            background: travelStatus.hasSpecialOccasionBadge ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.05)',
-                                            border: `1px solid ${travelStatus.hasSpecialOccasionBadge ? '#d4af37' : 'rgba(255,255,255,0.1)'}`,
-                                            color: travelStatus.hasSpecialOccasionBadge ? '#d4af37' : '#fff', cursor: 'pointer'
-                                        }}
-                                    >
-                                        🥂 Special Occasion
-                                    </button>
+                                    {(teleportConfig.dataRequirements || []).map((req) => {
+                                        const isActive = (travelStatus.activeBadges || []).includes(req.id);
+                                        return (
+                                            <button
+                                                key={req.id}
+                                                onClick={() => toggleBadge(req.id, req.tag)}
+                                                className={`badge-chip-top ${isActive ? 'active' : ''}`}
+                                                style={{
+                                                    padding: '8px 16px', borderRadius: '4px', fontSize: '0.7rem', letterSpacing: '1px', textTransform: 'uppercase',
+                                                    background: isActive ? 'rgba(212, 175, 55, 0.2)' : 'rgba(255,255,255,0.05)',
+                                                    border: `1px solid ${isActive ? '#d4af37' : 'rgba(255,255,255,0.1)'}`,
+                                                    color: isActive ? '#d4af37' : '#fff', cursor: 'pointer'
+                                                }}
+                                            >
+                                                {req.label}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -287,7 +289,10 @@ const TeleportPage = () => {
                                         }}
                                     >
                                         <div className="card-title" style={{ letterSpacing: '1px', fontWeight: '900', fontSize: '1.1rem' }}>{exp.title}</div>
-                                        <div className="reward-pill" style={{ background: 'var(--color-accent-primary)', color: '#000', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '900' }}>💎 {exp.reward.replace('exclusive', '').trim()}</div>
+                                        <div className="reward-pill" style={{ background: 'var(--color-accent-primary)', color: '#000', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '900', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                            <img src="/assets/medal_icon.png" style={{ width: '16px', height: '16px', objectFit: 'contain' }} alt="Reward" />
+                                            {exp.reward.replace('exclusive', '').trim()}
+                                        </div>
 
                                         {(isSelected || isFinalMode) && (
                                             <div className="selection-badge" style={{ background: 'var(--color-accent-primary)', color: '#000', borderRadius: '50%' }}>

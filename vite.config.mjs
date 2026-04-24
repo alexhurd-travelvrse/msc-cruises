@@ -29,63 +29,64 @@ const sceneEditorPlugin = () => ({
       req.on('end', () => {
         try {
           const parsed = JSON.parse(body);
-          const truthPath = path.resolve(__dirname, './src/data/config_truth.json');
-          let masterTruth = {};
-          if (fs.existsSync(truthPath)) masterTruth = JSON.parse(fs.readFileSync(truthPath, 'utf-8'));
-
-          // Support for direct scene editor saves (no nesting)
-          if (parsed.experienceId && parsed.objects) {
-             const expId = parsed.experienceId;
-             if (masterTruth.experiences && masterTruth.experiences[expId]) {
-                 const exp = masterTruth.experiences[expId];
-                 parsed.objects.forEach(obj => {
-                     if (obj.id === 'camera' || obj.name === 'Initial Camera Position') {
-                         exp.startPos = obj.pos;
-                         exp.startRot = obj.rot;
-                     } else if (obj.id === 'coin' || (exp.coin && obj.id === exp.coin.id) || obj.id.startsWith('special-')) {
-                         if (!exp.coin) exp.coin = {};
-                         exp.coin.position = obj.pos;
-                         exp.coin.rotation = obj.rot;
-                     } else if (obj.id === 'activity' || obj.id === 'remote' || obj.id.match(/^(item-)?\d+-\d+$/)) {
-                         // Find item in items array by id or default index
-                         const itemIdx = exp.items ? exp.items.findIndex(i => i.id === obj.id) : -1;
-                         if (itemIdx !== -1) {
-                             exp.items[itemIdx].position = obj.pos;
-                             exp.items[itemIdx].rotation = obj.rot;
-                              if (obj.discoveryMode) exp.items[itemIdx].discoveryMode = obj.discoveryMode;
-                              if (obj.audioUrl) {
-                                  if (!exp.items[itemIdx].collectible) exp.items[itemIdx].collectible = {};
-                                  exp.items[itemIdx].collectible.url = obj.audioUrl;
-                                  exp.items[itemIdx].collectible.type = 'mp3';
-                              }
-                         } else {
-                             // Fallback for named IDs like 'activity' or 'remote' to indices 0 and 1
-                             const fallbackIdx = (obj.id === 'remote') ? 0 : (obj.id === 'activity' ? 1 : -1);
-                             if (fallbackIdx !== -1 && exp.items && exp.items[fallbackIdx]) {
-                                 exp.items[fallbackIdx].position = obj.pos;
-                                 exp.items[fallbackIdx].rotation = obj.rot;
-                                  if (obj.discoveryMode) exp.items[fallbackIdx].discoveryMode = obj.discoveryMode;
-                                  if (obj.audioUrl) {
-                                      if (!exp.items[fallbackIdx].collectible) exp.items[fallbackIdx].collectible = {};
-                                      exp.items[fallbackIdx].collectible.url = obj.audioUrl;
-                                      exp.items[fallbackIdx].collectible.type = 'mp3';
-                                  }
-                             }
-                         }
-                     } else if (obj.id.startsWith('extra-')) {
-                         const idx = parseInt(obj.id.split('-')[1]);
-                         if (exp.extraObjects && exp.extraObjects[idx]) {
-                             exp.extraObjects[idx].pos = obj.pos;
-                             exp.extraObjects[idx].rot = obj.rot;
-                         }
-                     }
-                 });
-             }
-          }
+          const { companyId, experienceId, objects } = parsed;
           
-          if (parsed.config && Object.keys(parsed.config).length > 0) {
-              console.log("[Vite API] Received full configuration payload from Dashboard, replacing master truth disk file.");
-              masterTruth = parsed.config;
+          // Resolve correct manifest path
+          let manifestFile = 'config_truth.json'; // Default legacy
+          if (companyId === '25-hours-copenhagen') manifestFile = '25hours_indre.json';
+          else if (companyId === 'msc-europa') manifestFile = 'msc_europa.json';
+          else if (companyId === 'msc-cruises') manifestFile = 'config_truth.json';
+
+          const truthPath = path.resolve(__dirname, './src/data', manifestFile);
+          console.log(`[Vite Editor] Saving to: ${manifestFile} (Company: ${companyId})`);
+
+          if (!fs.existsSync(truthPath)) {
+             throw new Error(`Manifest file not found: ${manifestFile}`);
+          }
+
+          let masterTruth = JSON.parse(fs.readFileSync(truthPath, 'utf-8'));
+
+          // Support for Whitelabel Manifest Structure (challenge_configuration.experiences)
+          if (masterTruth.challenge_configuration) {
+              const expIdx = masterTruth.challenge_configuration.experiences.findIndex(e => e.exp_id === experienceId);
+              if (expIdx !== -1) {
+                  const exp = masterTruth.challenge_configuration.experiences[expIdx];
+                  objects.forEach(obj => {
+                      if (obj.id.startsWith('item')) {
+                          const iconIdx = exp.backpack_icons.findIndex(i => i.id === obj.id);
+                          if (iconIdx !== -1) {
+                              exp.backpack_icons[iconIdx].coordinates = {
+                                  x: obj.pos[0],
+                                  y: obj.pos[1],
+                                  z: obj.pos[2]
+                              };
+                          }
+                      } else if (obj.id === 'camera') {
+                          exp.startPos = obj.pos;
+                          exp.startRot = obj.rot;
+                      }
+                  });
+              }
+          } 
+          // Support for Legacy Structure (experiences[id])
+          else if (masterTruth.experiences && masterTruth.experiences[experienceId]) {
+              const exp = masterTruth.experiences[experienceId];
+              objects.forEach(obj => {
+                  if (obj.id === 'camera') {
+                      exp.startPos = obj.pos;
+                      exp.startRot = obj.rot;
+                  } else if (obj.id.startsWith('item') || obj.id.includes('-')) {
+                      const itemIdx = exp.items ? exp.items.findIndex(i => i.id === obj.id) : -1;
+                      if (itemIdx !== -1) {
+                          exp.items[itemIdx].position = obj.pos;
+                          exp.items[itemIdx].rotation = obj.rot;
+                      }
+                  } else if (obj.id.startsWith('special-')) {
+                      if (!exp.coin) exp.coin = {};
+                      exp.coin.position = obj.pos;
+                      exp.coin.rotation = obj.rot;
+                  }
+              });
           }
 
           fs.writeFileSync(truthPath, JSON.stringify(masterTruth, null, 4), 'utf-8');

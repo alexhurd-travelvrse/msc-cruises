@@ -12,32 +12,21 @@ extend({ SplatMesh, 'splatMesh': SplatMesh });
 const SparkModel = ({ url, scale = 1, rotation = [0, 0, 0], position = [0, 0, 0], onLoad }) => {
     const isMounted = useRef(true);
     const meshRef = useRef();
-    const [isEngineReady, setIsEngineReady] = useState(SplatMesh.isStaticInitialized);
+    const firedRef = useRef(false);
+    const frameCountRef = useRef(0);
 
     const onLoadRef = useRef(onLoad);
     useEffect(() => { onLoadRef.current = onLoad; }, [onLoad]);
-
-    const firedRef = useRef(false);
-    const frameCountRef = useRef(0);
-    const isDataLoadedRef = useRef(false);
-
-    useEffect(() => {
-        if (!isEngineReady) {
-            SplatMesh.staticInitialized.then(() => {
-                if (isMounted.current) {
-                    console.log('%c[Spark.js] WASM Engine Ready', 'color: #00ff00; font-weight: bold;');
-                    setIsEngineReady(true);
-                }
-            });
-        }
-    }, [isEngineReady]);
 
     useEffect(() => {
         isMounted.current = true;
         firedRef.current = false;
         frameCountRef.current = 0;
-        isDataLoadedRef.current = false;
-        console.log(`%c[Spark.js] Loading Splat: ${url}`, 'color: #00e5ff; font-weight: bold;');
+        
+        // Resolve URL to absolute to ensure library handles it correctly
+        const absoluteUrl = new URL(url, window.location.origin).href;
+        console.log(`%c[Spark.js] 🌐 Loading Splat: ${absoluteUrl}`, 'color: #00e5ff; font-weight: bold;');
+        console.log(`%c[Spark.js] 📍 Origin: ${window.location.origin}`, 'color: #888;');
 
         return () => {
             isMounted.current = false;
@@ -62,7 +51,6 @@ const SparkModel = ({ url, scale = 1, rotation = [0, 0, 0], position = [0, 0, 0]
                         try { mat.dispose(); } catch (e) {}
                     });
                 }
-                if (mesh.parent) { try { mesh.parent.remove(mesh); } catch (e) {} }
                 meshRef.current = null;
             }
         };
@@ -72,38 +60,32 @@ const SparkModel = ({ url, scale = 1, rotation = [0, 0, 0], position = [0, 0, 0]
         if (firedRef.current || !isMounted.current || !onLoadRef.current) return;
         
         const mesh = meshRef.current;
-        if (!mesh || !mesh.packedSplats || mesh.packedSplats.numSplats === 0) {
-            frameCountRef.current = 0;
-            return;
-        }
+        if (!mesh) return;
 
-        if (!isDataLoadedRef.current) {
-            isDataLoadedRef.current = true;
-            console.log(`%c[Spark.js] Network Data Loaded: ${url}`, 'color: #ff00ff; font-weight: bold;');
-        }
-
+        // In Spark 0.1.10, we'll wait for the mesh to be present and then give it a small buffer
+        // to ensure the GPU buffers are initialized.
         frameCountRef.current++;
-        if (frameCountRef.current >= 3) { // Reduced for faster signal response
+        if (frameCountRef.current >= 30) { // Approx 0.5s at 60fps
             firedRef.current = true;
-            console.log(`%c[Spark.js] ✓ Scene Materialized: ${url}`, 'color: #00ff00; font-weight: bold;');
+            console.log(`%c[Spark.js] ✓ Scene Ready: ${url}`, 'color: #00ff00; font-weight: bold;');
             onLoadRef.current();
         }
     });
 
-    if (!url || !isEngineReady) return null;
+    if (!url) return null;
 
+    const resolvedUrl = new URL(url, window.location.origin).href;
+    
     return (
         <splatMesh
             ref={meshRef}
-            key={url}
-            args={[{ url }]}
+            key={resolvedUrl}
+            args={[{ url: resolvedUrl }]}
             position={position}
             rotation={rotation}
             scale={[scale, scale, scale]}
             renderOrder={-1}
-            toneMapped={false} 
-            lodSplatScale={2.0} // High-density rendering
-            maxStdDev={3.0} // Preserves splat footprints for softness/clarity
+            toneMapped={false}
             raycast={() => null}
         />
     );

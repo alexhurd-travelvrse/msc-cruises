@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Billboard, Text, Float, PositionalAudio } from '@react-three/drei';
+import { Billboard, Text, Float, PositionalAudio, Image } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useGame } from '../context/GameContext';
+import { useInfluencer } from '../context/InfluencerContext';
 
 const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experienceId, isCollected, type, discoveryMode = 'instant', audioUrl, isStarted, isModalOpen }, ref) => {
     const { dismissedItems } = useGame();
@@ -10,7 +11,7 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
     const ringRef = useRef();
     const bgRef = useRef();
     const borderRef = useRef();
-    const textRef = useRef();
+    const imageRef = useRef();
     const audioRef = useRef();
     
     const [isMaterialized, setIsMaterialized] = useState(discoveryMode === 'instant');
@@ -22,19 +23,14 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
     const [isInsideAudioRange, setIsInsideAudioRange] = useState(false);
     const tempVec = useRef(new Vector3());
 
-    const sceneColors = {
-        '1': '#d4af37',
-        '2': '#00e5ff',
-        '3': '#ff8c00',
-        '4': '#ff3d00',
-        '5': '#ffcc00'
-    };
-    const color = sceneColors[experienceId] || '#ffffff';
+    const { manifest } = useInfluencer();
+    const primaryColor = manifest?.client_metadata?.brand_assets?.primary_color || '#00e5ff';
+
+    // "The floating backpack icon is a backpack"
+    const iconUrl = type === 'medal' || type === 'collectible' ? '/assets/medal_icon.png' : '/assets/backpack_icon.png';
 
     useEffect(() => {
-        const handleOrbUpdate = (e) => {
-            orbPos.current = e.detail.screenPos;
-        };
+        const handleOrbUpdate = (e) => { orbPos.current = e.detail.screenPos; };
         const handleScanStart = () => { isScanning.current = true; };
         const handleScanEnd = () => { 
             isScanning.current = false;
@@ -48,30 +44,12 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
             window.removeEventListener('orb-update', handleOrbUpdate);
             window.removeEventListener('orb-scan-start', handleScanStart);
             window.removeEventListener('orb-scan-end', handleScanEnd);
-            // Ensure audio signal is cleared on unmount
-            window.dispatchEvent(new CustomEvent('msc-sensory-audio-active', { detail: { active: false } }));
         };
     }, [isMaterialized, discoveryMode]);
-
-    // Track hot-reloaded changes from the SceneEditor
-    useEffect(() => {
-        setIsMaterialized(discoveryMode === 'instant');
-        scanProgress.current = 0;
-    }, [discoveryMode]);
-
-    // Explicit unmount cleanup for positional audio to handle React-Three-Fiber unmount lag
-    useEffect(() => {
-        return () => {
-            if (audioRef.current && audioRef.current.isPlaying) {
-                audioRef.current.stop();
-            }
-        };
-    }, []);
 
     useFrame(({ clock, camera, size: viewportSize }) => {
         if (!groupRef.current) return;
 
-        // Visual pulse
         const time = clock.getElapsedTime();
         if (ringRef.current && isMaterialized) {
             ringRef.current.scale.setScalar(1 + Math.sin(time * 3) * 0.1);
@@ -81,23 +59,16 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
         groupRef.current.getWorldPosition(tempVec.current);
         const distanceToCamera = camera.position.distanceTo(tempVec.current);
         
-        // Update audio range state (3.5m threshold for premium feel)
         if (discoveryMode === 'sonic' && !isCollected) {
             const inRange = distanceToCamera < 3.5;
             if (inRange !== isInsideAudioRange) {
                 setIsInsideAudioRange(inRange);
-                // Dispatch event to global narrator to pause/duck
-                window.dispatchEvent(new CustomEvent('msc-sensory-audio-active', { detail: { active: inRange } }));
             }
             
-            // Hard real-time sync for audio instance
             if (audioRef.current) {
-                const isDismissed = dismissedItems && dismissedItems.includes(id);
+                const isDismissed = dismissedItems?.includes(id);
                 const shouldPlay = inRange && isStarted && !isModalOpen && !isDismissed && !isCollected;
-                
                 if (shouldPlay && !audioRef.current.isPlaying) {
-                     // Auto-resume context if needed
-                    if (audioRef.current.context.state === 'suspended') audioRef.current.context.resume();
                     audioRef.current.play();
                 } else if (!shouldPlay && audioRef.current.isPlaying) {
                     audioRef.current.stop();
@@ -105,86 +76,52 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
             }
         }
 
-        // Discovery Logic
         if (!isMaterialized) {
             if (discoveryMode === 'scan') {
-                // Project 3D pos to 2D
                 const vec = new Vector3();
                 groupRef.current.getWorldPosition(vec);
                 vec.project(camera);
-
                 const px = (vec.x * 0.5 + 0.5) * viewportSize.width;
                 const py = (vec.y * -0.5 + 0.5) * viewportSize.height;
-
                 const dx = orbPos.current.x - px;
                 const dy = orbPos.current.y - py;
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
-                if (dist < 175 && vec.z < 1) { 
-                    if (!isScanning.current) {
-                        window.dispatchEvent(new CustomEvent('orb-scan-start', { detail: { x: px, y: py } }));
-                        isScanning.current = true;
-                    }
+                if (dist < 150 && vec.z < 1) { 
                     scanProgress.current += 1.0 / 60.0;
                     if (scanProgress.current >= 0.6) {
                         setIsMaterialized(true);
-                        window.dispatchEvent(new CustomEvent('orb-scan-end')); 
-                        isScanning.current = false;
                         window.dispatchEvent(new CustomEvent('trigger-confetti'));
+                        window.dispatchEvent(new CustomEvent('orb-scan-end')); 
                     }
                 } else {
-                    if (isScanning.current) {
-                        window.dispatchEvent(new CustomEvent('orb-scan-end'));
-                        isScanning.current = false;
-                    }
-                    scanProgress.current = Math.max(0, scanProgress.current - 0.005);
+                    scanProgress.current = Math.max(0, scanProgress.current - 0.01);
                 }
                 
-                // Scan Visuals
                 const alpha = Math.min(1, scanProgress.current / 0.6);
                 groupRef.current.visible = alpha > 0.01; 
-                bgRef.current.material.opacity = alpha * 0.8;
-                borderRef.current.material.opacity = alpha;
-                textRef.current.fillOpacity = alpha;
-                ringRef.current.material.opacity = alpha * 0.4;
-                borderRef.current.scale.setScalar(0.5 + alpha * 0.5);
-
+                if (bgRef.current?.material) bgRef.current.material.opacity = alpha * 0.8;
+                if (borderRef.current?.material) borderRef.current.material.opacity = alpha;
+                if (imageRef.current?.material) imageRef.current.material.opacity = alpha;
             } else if (discoveryMode === 'sonic') {
-                const vec = new Vector3();
-                groupRef.current.getWorldPosition(vec);
-                const dist = camera.position.distanceTo(vec);
-                
-                // Proximity visibility: Fades in as you get closer
-                const proximityAlpha = Math.max(0, 1 - (dist / 6.0)); 
+                const proximityAlpha = Math.max(0, 1 - (distanceToCamera / 6.0)); 
                 groupRef.current.visible = proximityAlpha > 0.05;
-                bgRef.current.material.opacity = proximityAlpha * 0.4;
-                borderRef.current.material.opacity = proximityAlpha * 0.8;
-                textRef.current.fillOpacity = proximityAlpha * 0.7;
-                ringRef.current.material.opacity = proximityAlpha * 0.2;
-                borderRef.current.scale.setScalar(0.7 + proximityAlpha * 0.3);
-
-                // Auto-materialize when very close
-                if (dist < 1.8) {
-                    // Prevent intervention error if user hasn't touched the screen
-                    const hasInteracted = (window.performance.now() - (window.lastInteractionTime || 0) < 5000);
-                    try { if (navigator.vibrate && hasInteracted) navigator.vibrate(20); } catch(e) {}
-                    setIsMaterialized(true);
-                }
+                if (bgRef.current?.material) bgRef.current.material.opacity = proximityAlpha * 0.4;
+                if (borderRef.current?.material) borderRef.current.material.opacity = proximityAlpha * 0.8;
+                if (imageRef.current?.material) imageRef.current.material.opacity = proximityAlpha;
+                if (distanceToCamera < 1.8) setIsMaterialized(true);
             }
         } else {
-            // Fully Materialized
             groupRef.current.visible = true;
-            bgRef.current.material.opacity = 0.8;
-            borderRef.current.material.opacity = 1.0;
-            textRef.current.fillOpacity = 1.0;
-            ringRef.current.material.opacity = 0.6;
-            borderRef.current.scale.setScalar(1);
+            if (bgRef.current?.material) bgRef.current.material.opacity = 0.8;
+            if (borderRef.current?.material) borderRef.current.material.opacity = 1.0;
+            if (imageRef.current?.material) imageRef.current.material.opacity = 1.0;
         }
     });
 
     if (isCollected) return null;
 
-    const icon = '🎒';
+    const markerColor = discoveryMode === 'scan' ? '#00e5ff' : (discoveryMode === 'sonic' ? '#FFD700' : primaryColor);
 
     return (
         <group position={pos} ref={(el) => {
@@ -202,44 +139,35 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
                     follow={true}
                     onClick={(e) => {
                         e.stopPropagation();
-                        // USER REQUEST: Always clickable regardless of state (Robustness)
                         if (groupRef.current?.visible) {
                             if (!isMaterialized) {
                                 setIsMaterialized(true);
-                                window.dispatchEvent(new CustomEvent('orb-scan-end')); 
                                 window.dispatchEvent(new CustomEvent('trigger-confetti'));
                             }
-                            
-                            window.dispatchEvent(new CustomEvent('orb-select')); 
                             onClick(e);
                         }
                     }}
                 >
+                    {/* The Center Pulse Dot */}
+                    <mesh position={[0, 0, 0.01]}>
+                        <circleGeometry args={[size * 0.15, 32]} />
+                        <meshBasicMaterial color="white" transparent opacity={isMaterialized ? 0.9 : 0} />
+                    </mesh>
+
                     <mesh ref={ringRef} position={[0, 0, -0.01]}>
-                        <ringGeometry args={[size * 0.45, size * 0.52, 64]} />
-                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : (discoveryMode === 'sonic' ? '#FFD700' : color)} transparent opacity={isMaterialized ? 0.6 : 0} depthTest={false} />
+                        <ringGeometry args={[size * 0.35, size * 0.42, 64]} />
+                        <meshBasicMaterial color={markerColor} transparent opacity={isMaterialized ? 0.6 : 0} />
                     </mesh>
                     
                     <mesh ref={bgRef}>
-                        <circleGeometry args={[size * 0.42, 64]} />
-                        <meshBasicMaterial color="#0b1e3b" transparent opacity={isMaterialized ? 0.8 : 0} depthTest={false} />
+                        <circleGeometry args={[size * 0.32, 64]} />
+                        <meshBasicMaterial color="#000" transparent opacity={isMaterialized ? 0.4 : 0} />
                     </mesh>
 
                     <mesh ref={borderRef} position={[0, 0, 0.001]}>
-                        <ringGeometry args={[size * 0.4, size * 0.42, 64]} />
-                        <meshBasicMaterial color={discoveryMode === 'scan' ? '#00e5ff' : (discoveryMode === 'sonic' ? '#FFD700' : color)} transparent opacity={isMaterialized ? 1 : 0} depthTest={false} />
+                        <ringGeometry args={[size * 0.3, size * 0.32, 64]} />
+                        <meshBasicMaterial color={markerColor} transparent opacity={isMaterialized ? 1 : 0} />
                     </mesh>
-
-                    <Text 
-                        ref={textRef}
-                        position={[0, 0, 0.02]} 
-                        fontSize={size * 0.45} 
-                        depthTest={false}
-                        color={color}
-                        fillOpacity={isMaterialized ? 1 : 0}
-                    >
-                        {icon}
-                    </Text>
                 </Billboard>
 
                 {isStarted && !isCollected && discoveryMode === 'sonic' && audioUrl && (
@@ -247,7 +175,7 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
                         ref={audioRef}
                         url={audioUrl} 
                         distanceModel="exponential" 
-                        rolloffFactor={8.0} // Even steeper for absolute silence
+                        rolloffFactor={8.0} 
                         refDistance={0.5} 
                         volume={isInsideAudioRange ? 1 : 0} 
                         autoplay={false}
@@ -255,10 +183,10 @@ const BackpackMarker = React.forwardRef(({ id, pos, size = 0.4, onClick, experie
                     />
                 )}
 
-                {isStarted && ((discoveryMode === 'sonic' && !isCollected) || isMaterialized) && (
+                {isStarted && isMaterialized && (
                     <pointLight 
-                        intensity={discoveryMode === 'sonic' ? 0.8 + Math.sin(Date.now()*0.003)*0.4 : 1.5} 
-                        color={discoveryMode === 'sonic' ? '#FFD700' : color} 
+                        intensity={1.5} 
+                        color={markerColor} 
                         distance={3} 
                         decay={1.5} 
                     />

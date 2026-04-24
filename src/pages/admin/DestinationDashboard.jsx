@@ -4,16 +4,16 @@ import { useInfluencer } from '../../context/InfluencerContext';
 import { useGame } from '../../context/GameContext';
 
 const DestinationDashboard = () => {
-    const { currentDestination, companies, logoutDestination } = useInfluencer();
+    const { activeWhitelabelId, manifest, selectWhitelabel } = useInfluencer();
     const { getTotalCoins } = useGame();
     const navigate = useNavigate();
 
-    if (!currentDestination) {
+    if (!activeWhitelabelId) {
         navigate('/admin/destination-login');
         return null;
     }
 
-    const company = companies.find(c => c.id === currentDestination);
+    const companyName = manifest?.client_metadata?.hotel_name || activeWhitelabelId;
     const totalBudget = 25000;
 
     // Calculate amount spent: $5 per completed challenge (coin)
@@ -32,8 +32,8 @@ const DestinationDashboard = () => {
     const approvedInfluencers = [
         {
             id: '1',
-            name: 'Alex Hurd',
-            avatar: '/assets/Alex_Hurd.jpg',
+            name: manifest?.creator_metadata?.creator_name || 'Alex Hurd',
+            avatar: manifest?.creator_metadata?.orb_image_url || '/assets/Alex_Hurd.jpg',
             challengesCompleted: coinsCollected,
             earnings: amountSpent,
             status: 'active'
@@ -45,7 +45,7 @@ const DestinationDashboard = () => {
             <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                    <h1 style={{ color: '#333', margin: 0 }}>{company?.name} Campaign Dashboard</h1>
+                    <h1 style={{ color: '#333', margin: 0 }}>{companyName} Campaign Dashboard</h1>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                         <button
                             onClick={() => navigate('/admin/config')}
@@ -61,7 +61,7 @@ const DestinationDashboard = () => {
                         </button>
                         <button
                             onClick={() => {
-                                logoutDestination();
+                                selectWhitelabel('msc-europa'); // "logout" back to default
                                 navigate('/admin/destination-login');
                             }}
                             style={{ padding: '0.5rem 1rem', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}

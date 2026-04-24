@@ -1,0 +1,172 @@
+{
+  "client_metadata": {
+    "hotel_name": "25 Hours Hotel Indre",
+    "slug": "25-hours-copenhagen",
+    "brand_assets": {
+      "hotel_logo_url": "/assets/logos/25hours-logo.svg",
+      "primary_color": "#FF5733",
+      "hero_image_url": "/models/Add_Bedroom_Content_To_Video.mp4",
+      "hero_text": "Experience the Soul of Copenhagen",
+      "cta_primary": "Start Discovery",
+      "cta_secondary": "Explore Indre By",
+      "benefits": [
+        "✨ Discover your secret travel vibe",
+        "🎵 Collect exclusive soundtracks and guides",
+        "🏷️ Get a personalised hotel offer"
+      ],
+      "highlighted_benefit": "30% Giftcard for Disloyalty Loyalty Program"
+    }
+  },
+  "creator_metadata": {
+    "creator_name": "Studio-X",
+    "orb_image_url": "/assets/Alexhurd1.jpg",
+    "orb_bio": "Capturing the eclectic vibe of Indre By.",
+    "voiceovers": {
+      "home": "/assets/audio/25h_home.mp3",
+      "teleport": "/assets/audio/25h_teleport.mp3",
+      "completion": "/assets/audio/25h_completion.mp3"
+    }
+  },
+  "challenge_configuration": {
+    "total_experiences": 5,
+    "experiences": [
+      {
+        "exp_id": "1",
+        "name": "Vinyl Room",
+        "splat_url": "/models/music_lounge.spz",
+        "backpack_icons": [
+          {
+            "id": "item1-1",
+            "coordinates": {
+              "x": 0.273419046842215,
+              "y": 1.1940841983759705,
+              "z": -5.39969014096594
+            },
+            "content_type": "collectible",
+            "data_tag": "design_lover",
+            "reward_label": "Music ",
+            "video": "https://www.youtube.com/shorts/RYk0eXpmnR4",
+            "description": "amazing room here - perfect to relax in and listen to 70 and 80s music. Quite retro",
+            "collectible": {
+              "url": "/models/Experience_Revolution.mp3",
+              "type": "medal"
+            }
+          }
+        ],
+        "startPos": [
+          0.4026872425957356,
+          0.9339709584540907,
+          -0.3774984667906252
+        ],
+        "startRot": [
+          22.705043571764453,
+          1.3602155904196105,
+          -0.5596621518496974
+        ]
+      },
+      {
+        "exp_id": "2",
+        "name": "Bar",
+        "splat_url": "/models/Eclectic Modern Bar and Lounge.spz",
+        "backpack_icons": [
+          {
+            "id": "item2-1",
+            "coordinates": {
+              "x": -1.2,
+              "y": 0.8,
+              "z": 1.5
+            },
+            "content_type": "collectible",
+            "data_tag": "music_enthusiast",
+            "reward_label": "Exclusive Playlist"
+          }
+        ]
+      },
+      {
+        "exp_id": "3",
+        "name": "Sauna",
+        "splat_url": "/models/Modern Wooden Sauna Interior.spz",
+        "backpack_icons": [
+          {
+            "id": "item3-1",
+            "coordinates": {
+              "x": 2,
+              "y": 1.1,
+              "z": -0.5
+            },
+            "content_type": "collectible",
+            "data_tag": "social_foodie",
+            "reward_label": "Mezze Recipe"
+          }
+        ]
+      },
+      {
+        "exp_id": "4",
+        "name": "Luxury Room",
+        "splat_url": "/models/A Cozy Modern Hotel Room (2).spz",
+        "backpack_icons": [
+          {
+            "id": "item4-1",
+            "coordinates": {
+              "x": -0.8,
+              "y": 1.5,
+              "z": -3
+            },
+            "content_type": "info",
+            "data_tag": "nightlife_intent",
+            "reward_label": "Cocktail Masterclass"
+          }
+        ]
+      },
+      {
+        "exp_id": "5",
+        "name": "Local Beach",
+        "splat_url": "/models/Coastal Beach Snack Bar.spz",
+        "backpack_icons": [
+          {
+            "id": "item5-1",
+            "coordinates": {
+              "x": 0,
+              "y": 2.5,
+              "z": 4
+            },
+            "content_type": "collectible",
+            "data_tag": "wellness_enthusiast",
+            "reward_label": "Morning Yoga Session"
+          }
+        ]
+      }
+    ]
+  },
+  "teleport": {
+    "backpackTitle": "CURATE YOUR EXPERIENCE",
+    "backpackDesc": "FIRST - CHOOSE ORDER OF CHALLENGES",
+    "heroImage": "/models/25h_indreby-lobby_1-credit_StephanLemke.jpg"
+  },
+  "reward_engine": {
+    "reward_title": "The Indre By Discovery Perk",
+    "reward_url": "https://25hours-hotels.com/offers/special-deal",
+    "qr_code_enabled": true,
+    "logic_mode": "weighted_intent",
+    "data_profiles": [
+      {
+        "profile_name": "Modern Minimalist",
+        "match_tags": [
+          "design_lover",
+          "wellness_enthusiast"
+        ],
+        "offer_active": true,
+        "offer_text": "20% off your next design stay."
+      },
+      {
+        "profile_name": "Social Foodie",
+        "match_tags": [
+          "social_foodie",
+          "nightlife_intent"
+        ],
+        "offer_active": true,
+        "offer_text": "Free welcome drink and mezze platter."
+      }
+    ]
+  }
+}

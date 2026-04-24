@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useInfluencer } from '../../context/InfluencerContext';
 
 const DestinationLoginPage = () => {
-    const { companies, loginAsDestination } = useInfluencer();
+    const { availableWhitelabels, selectWhitelabel } = useInfluencer();
     const navigate = useNavigate();
-    const [selectedId, setSelectedId] = useState(companies[0]?.id);
+    const [selectedId, setSelectedId] = useState(availableWhitelabels && availableWhitelabels.length > 0 ? availableWhitelabels[0] : 'msc-europa');
 
     const handleLogin = (e) => {
         e.preventDefault();
-        loginAsDestination(selectedId);
+        selectWhitelabel(selectedId);
         navigate('/admin/destination-dashboard');
     };
 
@@ -25,8 +25,8 @@ const DestinationLoginPage = () => {
                             onChange={(e) => setSelectedId(e.target.value)}
                             style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #ccc' }}
                         >
-                            {companies.map(company => (
-                                <option key={company.id} value={company.id}>{company.name}</option>
+                            {(availableWhitelabels || []).map(id => (
+                                <option key={id} value={id}>{id}</option>
                             ))}
                         </select>
                     </div>

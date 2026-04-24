@@ -12,7 +12,7 @@ const HomePage = () => {
     const { initAudioContext } = useVoice();
     const [webglError, setWebglError] = useState(false);
     const videoRef = useRef(null);
-    const { publicConfig, publicInfluencer } = useInfluencer();
+    const { publicConfig, publicInfluencer, manifest } = useInfluencer();
 
     const heroImage = publicConfig?.home?.heroImage || null;
 
@@ -64,7 +64,7 @@ const HomePage = () => {
         return <div className="loading-screen">Loading Home...</div>;
     }
 
-    const { title, subtitle, influencerPhoto, description } = publicConfig.home;
+    const { propertyName, title, benefits, highlightedBenefit, influencerPhoto, description } = publicConfig.home;
 
 
     const handleStartChallenge = () => {
@@ -81,6 +81,23 @@ const HomePage = () => {
     return (
         <div className="home-page" style={{ position: 'relative', overflow: 'hidden', background: '#050B14' }}>
             <AudioController audioKey="home" active={!isTransitioning} />
+
+            {/* PARTNER LOGO */}
+            {publicConfig.home?.partnerLogo && (
+                <div style={{
+                    position: 'fixed',
+                    top: '40px',
+                    left: '40px',
+                    zIndex: 100,
+                    pointerEvents: 'none'
+                }}>
+                    <img 
+                        src={publicConfig.home.partnerLogo} 
+                        alt="Partner Logo" 
+                        style={{ height: '50px', objectFit: 'contain', filter: 'drop-shadow(0 2px 10px rgba(0,0,0,0.5))' }} 
+                    />
+                </div>
+            )}
 
             {/* HIGH-IMPACT VIDEO BACKGROUND */}
             <div className="hero-bg-container" style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden', background: '#050B14' }}>
@@ -189,15 +206,15 @@ const HomePage = () => {
             <div className="container hero-content" style={{ position: 'relative', zIndex: 10 }}>
 
 
-                <h1 className="hero-title animate-fade-in animate-delay-1" style={{ color: '#fff', textShadow: '0 4px 15px rgba(0,0,0,0.8)', marginTop: '40px', marginBottom: '40px' }}>
-                    <span>{title}</span>
-                </h1>
-
-                {subtitle && (
-                    <p className="hero-subtitle animate-fade-in animate-delay-2" style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '8px', textTransform: 'uppercase' }}>
-                        {subtitle}
+                {propertyName && (
+                    <p className="hero-subtitle animate-fade-in animate-delay-1" style={{ color: 'rgba(255,255,255,0.7)', letterSpacing: '8px', textTransform: 'uppercase', marginBottom: '10px' }}>
+                        {propertyName}
                     </p>
                 )}
+
+                <h1 className="hero-title animate-fade-in animate-delay-1" style={{ color: '#fff', textShadow: '0 4px 15px rgba(0,0,0,0.8)', marginTop: '0', marginBottom: '40px' }}>
+                    <span>{title}</span>
+                </h1>
 
                 {description && (
                     <p className="hero-description animate-fade-in animate-delay-2" style={{ 
@@ -213,53 +230,40 @@ const HomePage = () => {
                 )}
 
                 <div className="benefits-list animate-fade-in animate-delay-2" style={{ marginTop: '0.5rem', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', alignItems: 'center' }}>
-                    <div className="benefit-item" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                        ✨ Discover your secret travel vibe
-                    </div>
-                    <div className="benefit-item" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                        🎵 Collect exclusive soundtracks and guides
-                    </div>
-                    <div className="benefit-item destaque-benefit" style={{ 
-                        background: 'rgba(0, 229, 255, 0.1)', 
-                        border: '1px solid rgba(0, 229, 255, 0.3)', 
-                        borderRadius: '4px', 
-                        padding: '8px 16px',
-                        marginTop: '5px',
-                        color: '#00e5ff',
-                        fontWeight: '600',
-                        fontSize: '0.9rem',
-                        letterSpacing: '1px',
-                        textTransform: 'uppercase'
-                    }}>
-                        🏷️ Get a personalised onboard offer
-                    </div>
+                    {(benefits || []).map((benefit, idx) => (
+                        <div key={idx} className="benefit-item" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                            {benefit}
+                        </div>
+                    ))}
                     
-                    <div className="benefit-item standout-benefit" style={{ 
-                        background: 'rgba(5, 10, 25, 0.9)', 
-                        border: '2px solid #00e5ff', 
-                        borderRadius: '8px', 
-                        padding: '16px 36px',
-                        marginTop: '20px',
-                        marginBottom: '40px',
-                        transform: 'scale(1.08)',
-                        boxShadow: '0 0 40px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.2)',
-                        cursor: 'pointer',
-                        backdropFilter: 'blur(20px)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
-                        <span className="benefit-text" style={{ 
-                            color: '#00e5ff', 
-                            fontWeight: '900', 
-                            fontSize: '1.1rem', 
-                            letterSpacing: '3px', 
-                            textTransform: 'uppercase', 
-                            textShadow: '0 0 15px rgba(0, 229, 255, 0.8)' 
+                    {highlightedBenefit && (
+                        <div className="benefit-item standout-benefit" style={{ 
+                            background: 'rgba(5, 10, 25, 0.9)', 
+                            border: `2px solid var(--primary-brand-color, #00e5ff)`, 
+                            borderRadius: '8px', 
+                            padding: '16px 36px',
+                            marginTop: '20px',
+                            marginBottom: '40px',
+                            transform: 'scale(1.08)',
+                            boxShadow: `0 0 40px var(--primary-brand-color, #00e5ff)66, inset 0 0 15px var(--primary-brand-color, #00e5ff)33`,
+                            cursor: 'pointer',
+                            backdropFilter: 'blur(20px)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                         }}>
-                            Get on the exclusive speakeasy guestlist
-                        </span>
-                    </div>
+                            <span className="benefit-text" style={{ 
+                                color: 'var(--primary-brand-color, #00e5ff)', 
+                                fontWeight: '900', 
+                                fontSize: '1.1rem', 
+                                letterSpacing: '3px', 
+                                textTransform: 'uppercase', 
+                                textShadow: `0 0 15px var(--primary-brand-color, #00e5ff)CC` 
+                            }}>
+                                {highlightedBenefit}
+                            </span>
+                        </div>
+                    )}
                 </div>
 
 
@@ -268,9 +272,9 @@ const HomePage = () => {
                     onClick={handleStartChallenge}
                     className="btn-primary hero-btn animate-fade-in animate-delay-3"
                     disabled={isTransitioning}
-                    style={{ marginBottom: '2rem' }}
+                    style={{ marginBottom: '2rem', backgroundColor: 'var(--primary-brand-color, #00e5ff)' }}
                 >
-                    {isTransitioning ? 'INITIALIZING...' : 'ENTER EXPERIENCE'}
+                    {isTransitioning ? 'INITIALIZING...' : (publicConfig.home?.cta_primary || 'ENTER EXPERIENCE')}
                 </button>
             </div>
 

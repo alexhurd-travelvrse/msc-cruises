@@ -1,209 +1,129 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import configTruth from '../data/config_truth.json';
-import voiceoverManifest from '../data/voiceoverManifest.json';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
+import mscEuropaConfig from '../data/msc_europa.json';
+import hours25Config from '../data/25hours_indre.json';
 
 const InfluencerContext = createContext();
 
 export const useInfluencer = () => useContext(InfluencerContext);
 
+const MANIFESTS = {
+    'msc-europa': mscEuropaConfig,
+    '25-hours-copenhagen': hours25Config
+};
+
 export const InfluencerProvider = ({ children }) => {
-    const publicInfluencerId = '1';
-    const publicCompanyId = import.meta.env.VITE_ACTIVE_COMPANY || 'msc-cruises';
-
-    const initialInfluencers = [
-        { id: '1', name: 'Alex Hurd', type: 'Digital Nomad', avatar: '/assets/Alexhurd1.jpg' },
-        { id: '2', name: 'New Influencer', type: 'Luxury/Travel Blogger', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=50&q=80' }
-    ];
-
-    const companies = [
-        { id: 'msc-cruises', name: 'MSC Cruises', type: 'cruise', status: 'active', image: '/assets/hero.png' },
-        { id: 'travel-vrse', name: 'Travel-Vrse', type: 'portal', status: 'active', image: '/models/travelvrse logo.png' },
-        { id: 'sun-gardens', name: 'Sun Gardens Dubrovnik', type: 'hotel', status: 'active', image: '/assets/hero.png' },
-        { id: 'hilton', name: 'Hilton Connected Room', type: 'hotel', status: 'dumb', image: '/assets/hero.png' }
-    ];
-
-    const [currentInfluencer, setCurrentInfluencer] = useState(() => {
+    // Current active company/whitelabel ID
+    const [activeWhitelabelId, setActiveWhitelabelId] = useState(() => {
         try {
-            const saved = localStorage.getItem('currentInfluencer_v17');
-            return saved ? JSON.parse(saved) : null;
-        } catch (e) { return null; }
-    });
-    const [currentDestination, setCurrentDestination] = useState(null);
-    const [activeCompanyId, setActiveCompanyId] = useState(() => {
-        try {
-            const saved = localStorage.getItem('activeCompanyId_v17');
-            return saved ? JSON.parse(saved) : 'msc-cruises';
-        } catch (e) { return 'msc-cruises'; }
+            const saved = localStorage.getItem('activeWhitelabelId_v1');
+            const pathSegments = window.location.pathname.split('/').filter(Boolean);
+            const foundId = pathSegments.find(segment => MANIFESTS[segment]);
+            if (foundId) return foundId;
+            
+            return saved || import.meta.env.VITE_WHITELABEL_ID || 'msc-europa';
+        } catch (e) { return 'msc-europa'; }
     });
 
-    const [configs, setConfigs] = useState({ ...configTruth });
+    const [manifest, setManifest] = useState(MANIFESTS[activeWhitelabelId] || MANIFESTS['msc-europa']);
 
     useEffect(() => {
-        console.log("[InfluencerContext] Active Company:", activeCompanyId);
-        console.log("[InfluencerContext] Public Company:", publicCompanyId);
-        console.log("[InfluencerContext] ConfigTruth Keys:", Object.keys(configTruth));
-    }, [activeCompanyId, publicCompanyId]);
-
-    const resetToTruth = () => {
-        setConfigs({ ...configTruth });
-        console.log("%c[InfluencerContext] REVERTED TO GITHUB TRUTH", "color: #ff9800; font-weight: bold;");
-    };
-
-    const [earnings, setEarnings] = useState(() => {
-        try {
-            const saved = localStorage.getItem('influencerEarnings_v17');
-            return saved ? JSON.parse(saved) : {};
-        } catch (e) { return {}; }
-    });
-
-
-    const [influencers, setInfluencers] = useState(() => {
-        try {
-            const saved = localStorage.getItem('influencers_v17');
-            return saved ? JSON.parse(saved) : initialInfluencers;
-        } catch (e) { 
-            return initialInfluencers; 
-        }
-    });
-
-    const updateInfluencer = React.useCallback((id, newData) => {
-        setInfluencers(prev => {
-            const updated = prev.map(inv => inv.id === id ? { ...inv, ...newData } : inv);
-            localStorage.setItem('influencers_v17', JSON.stringify(updated));
-            if (currentInfluencer && currentInfluencer.id === id) {
-                setCurrentInfluencer({ ...currentInfluencer, ...newData });
-            }
-            return updated;
-        });
-    }, [currentInfluencer]);
-
-
-    useEffect(() => {
-        const loadConfigs = () => {
-            setConfigs({ ...configTruth });
-            try {
-                const savedEarnings = localStorage.getItem('influencerEarnings_v17');
-                if (savedEarnings) setEarnings(JSON.parse(savedEarnings));
-            } catch (e) {
-                console.warn("[InfluencerContext] LocalStorage check failed:", e);
-            }
-        };
-        const handleStorageChange = (e) => {
-            if (e.key === 'influencerEarnings_v17') loadConfigs();
-        };
-        window.addEventListener('storage', handleStorageChange);
-        loadConfigs();
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, []);
-
-    const login = (influencerId) => {
-        const influencer = influencers.find(i => i.id === influencerId);
-        setCurrentInfluencer(influencer);
-        localStorage.setItem('currentInfluencer_v17', JSON.stringify(influencer));
-    };
-
-    const logout = () => {
-        setCurrentInfluencer(null);
-        setActiveCompanyId(null);
-        localStorage.removeItem('currentInfluencer_v17');
-        localStorage.removeItem('activeCompanyId_v17');
-    };
-
-    const selectCompany = (companyId) => {
-        setActiveCompanyId(companyId);
-        localStorage.setItem('activeCompanyId_v17', JSON.stringify(companyId));
-    };
-
-    const getConfig = React.useCallback((influencerId, companyId) => {
-        const targetId = influencerId || (currentDestination === companyId ? 'destination' : publicInfluencerId);
-        const influencerKey = `${targetId}_${companyId}`;
-        const destinationKey = `destination_${companyId}`;
-
-        const savedInfluencer = configs[influencerKey];
-        const savedDestination = configs[destinationKey];
-        const defaultConfig = configTruth.experiences ? configTruth : (configTruth[companyId] || {});
-
-        const baseConfig = savedInfluencer || savedDestination || defaultConfig;
+        const newManifest = MANIFESTS[activeWhitelabelId] || MANIFESTS['msc-europa'];
+        setManifest(newManifest);
+        localStorage.setItem('activeWhitelabelId_v1', activeWhitelabelId);
         
-        // Merge in the voiceover manifest for the active company
-        const companyAudioFiles = voiceoverManifest[companyId] || {};
+        // Apply Brand Colors
+        if (newManifest.client_metadata?.brand_assets?.primary_color) {
+            document.documentElement.style.setProperty('--primary-brand-color', newManifest.client_metadata.brand_assets.primary_color);
+        }
+    }, [activeWhitelabelId]);
+
+    const selectWhitelabel = (id) => {
+        if (MANIFESTS[id]) {
+            setActiveWhitelabelId(id);
+        }
+    };
+
+    // Compatibility Layer for existing components
+    const publicConfig = useMemo(() => {
+        const homeConfig = manifest.client_metadata?.brand_assets || {};
+        const experiences = {};
+        
+        // Map array experiences to indexed object for the engine
+        (manifest.challenge_configuration?.experiences || []).forEach((exp) => {
+            const key = exp.exp_id.toString();
+            experiences[key] = {
+                name: exp.name || exp.exp_id,
+                splatUrl: exp.splat_url,
+                startPos: exp.startPos,
+                startRot: exp.startRot,
+                backpack_icons: exp.backpack_icons, // Keep raw icons for Scene3D
+                items: (exp.backpack_icons || []).map(icon => ({
+                    id: icon.id,
+                    name: icon.reward_label,
+                    title: icon.reward_label,
+                    description: icon.description || (icon.content_type === 'collectible' ? 'Found a new discovery!' : 'New info unlocked'),
+                    media: icon.media || icon.image,
+                    video: icon.video,
+                    position: icon.coordinates ? [icon.coordinates.x, icon.coordinates.y, icon.coordinates.z] : (icon.position || [0,0,0]),
+                    data_tag: icon.data_tag,
+                    type: icon.content_type === 'collectible' ? 'medal' : 'activity',
+                    discoveryMode: icon.discoveryMode || 'instant',
+                    collectible: icon.collectible || {
+                        title: icon.reward_label,
+                        type: icon.content_type === 'collectible' ? 'medal' : 'pdf',
+                        description: icon.description,
+                        url: icon.media || icon.image
+                    }
+                }))
+            };
+        });
 
         return {
-            ...defaultConfig,
-            ...baseConfig,
-            home: { ...defaultConfig?.home, ...(baseConfig?.home || {}) },
-            teleport: { ...defaultConfig?.teleport, ...(baseConfig?.teleport || {}) },
-            audio: { ...defaultConfig?.audio, ...(baseConfig?.audio || {}) },
-            audioFiles: { ...companyAudioFiles, ...(baseConfig.audioFiles || {}) },
-            coins: { ...defaultConfig.coins, ...(baseConfig.coins || {}) },
-            experiences: {
-                ...defaultConfig.experiences,
-                ...Object.keys(baseConfig.experiences || {}).reduce((acc, key) => {
-                    const defaultExp = defaultConfig.experiences?.[key] || {};
-                    const baseExp = baseConfig.experiences?.[key] || {};
-
-                    acc[key] = {
-                        ...defaultExp,
-                        ...baseExp,
-                        items: (baseExp.items && baseExp.items.length > 0)
-                            ? baseExp.items
-                            : (defaultExp.items || []),
-                        extraObjects: (baseExp.extraObjects && baseExp.extraObjects.length > 0)
-                            ? baseExp.extraObjects
-                            : (defaultExp.extraObjects || [])
-                    };
-                    return acc;
-                }, {})
+            id: manifest.client_metadata?.slug,
+            home: {
+                propertyName: manifest.client_metadata?.hotel_name,
+                title: homeConfig.hero_text,
+                heroImage: homeConfig.hero_image_url,
+                partnerLogo: manifest.client_metadata?.brand_assets?.hotel_logo_url,
+                influencerName: manifest.creator_metadata?.creator_name,
+                influencerPhoto: manifest.creator_metadata?.orb_image_url,
+                cta_primary: homeConfig.cta_primary,
+                cta_secondary: homeConfig.cta_secondary,
+                benefits: homeConfig.benefits || [
+                    "✨ Discover your secret travel vibe",
+                    "🎵 Collect exclusive soundtracks and guides",
+                    "🏷️ Get a personalised onboard offer"
+                ],
+                highlightedBenefit: homeConfig.highlighted_benefit || "Get on the exclusive speakeasy guestlist"
             },
-            personas: { ...defaultConfig.personas, ...(baseConfig.personas || {}) }
+            teleport: {
+                heroImage: manifest.teleport?.heroImage || manifest.teleport_configuration?.hero_image_url || '/assets/hero.png',
+                backpackTitle: manifest.teleport?.backpackTitle || "Your Collection",
+                backpackDesc: manifest.teleport?.backpackDesc || "Curated objects from your exploration",
+                dataRequirements: manifest.teleport_configuration?.data_requirements || [
+                    { id: "first_time", label: "✨ First Time Guest", tag: "new_guest" },
+                    { id: "special_occasion", label: "🥂 Special Occasion", tag: "celebration" }
+                ]
+            },
+            audioFiles: manifest.creator_metadata?.voiceovers || {},
+            experiences
         };
-    }, [configs, currentDestination, publicInfluencerId]);
+    }, [manifest]);
 
-    const saveConfig = React.useCallback((influencerId, companyId, newConfig) => {
-        const id = influencerId || (currentDestination === companyId ? 'destination' : null);
-        if (!id) return;
-        const key = `${id}_${companyId}`;
-        const updatedConfigs = { ...configs, [key]: newConfig };
-        setConfigs(updatedConfigs);
-        // Removed localStorage save to rely entirely on Publisher
-    }, [configs, currentDestination]);
-
-    const updateEarnings = React.useCallback((influencerId, amount) => {
-        const current = earnings[influencerId] || 0;
-        const newEarnings = { ...earnings, [influencerId]: current + amount };
-        setEarnings(newEarnings);
-        localStorage.setItem('influencerEarnings_v17', JSON.stringify(newEarnings));
-    }, [earnings]);
-
-    const loginAsDestination = (companyId) => setCurrentDestination(companyId);
-    const logoutDestination = () => setCurrentDestination(null);
-
-    const activeInfluencerId = currentInfluencer?.id || publicInfluencerId;
-    const publicConfig = getConfig(activeInfluencerId, publicCompanyId);
-    const publicInfluencer = influencers.find(i => i.id === activeInfluencerId) || influencers[0];
+    const publicInfluencer = useMemo(() => ({
+        name: manifest.creator_metadata?.creator_name || 'Guide',
+        avatar: manifest.creator_metadata?.orb_image_url || '/assets/avatar.jpg',
+        bio: manifest.creator_metadata?.orb_bio || ''
+    }), [manifest]);
 
     return (
         <InfluencerContext.Provider value={{
-            influencers,
-            companies,
-            currentInfluencer,
-            currentDestination,
-            activeCompanyId,
-            publicCompanyId,
+            activeWhitelabelId,
+            selectWhitelabel,
+            manifest,
+            publicConfig,
             publicInfluencer,
-            configs,
-            earnings,
-            login,
-            logout,
-            loginAsDestination,
-            logoutDestination,
-            selectCompany,
-            updateInfluencer,
-            getConfig,
-            saveConfig,
-            updateEarnings,
-            resetToTruth,
-            publicConfig
+            availableWhitelabels: Object.keys(MANIFESTS)
         }}>
             {children}
         </InfluencerContext.Provider>

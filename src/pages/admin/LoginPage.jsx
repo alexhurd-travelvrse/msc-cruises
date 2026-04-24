@@ -1,24 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useInfluencer } from '../../context/InfluencerContext';
 
 const LoginPage = () => {
-    const { influencers, login, currentInfluencer } = useInfluencer();
     const navigate = useNavigate();
-    const [selectedId, setSelectedId] = useState(influencers[0]?.id);
-    const [loggingIn, setLoggingIn] = useState(false);
-
-    // Wait for context to commit the new currentInfluencer before navigating
-    useEffect(() => {
-        if (loggingIn && currentInfluencer) {
-            navigate('/admin/companies');
-        }
-    }, [loggingIn, currentInfluencer, navigate]);
+    const influencers = [{id: 'studio-x', name: 'Studio-X'}, {id: 'alex', name: 'Alex Hurd'}];
+    const [selectedId, setSelectedId] = useState(influencers[0].id);
 
     const handleLogin = (e) => {
         e.preventDefault();
-        login(selectedId);
-        setLoggingIn(true); // Trigger the useEffect to watch for state commit
+        // Since influencer auth isn't strict anymore with the manifest, we just proceed.
+        navigate('/admin/companies');
     };
 
     return (

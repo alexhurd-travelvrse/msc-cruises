@@ -89,7 +89,7 @@ const WarpStars = ({ speedMultiplier = 1 }) => {
     );
 };
 
-const TeleportBackground = ({ voyageTitle = "MSC WORLD EUROPA" }) => {
+const TeleportBackground = ({ voyageTitle = "TRAVELVRSE", heroImage = '/assets/hero.png' }) => {
     const [phase, setPhase] = useState('warp'); // 'warp' -> 'transition' -> 'arrived'
 
     useEffect(() => {
@@ -124,10 +124,10 @@ const TeleportBackground = ({ voyageTitle = "MSC WORLD EUROPA" }) => {
                 }} />
             </div>
 
-            {/* PHASE 2: Ship Arriving */}
+            {/* PHASE 2: Ship/Hotel Arriving */}
             <div style={{
                 position: 'absolute', inset: 0,
-                backgroundImage: 'url(/assets/msc_ship.png)',
+                backgroundImage: `url(${heroImage})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center 40%',
                 opacity: phase === 'warp' ? 0 : 1,

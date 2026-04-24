@@ -1,241 +1,218 @@
 import React from 'react';
+import { useSpring, animated } from '@react-spring/web';
 import { useGame } from '../context/GameContext';
 import { useInfluencer } from '../context/InfluencerContext';
 
-const FavouritesOverlay = ({ onClose }) => {
-    const { interestInsights, influencer, backpack, favourites, toggleFavourite, travelStatus, resetProgress } = useGame();
-    const { publicConfig, publicInfluencer } = useInfluencer();
-    const [showConfirmReset, setShowConfirmReset] = React.useState(false);
-    const brandingTitle = publicConfig?.home?.title?.toUpperCase() || "VIRTUAL EXPERIENCE";
+const YouTubePlayer = ({ url }) => {
+    const getYouTubeId = (url) => {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    };
 
-    React.useEffect(() => {
-        console.log('%c[FavouritesOverlay] Rendering with backpack items:', 'color: #ff00ff; font-weight: bold;', backpack);
-        backpack.forEach((item, idx) => {
-            console.log(`  [${idx}] ${item.title}:`, {
-                id: item.id,
-                type: item.type,
-                hasImage: !!item.image,
-                image: item.image
-            });
-        });
-    }, [backpack]);
+    const isRawVideo = (url) => {
+        if (!url) return false;
+        return url.toLowerCase().match(/\.(mp4|webm|ogg|mov)$/) || url.includes('v.ftcdn.net');
+    };
 
-    const vibeCategories = [
-        { id: 'Wellness Voyager', title: 'Wellness Voyager', image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=150&q=80' },
-        { id: 'Culture Seeker', title: 'Culture Seeker', image: 'https://images.unsplash.com/photo-1518911710364-17ec553bde5d?auto=format&fit=crop&w=150&q=80' },
-        { id: 'Family Planner', title: 'Family Planner', image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=150&q=80' },
-        { id: 'Work from Sea', title: 'Work from Sea', image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=150&q=80' },
-        { id: 'Social Foodie', title: 'Social Foodie', image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=150&q=80' },
-        { id: 'The Alchemist', title: 'The Alchemist', image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=150&q=80' },
-        { id: 'Social Storyteller', title: 'Social Storyteller', image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=150&q=80' },
-        { id: 'The Sovereign', title: 'The Sovereign', image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=150&q=80' },
-    ];
+    if (!url) return null;
+
+    if (isRawVideo(url)) {
+        return (
+            <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0, background: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+                <video src={url} controls playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
+        );
+    }
+
+    const videoId = getYouTubeId(url)?.trim();
+    if (!videoId) return null;
 
     return (
-        <div className="favourites-overlay">
-            <div className="favourites-panel glass-panel animate-fade-in">
-                <div className="favourites-header" style={{ padding: '30px 40px', borderBottom: '0.5px solid rgba(255, 255, 255, 0.1)' }}>
-                    <div>
-                        <h2 className="serif-title" style={{ margin: 0, fontSize: '2rem' }}>{(publicConfig?.teleport?.backpackTitle || "Favourites & Backpack").toUpperCase()}</h2>
-                        <p className="metadata-label" style={{ margin: '5px 0 0 0', opacity: 0.6 }}>{(publicConfig?.teleport?.backpackDesc || "Curated For Your Next Voyage")}</p>
-                    </div>
-                    <button onClick={() => {
-                        onClose();
-                        window.dispatchEvent(new CustomEvent('stop-collectible-audio'));
-                    }} className="ghost-button" style={{ fontSize: '1.2rem', padding: '5px 15px' }}>✕</button>
-                </div>
-
-                <div className="favourites-scroll" style={{ padding: '30px 40px' }}>
-                    {/* Vibe Grid */}
-                    <h3 className="metadata-label" style={{ color: 'var(--color-accent-primary)', marginBottom: '2rem' }}>Digital Guest Profile</h3>
-                    <div className="vibe-grid">
-                        {vibeCategories.map(vibe => {
-                            const score = interestInsights ? (interestInsights[vibe.id] || 0) : 0;
-                            const isActive = score > 0;
-                            return (
-                                <div key={vibe.id} className={`vibe-card ${isActive ? 'active' : ''}`}>
-                                    <div style={{ color: isActive ? '#FFD700' : '#444', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                                        {isActive ? '★' : '☆'}
-                                    </div>
-                                    <div style={{ fontSize: '0.7rem', fontWeight: 'bold', marginTop: '5px' }}>{vibe.title.toUpperCase()}</div>
-                                    <img src={vibe.image} className="vibe-card-img" style={{ opacity: isActive ? 1 : 0.2 }} alt={vibe.title} />
-                                    {isActive && <div style={{ fontSize: '0.6rem', color: '#FFD700', marginTop: '5px' }}>{score} PTS</div>}
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {/* Backpack Items */}
-                    <h3 className="metadata-label" style={{ color: 'var(--color-accent-primary)', marginBottom: '1.5rem', marginTop: '3rem' }}>Captured Experience Collectibles ({backpack.length})</h3>
-                    <div className="curated-feed">
-                        {backpack.length === 0 ? (
-                            <p style={{ textAlign: 'center', opacity: 0.5, padding: '2rem' }}>Your backpack is empty. Explore and find activities!</p>
-                        ) : (
-                            backpack.map((item, idx) => {
-                                const roomId = String(item.id || '1').split('-')[0];
-                                const themes = { '1': '#d4af37', '2': '#00e5ff', '3': '#ff8c00', '4': '#ff3d00', '5': '#ffcc00' };
-                                const itemColor = item.type === 'medal' ? '#FFD700' : (themes[roomId] || '#d4af37');
-
-                                return (
-                                <div key={idx} className="feed-item" style={{ borderLeft: `4px solid ${itemColor}`, background: `rgba(255,255,255,0.02)` }}>
-                                    <div className="feed-img">
-                                        {item.image ? (
-                                            <img
-                                                src={item.image}
-                                                alt={item.title}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                onError={(e) => {
-                                                    e.target.style.display = 'none';
-                                                    e.target.nextSibling.style.display = 'flex';
-                                                }}
-                                            />
-                                        ) : null}
-                                        <div style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            background: `${itemColor}20`,
-                                            display: item.image ? 'none' : 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '1.5rem',
-                                            border: `1px solid ${itemColor}40`
-                                        }}>
-                                            {item.type === 'medal' ? '🏅' : (item.icon || '🎒')}
-                                        </div>
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <h4 style={{ margin: '0 0 5px 0', color: itemColor, fontSize: '0.9rem', fontWeight: '800' }}>{item.title.toUpperCase()}</h4>
-                                            {item.collectible && (
-                                                <span style={{ 
-                                                    fontSize: '0.5rem', 
-                                                    background: `${itemColor}20`, 
-                                                    color: itemColor, 
-                                                    padding: '2px 6px', 
-                                                    borderRadius: '4px',
-                                                    border: `1px solid ${itemColor}40`,
-                                                    fontWeight: 'bold',
-                                                    letterSpacing: '1px'
-                                                }}>
-                                                    COLLECTIBLE
-                                                </span>
-                                            )}
-                                        </div>
-                                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#999' }}>{item.description}</p>
-                                    </div>
-                                </div>
-                                );
-                            })
-                        )}
-                    </div>
-
-                    {/* Voyage Details */}
-                    <div className="voyage-details-section glass-panel" style={{ padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid rgba(255, 215, 0, 0.2)' }}>
-                        <h3 className="panel-subtitle" style={{ color: '#FFD700', marginBottom: '1rem', marginTop: 0 }}>YOUR VOYAGE DETAILS</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>FIRST TIME CRUISER</span>
-                                <span style={{
-                                    fontSize: '0.85rem',
-                                    fontWeight: 'bold',
-                                    color: travelStatus.hasFirstTimeBadge ? '#FFD700' : '#888',
-                                    background: travelStatus.hasFirstTimeBadge ? 'rgba(255, 215, 0, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                                    padding: '4px 12px',
-                                    borderRadius: '20px'
-                                }}>
-                                    {travelStatus.hasFirstTimeBadge ? 'CLAIMED' : 'UNCLAIMED'}
-                                </span>
-                            </div>
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>SPECIAL OCCASION PACKAGE</span>
-                                <span style={{
-                                    fontSize: '0.85rem',
-                                    fontWeight: 'bold',
-                                    color: travelStatus.hasSpecialOccasionBadge ? '#ff69b4' : '#888',
-                                    background: travelStatus.hasSpecialOccasionBadge ? 'rgba(255, 105, 180, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                                    padding: '4px 12px',
-                                    borderRadius: '20px'
-                                }}>
-                                    {travelStatus.hasSpecialOccasionBadge ? 'CLAIMED' : 'UNCLAIMED'}
-                                </span>
-                            </div>
-
-                            {travelStatus.bookingDates && (
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-                                    <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>SAILING DATE</span>
-                                    <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>{travelStatus.bookingDates}</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Influencer Advice */}
-                    <div className="influencer-section glass-panel">
-                        <div className="influencer-avatar">
-                            <img src={publicConfig?.home?.influencerPhoto || influencer?.image} alt={publicInfluencer?.name || influencer?.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </div>
-                        <h4 style={{ color: '#FFD700' }}>{(publicInfluencer?.name || influencer?.name).toUpperCase()}'S ADVICE</h4>
-                        <p style={{ fontSize: '0.9rem', opacity: 0.8, maxWidth: '500px' }}>
-                            {publicConfig?.home?.description ? (
-                                `"${publicConfig.home.description.substring(0, 150)}..."`
-                            ) : (
-                                `"Yo! You're building a sick profile here. These spots are my absolute favorites. Keep exploring!"`
-                            )}
-                        </p>
-                    </div>
-
-                    {/* Reset Progress Button */}
-                    <div style={{ marginTop: '3rem', padding: '1rem', textAlign: 'center' }}>
-                        {!showConfirmReset ? (
-                            <button 
-                                onClick={() => setShowConfirmReset(true)}
-                                className="btn-glass"
-                                style={{ 
-                                    color: '#ff4444', 
-                                    borderColor: 'rgba(255, 68, 68, 0.3)',
-                                    fontSize: '0.8rem',
-                                    padding: '10px 20px'
-                                }}
-                            >
-                                RESTART VOYAGE (CLEAR PROGRESS)
-                            </button>
-                        ) : (
-                            <div className="animate-fade-in" style={{ 
-                                background: 'rgba(255, 68, 68, 0.1)', 
-                                padding: '15px', 
-                                borderRadius: '8px',
-                                border: '1px solid rgba(255, 68, 68, 0.3)'
-                            }}>
-                                <p style={{ margin: '0 0 10px 0', fontSize: '0.8rem', color: '#ff4444', fontWeight: 'bold' }}>
-                                    CONFIRM RESTART? ALL PROGRESS WILL BE LOST.
-                                </p>
-                                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                                    <button 
-                                        onClick={() => {
-                                            resetProgress();
-                                            onClose();
-                                        }}
-                                        className="btn-glass"
-                                        style={{ color: '#ff4444', borderColor: '#ff4444', padding: '5px 15px' }}
-                                    >
-                                        YES, RESET
-                                    </button>
-                                    <button 
-                                        onClick={() => setShowConfirmReset(false)}
-                                        className="btn-glass"
-                                        style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.3)', padding: '5px 15px' }}
-                                    >
-                                        CANCEL
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
+        <div style={{ position: 'relative', width: '100%', paddingBottom: '177.77%', height: 0, borderRadius: '12px', overflow: 'hidden', background: '#000' }}>
+            <iframe
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+            />
         </div>
     );
 };
 
+const FavouritesOverlay = ({ isVisible, onClose }) => {
+    const { interestInsights, backpack, travelStatus } = useGame();
+    const { publicConfig, manifest } = useInfluencer();
+    const [selectedItem, setSelectedItem] = React.useState(null);
+    const currentThemeColor = manifest?.client_metadata?.brand_assets?.primary_color || '#00e5ff';
+
+    const overlaySpring = useSpring({
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? 'auto' : 'none',
+        config: { tension: 120, friction: 14 }
+    });
+
+    const panelSpring = useSpring({
+        transform: isVisible ? 'translateX(0%)' : 'translateX(100%)',
+        config: { tension: 200, friction: 25 }
+    });
+
+    const detailSpring = useSpring({
+        opacity: selectedItem ? 1 : 0,
+        transform: selectedItem ? 'translateX(0%)' : 'translateX(50%)',
+        pointerEvents: selectedItem ? 'auto' : 'none'
+    });
+
+    const vibeCategories = [
+        { id: 'Wellness Voyager', title: 'Wellness Voyager' },
+        { id: 'Culture Seeker', title: 'Culture Seeker' },
+        { id: 'Family Planner', title: 'Family Planner' },
+        { id: 'Work from Sea', title: 'Work from Sea' },
+        { id: 'Social Foodie', title: 'Social Foodie' },
+        { id: 'The Alchemist', title: 'The Alchemist' },
+        { id: 'Social Storyteller', title: 'Social Storyteller' },
+        { id: 'The Sovereign', title: 'The Sovereign' },
+    ];
+
+    return (
+        <animated.div className="favourites-overlay" style={{
+            ...overlaySpring,
+            position: 'fixed',
+            inset: 0,
+            zIndex: 10000,
+            background: 'rgba(5, 5, 15, 0.8)',
+            backdropFilter: 'blur(15px)',
+            display: 'flex',
+            justifyContent: 'flex-end'
+        }} onClick={() => { setSelectedItem(null); onClose(); }}>
+            <animated.div 
+                className="favourites-panel glass-panel" 
+                style={{
+                    ...panelSpring,
+                    width: '100%',
+                    maxWidth: '500px',
+                    height: '100%',
+                    background: 'rgba(10, 10, 25, 0.98)',
+                    backdropFilter: 'blur(40px)',
+                    borderLeft: '1px solid rgba(255,255,255,0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative'
+                }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* List View */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <div className="favourites-header" style={{ padding: '40px', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2 className="serif-title" style={{ margin: 0, fontSize: '1.8rem' }}>{(publicConfig?.teleport?.backpackTitle || "My Discoveries").toUpperCase()}</h2>
+                            <p className="metadata-label" style={{ margin: '5px 0 0 0', opacity: 0.6 }}>{(publicConfig?.teleport?.backpackDesc || "Your Curated Experience")}</p>
+                        </div>
+                        <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>✕</button>
+                    </div>
+
+                    <div className="favourites-scroll" style={{ padding: '40px', flex: 1, overflowY: 'auto' }}>
+                        {/* Vibe Insight */}
+                        <div style={{ marginBottom: '40px' }}>
+                            <div className="metadata-label" style={{ color: currentThemeColor, marginBottom: '20px', fontSize: '0.65rem', letterSpacing: '4px' }}>EXPERIENCE PROFILE</div>
+                            <div className="vibe-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                                {vibeCategories.map(vibe => {
+                                    const score = interestInsights ? (interestInsights[vibe.id] || 0) : 0;
+                                    const isActive = score > 0;
+                                    return (
+                                        <div key={vibe.id} style={{ 
+                                            background: isActive ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                                            border: isActive ? `1px solid ${currentThemeColor}60` : '1px solid rgba(255,255,255,0.05)',
+                                            padding: '10px 5px',
+                                            borderRadius: '8px',
+                                            textAlign: 'center',
+                                            opacity: isActive ? 1 : 0.4
+                                        }}>
+                                            <div style={{ fontSize: '0.55rem', fontWeight: '800', textTransform: 'uppercase' }}>{vibe.title.split(' ')[0]}</div>
+                                            {isActive && <div style={{ fontSize: '0.65rem', color: currentThemeColor, marginTop: '3px', fontWeight: '900' }}>{score}</div>}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Items List */}
+                        <div className="metadata-label" style={{ color: currentThemeColor, marginBottom: '20px', fontSize: '0.65rem', letterSpacing: '4px' }}>CAPTURED ASSETS ({backpack.length})</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            {backpack.map((item, idx) => (
+                                <div key={idx} onClick={() => setSelectedItem(item)} style={{ 
+                                    display: 'flex', gap: '20px', padding: '15px', borderRadius: '12px',
+                                    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
+                                    cursor: 'pointer', transition: 'all 0.2s'
+                                }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>
+                                    <div style={{ width: '60px', height: '60px', background: `${currentThemeColor}20`, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+                                        {item.type === 'medal' ? '🏅' : '🎒'}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h4 style={{ margin: '0 0 5px 0', fontSize: '0.9rem', color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>{item.title}</h4>
+                                        <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.description}</p>
+                                    </div>
+                                    <div style={{ color: currentThemeColor, fontSize: '1.2rem' }}>→</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Detail View (Sub-panel) */}
+                <animated.div style={{
+                    ...detailSpring,
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(10, 10, 30, 1)',
+                    zIndex: 100,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '40px'
+                }}>
+                    <button onClick={() => setSelectedItem(null)} style={{ background: 'none', border: 'none', color: currentThemeColor, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '30px', fontWeight: '800' }}>
+                        ← BACK TO COLLECTION
+                    </button>
+
+                    {selectedItem && (
+                        <div style={{ overflowY: 'auto', flex: 1 }}>
+                            <div style={{ marginBottom: '30px' }}>
+                                {selectedItem.video ? (
+                                    <YouTubePlayer url={selectedItem.video} />
+                                ) : (
+                                    <img src={selectedItem.media || selectedItem.image || '/assets/hero.png'} style={{ width: '100%', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }} alt="Detail" />
+                                )}
+                            </div>
+                            
+                            <div className="metadata-label" style={{ color: currentThemeColor, fontSize: '0.6rem', letterSpacing: '4px', marginBottom: '10px' }}>DISCOVERY DETAIL</div>
+                            <h2 className="serif-title" style={{ fontSize: '2.4rem', color: '#fff', marginBottom: '20px', lineHeight: 1.1 }}>{selectedItem.title}</h2>
+                            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1rem', lineHeight: 1.6, marginBottom: '40px' }}>{selectedItem.description}</p>
+
+                            {selectedItem.collectible?.url && (
+                                <div style={{ padding: '25px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div className="metadata-label" style={{ fontSize: '0.6rem', opacity: 0.5, marginBottom: '15px' }}>COLLECTIBLE REWARD</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '25px' }}>
+                                        <div style={{ fontSize: '2rem' }}>{selectedItem.type === 'medal' ? '🏅' : '📄'}</div>
+                                        <div style={{ flex: 1, fontWeight: '800', color: '#fff' }}>{selectedItem.collectible.title || 'Discovery Asset'}</div>
+                                    </div>
+                                    <button 
+                                        onClick={() => window.open(selectedItem.collectible.url, '_blank')}
+                                        style={{ width: '100%', padding: '15px', borderRadius: '10px', background: currentThemeColor, color: '#000', border: 'none', fontWeight: '900', cursor: 'pointer' }}
+                                    >
+                                        ACCESS COLLECTIBLE
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </animated.div>
+            </animated.div>
+        </animated.div>
+    );
+};
+
 export default FavouritesOverlay;
+

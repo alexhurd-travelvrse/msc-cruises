@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useInfluencer } from '../context/InfluencerContext';
 
 function CoordinateAxisInput({ axis, i, selectedObj, transformMode }) {
     const isRot = transformMode === 'rotate';
@@ -76,6 +77,7 @@ function SceneEditor({
     onDownloadConfig,
     onResetToTruth
 }) {
+    const { activeWhitelabelId } = useInfluencer();
     const [copied, setCopied] = React.useState(false);
     const [localSaved, setLocalSaved] = React.useState(false);
     const [publishSaved, setPublishSaved] = React.useState(false);
@@ -169,29 +171,32 @@ function SceneEditor({
         try {
             setSaveError(null);
             
-            // This specifically hits the Node.js backend to update config_truth.json
-            const experienceId = window.location.pathname.split('/').pop() || '1';
-            const activeCompanyId = import.meta.env.VITE_ACTIVE_COMPANY || 'msc-cruises';
+            const pathSegments = window.location.pathname.split('/').filter(Boolean);
+            const experienceId = pathSegments.pop() || '1';
+            
+            // Collect all objects including the camera if it was moved
+            // Collect all objects from state
+            const saveObjects = objects.map(obj => ({
+                id: obj.id,
+                pos: obj.pos,
+                rot: obj.rot,
+                discoveryMode: obj.discoveryMode
+            }));
             
             const response = await fetch('/api/save-config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    companyId: activeCompanyId,
+                    companyId: activeWhitelabelId,
                     experienceId,
-                    objects: objects.map(obj => ({
-                        id: obj.id,
-                        pos: obj.pos,
-                        rot: obj.rot,
-                        discoveryMode: obj.discoveryMode
-                    }))
+                    objects: saveObjects
                 })
             });
             const result = await response.json();
             if (response.ok) {
                 setPublishSaved(true);
                 setTimeout(() => setPublishSaved(false), 3000);
-                alert("🚀 READY FOR GITHUB DESKTOP!\nYour coordinates have been written to config_truth.json.");
+                alert(`🚀 SUCCESS!\n\nCoordinates for Experience ${experienceId} (${activeWhitelabelId}) have been burned to the manifest.\n\nStart Position: ${window.latestCameraPos.map(v => v.toFixed(2)).join(', ')}`);
             } else {
                 setSaveError(result.error || 'Failed to save to project files');
             }
@@ -207,15 +212,7 @@ function SceneEditor({
         window.dispatchEvent(new CustomEvent('scene-editor-mode-change', { detail: { mode } }));
     };
 
-    const isCamera = activeObject === 'camera';
-    const selectedItem = (objects || []).find(o => o.id === activeObject);
-
-    const selectedObj = isCamera ? {
-        id: 'camera',
-        name: 'Camera Start Position',
-        pos: (window.latestCameraPos || [0, 0, 0]),
-        rot: (window.latestCameraRot || [0, 0, 0])
-    } : selectedItem;
+    const selectedObj = (objects || []).find(o => o.id === activeObject);
 
     return (
         <div 

@@ -33,7 +33,7 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="profile-info" style={{ marginBottom: '40px', color: 'var(--color-text-muted)', lineHeight: '1.6' }}>
-                    <p>Explore experiences across the MSC World Europa to fill your backpack with exclusive rewards and member deals.</p>
+                    <p>Explore experiences and fill your backpack with exclusive rewards and member deals.</p>
                 </div>
 
                 <button

@@ -1,0 +1,70 @@
+{
+  "client_metadata": {
+    "hotel_name": "MSC Cruises Europa",
+    "slug": "msc-europa",
+    "brand_assets": {
+      "hotel_logo_url": "/assets/logos/msc-logo.svg",
+      "primary_color": "#003366",
+      "hero_image_url": "/models/mscheroimage5.mp4",
+      "hero_text": "Experience the Future of Cruising",
+      "cta_primary": "Begin Journey",
+      "cta_secondary": "Explore Ship",
+      "benefits": [
+        "✨ Discover the future of cruising",
+        "🌊 Explore the world's most sustainable ship",
+        "💎 Unlock exclusive member rewards"
+      ],
+      "highlighted_benefit": "Access the VIP Yacht Club guestlist"
+    }
+  },
+  "creator_metadata": {
+    "creator_name": "Alex Hurd",
+    "orb_image_url": "/assets/Alexhurd1.jpg",
+    "orb_bio": "Your digital guide to the stunning MSC World Europa.",
+    "voiceovers": {
+      "home": "/assets/audio/msc_home.mp3",
+      "teleport": "/assets/audio/msc_teleport.mp3",
+      "completion": "/assets/audio/msc_completion.mp3"
+    }
+  },
+  "challenge_configuration": {
+    "total_experiences": 5,
+    "experiences": [
+      {
+        "exp_id": "1",
+        "name": "Yacht Club Owner's Suite",
+        "splat_url": "/models/msc_yacht_club.splat",
+        "backpack_icons": [
+          {
+            "id": "1-1",
+            "coordinates": { "x": 0.3, "y": 1.2, "z": -1 },
+            "content_type": "collectible",
+            "data_tag": "work_from_sea",
+            "reward_label": "Wi-fi Package"
+          }
+        ]
+      }
+    ]
+  },
+  "teleport_configuration": {
+    "hero_image_url": "/assets/msc_ship.png",
+    "data_requirements": [
+      { "id": "first_time", "label": "✨ First Time Cruiser", "tag": "new_guest" },
+      { "id": "special_occasion", "label": "🥂 Special Occasion", "tag": "celebration" }
+    ]
+  },
+  "reward_engine": {
+    "reward_title": "The MSC Discovery Reward",
+    "reward_url": "https://msccruises.com/rewards",
+    "qr_code_enabled": true,
+    "logic_mode": "weighted_intent",
+    "data_profiles": [
+      {
+        "profile_name": "The Sovereign",
+        "match_tags": ["luxury_intent"],
+        "offer_active": true,
+        "offer_text": "Exclusive Yacht Club Benefits"
+      }
+    ]
+  }
+}

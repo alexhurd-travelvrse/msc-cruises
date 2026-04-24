@@ -18,15 +18,19 @@
   --gradient-tropical: linear-gradient(135deg, #5BC0DE 0%, #3D8A9C 100%);
   --gradient-sunset: linear-gradient(90deg, #FF7E5F, #FEB47B);
 
-  /* Luxury HUD Glassmorphism System */
-  --luxury-glass-bg: rgba(255, 255, 255, 0.05);
-  --luxury-glass-blur: blur(25px) saturate(120%);
-  --luxury-glass-border: 0.5px solid rgba(255, 255, 255, 0.2);
-  --luxury-glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  /* Luxury HUD Glassmorphism System - MSC Vercel Standard */
+  --luxury-glass-bg: rgba(10, 10, 25, 0.7);
+  --luxury-glass-blur: blur(30px) saturate(140%);
+  --luxury-glass-border: 1px solid rgba(255, 255, 255, 0.15);
+  --luxury-glass-inner-border: 1px solid rgba(255, 255, 255, 0.05);
+  --luxury-glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   
-  /* Luxury Typography Hierarchy */
+  /* Typography - MSC Vercel Standard */
   --font-serif: 'Playfair Display', serif;
   --font-sans: 'Montserrat', sans-serif;
+  --font-branding: 'Montserrat', sans-serif;
+  --weight-bold: 800;
+  --letter-spacing-hud: 2px;
   
   /* Spacing */
   --spacing-xs: 0.5rem;
@@ -100,14 +104,26 @@ h1, h2, h3, h4, h5, h6, .hero-title, .status-title, .panel-title {
   transform: translateZ(0);
 }
 
-.vibe-box, .medal-box, .backpack-box, .vibe-badge-top {
+.vibe-box, .medal-box, .backpack-box, .glass-btn-circle, .vibe-badge-top {
   background: var(--luxury-glass-bg);
-  backdrop-filter: blur(25px) saturate(120%);
-  -webkit-backdrop-filter: blur(25px) saturate(120%);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
-  border: 0.5px solid rgba(255, 255, 255, 1);
+  backdrop-filter: var(--luxury-glass-blur);
+  -webkit-backdrop-filter: var(--luxury-glass-blur);
+  border: var(--luxury-glass-border);
   box-shadow: var(--luxury-glass-shadow);
-  border-radius: 4px;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Circular Docks Standard */
+.glass-btn-circle {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
 }
 
 .serif-title {
@@ -118,11 +134,12 @@ h1, h2, h3, h4, h5, h6, .hero-title, .status-title, .panel-title {
 }
 
 .metadata-label {
-  font-family: var(--font-sans);
+  font-family: var(--font-branding);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: var(--letter-spacing-hud);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--color-accent-primary);
 }
 
 .ghost-button {

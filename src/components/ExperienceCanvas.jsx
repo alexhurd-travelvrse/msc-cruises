@@ -12,11 +12,7 @@ const SparkSystem = () => {
     const { gl } = useThree();
     const options = useMemo(() => ({
         renderer: gl,
-        autoUpdate: true,
-        pixelRatio: 2, 
-        antialias: false, // Spark JS recommends false for Gaussian rasterization
-        precision: 'float32', // Improved sorting precision
-        sortRadial: true // Better accuracy for wide-angle views
+        autoUpdate: true
     }), [gl]);
 
     console.log('%c[SparkSystem] Initializing Spark.js renderer', 'color: #00e5ff; font-weight: bold;');
@@ -30,7 +26,7 @@ const SparkSystem = () => {
 useTexture.preload('/textures/coin.png');
 useTexture.preload('/textures/activity.png');
 useTexture.preload('/textures/gelato.png');
-useTexture.preload('/textures/msc_sovereign_coin.png');
+// Removed legacy preloads
 
 
 const ExperienceCanvas = React.memo(({ 
@@ -53,20 +49,17 @@ const ExperienceCanvas = React.memo(({
                 background: '#050510',
                 filter: 'brightness(1.3) contrast(1.08) saturate(1.05)' // Sharpened contrast for clarity
             }}
-            dpr={1.5} // High fidelity with smoother performance headroom
+            dpr={0.75} // Matches proven performance profile from MSC master
             gl={{
-                antialias: true,
+                antialias: false, 
                 alpha: false,
                 depth: true,
-                stencil: true, 
+                stencil: false, 
                 powerPreference: 'high-performance',
                 preserveDrawingBuffer: false,
                 failIfMajorPerformanceCaveat: false,
-                logarithmicDepthBuffer: false, 
-                precision: 'highp',
-                outputColorSpace: 'srgb', 
-                toneMapping: 4, 
-                toneMappingExposure: 1.2 
+                logarithmicDepthBuffer: false,
+                precision: 'highp'
             }}
             onCreated={({ gl }) => {
                 const canvas = gl.domElement;
@@ -93,9 +86,8 @@ const ExperienceCanvas = React.memo(({
                 }, false);
             }}
         >
-            <PerspectiveCamera makeDefault position={[0, 2, 5]} fov={75} near={0.2} far={200}>
-                <SparkSystem />
-            </PerspectiveCamera>
+            <PerspectiveCamera makeDefault position={[0, 2, 5]} fov={75} near={0.2} far={200} />
+            <SparkSystem />
             <Suspense fallback={null}>
                 {(experienceId === '2' || experienceId === '3') ? (
                     <Environment preset="night" />

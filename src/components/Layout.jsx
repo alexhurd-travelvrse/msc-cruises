@@ -15,8 +15,8 @@ const Layout = ({ children }) => {
                     <div className="container header-content">
                         <Link to="/" className="logo">
                             <img
-                                src="/models/msc.logo.png"
-                                alt="MSC Cruises"
+                                src={publicConfig?.client_metadata?.brand_assets?.hotel_logo_url || "/models/25hrslogo.jpg"}
+                                alt={publicConfig?.client_metadata?.hotel_name || "Partner Logo"}
                                 className="nav-logo"
                                 style={{ height: '55px' }}
                             />

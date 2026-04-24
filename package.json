@@ -1,11 +1,12 @@
 {
-  "name": "msc-cruises",
+  "name": "25-hours",
   "private": true,
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "dev:msc": "vite --mode msc --port 5173 --host",
     "dev:sg": "vite --mode sungardens --port 5174 --host",
+    "dev:25h": "vite --mode 25hours --port 5173 --host",
     "build": "vite build",
     "build:msc": "vite build --mode msc",
     "build:sg": "vite build --mode sungardens",
